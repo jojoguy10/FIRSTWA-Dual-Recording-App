@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OBS_StartRecording_Network", "OBS_StartRecording_Network\OBS_StartRecording_Network.csproj", "{BE060DF2-395E-4920-A648-73C727B520DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE060DF2-395E-4920-A648-73C727B520DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE060DF2-395E-4920-A648-73C727B520DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE060DF2-395E-4920-A648-73C727B520DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE060DF2-395E-4920-A648-73C727B520DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8942E06A-B955-476F-BE7C-BA6C013C06A2}
+	EndGlobalSection
+EndGlobal
