@@ -8,6 +8,8 @@ using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net;
+using System.Net.Sockets;
 using OBSWebsocketDotNet;
 
 namespace OBS_StartRecording_Network
@@ -15,15 +17,18 @@ namespace OBS_StartRecording_Network
     public partial class frmMain : Form
     {
         Settings frmSetting = new Settings();
+        Socket sock;
+        IPAddress serverAddr;
+        private int intUdpPort = 1234;
+        IPEndPoint endPoint;
         private string videoFolder = @"C:\Recordings";
-        private string strIPAddress = @"127.0.0.1";
+        private string strIPaddressHOST = @"127.0.0.1";
+        private string strIPAddressPROGRAM = @"192.168.0.103";
+        private string strIPAddressWIDE = @"192.168.0.104";
         private string strPassword = @"password";
-        private string strPort1 = "4444";
-        private string strPort2 = "4445";
+        private string strPortPROGRAM = "4444";
+        private string strPortWIDE = "4445";
         private DateTime startTime;
-
-        private OBSWebsocket _obsMain;
-        private OBSWebsocket _obsWide;
 
         public frmMain()
         {
@@ -34,53 +39,13 @@ namespace OBS_StartRecording_Network
             btnStartRecording.Enabled = false;
             btnStopRecording.Enabled = false;
 
+            sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            serverAddr = IPAddress.Parse(strIPaddressHOST);
+            endPoint = new IPEndPoint(serverAddr, intUdpPort);
+
             Directory.CreateDirectory(Path.Combine(videoFolder, "Main"));
             Directory.CreateDirectory(Path.Combine(videoFolder, "Wide"));
 
-            _obsMain = new OBSWebsocket();
-            _obsMain.Connected += onConnected;
-            _obsMain.Disconnected += onDisconnected;
-            _obsMain.RecordingStateChanged += onMainRecordingStateChanged;
-            _obsMain.StreamStatus += mainStreamStatus;
-
-            _obsWide = new OBSWebsocket();
-            _obsWide.Connected += onConnected;
-            _obsWide.Disconnected += onDisconnected;
-            _obsWide.RecordingStateChanged += onWideRecordingStateChanged;
-            _obsWide.StreamStatus += wideStreamStatus;
-
-        }
-
-        private void mainStreamStatus(OBSWebsocket sender, StreamStatus status)
-        {
-        }
-
-        private void wideStreamStatus(OBSWebsocket sender, StreamStatus status)
-        {
-        }
-
-        private void onMainRecordingStateChanged(OBSWebsocket sender, OutputState type)
-        {
-        }
-
-        private void onWideRecordingStateChanged(OBSWebsocket sender, OutputState type)
-        {
-        }
-
-        private void onDisconnected(object sender, EventArgs e)
-        {
-            groupEvent.Enabled = false;
-            groupMatch.Enabled = false;
-            btnStartRecording.Enabled = false;
-            btnStopRecording.Enabled = false;
-        }
-
-        private void onConnected(object sender, EventArgs e)
-        {
-            groupEvent.Enabled = true;
-            groupMatch.Enabled = true;
-            btnStartRecording.Enabled = true;
-            btnStopRecording.Enabled = false;
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
@@ -102,10 +67,11 @@ namespace OBS_StartRecording_Network
             DialogResult settingsResult = frmSetting.ShowDialog();
             if (settingsResult == DialogResult.OK)
             {
-                strIPAddress = frmSetting.IPAddress;
+                strIPAddressPROGRAM = frmSetting.IPAddressPROGRAM;
+                strIPAddressWIDE = frmSetting.IPAddressWIDE;
                 strPassword = frmSetting.Password;
-                strPort1 = frmSetting.Port1.ToString();
-                strPort2 = frmSetting.Port2.ToString();
+                strPortPROGRAM = frmSetting.PortPROGRAM.ToString();
+                strPortWIDE = frmSetting.PortWIDE.ToString();
             }
             
         }
@@ -117,11 +83,11 @@ namespace OBS_StartRecording_Network
             btnStartRecording.Enabled = false;
             btnStopRecording.Enabled = true;
 
+            byte[] sendBuffer = Encoding.ASCII.GetBytes("Start Recording");
+            sock.SendTo(sendBuffer, endPoint);
+
             startTime = DateTime.Now;
             timerElapsed.Start();
-
-            _obsMain.StartRecording();
-            _obsWide.StartRecording();
         }
 
         private void btnStopRecording_Click(object sender, EventArgs e)
@@ -131,85 +97,27 @@ namespace OBS_StartRecording_Network
             btnStartRecording.Enabled = true;
             btnStopRecording.Enabled = false;
 
-            timerElapsed.Stop();
+            byte[] sendBuffer = Encoding.ASCII.GetBytes("Stop Recording");
+            sock.SendTo(sendBuffer, endPoint);
 
-            _obsMain.StopRecording();
-            _obsWide.StopRecording();
+            timerElapsed.Stop();
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
             if (btnConnect.Text.Contains("Connect"))
             {
-                if (!_obsMain.IsConnected)
-                {
-                    try
-                    {
-                        _obsMain.Connect(@"ws:\\" + strIPAddress + ":" + strPort1, strPassword);
-                        btnConnect.Text = "Disconnect from OBS";
-                    }
-                    catch (AuthFailureException)
-                    {
-                        MessageBox.Show("Authentication failed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-                    catch (ErrorResponseException ex)
-                    {
-                        MessageBox.Show("Connect failed : " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-                }
-                Console.WriteLine(_obsMain.GetRecordingFolder());
-                _obsMain.SetRecordingFolder(@"C:\Main");
-
-                if (!_obsWide.IsConnected)
-                {
-                    try
-                    {
-                        _obsWide.Connect(@"ws:\\" + strIPAddress + ":" + strPort2, strPassword);
-                        btnConnect.Text = "Disconnect from OBS";
-                    }
-                    catch (AuthFailureException)
-                    {
-                        MessageBox.Show("Authentication failed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-                    catch (ErrorResponseException ex)
-                    {
-                        MessageBox.Show("Connect failed : " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-                }
+                groupEvent.Enabled = true;
+                groupMatch.Enabled = true;
+                btnStartRecording.Enabled = true;
+                btnStopRecording.Enabled = false;
             }
             else
             {
-                if (_obsMain.IsConnected)
-                {
-                    try
-                    {
-                        _obsMain.Disconnect();
-                        btnConnect.Text = "Connect to OBS";
-                    }
-                    catch (ErrorResponseException ex)
-                    {
-                        MessageBox.Show("Disconnection failed : " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-                }
-
-                if (_obsWide.IsConnected)
-                {
-                    try
-                    {
-                        _obsWide.Disconnect();
-                        btnConnect.Text = "Connect to OBS";
-                    }
-                    catch (ErrorResponseException ex)
-                    {
-                        MessageBox.Show("Disconnection failed : " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-                }
+                groupEvent.Enabled = false;
+                groupMatch.Enabled = false;
+                btnStartRecording.Enabled = false;
+                btnStopRecording.Enabled = false;
             }
         }
 
