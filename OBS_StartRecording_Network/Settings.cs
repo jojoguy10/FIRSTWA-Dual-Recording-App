@@ -12,9 +12,10 @@ namespace OBS_StartRecording_Network
 {
     public partial class Settings : Form
     {
-        public string IPAddressPROGRAM { get; private set; } = @"192.168.0.103";
-        public string IPAddressWIDE { get; private set; } = @"192.168.0.104";
+        public string IPAddressPROGRAM { get; private set; } = @"192.168.0.104";
+        public string IPAddressWIDE { get; private set; } = @"192.168.0.103";
         public string Password { get; private set; } = @"password";
+        public string Folder { get; private set; } = @"D:\__USER\Videos\VM Captures";
         public int PortPROGRAM { get; private set; } = 4444;
         public int PortWIDE { get; private set; } = 4445;
 
@@ -31,17 +32,48 @@ namespace OBS_StartRecording_Network
             Password = txtPassword.Text;
             PortPROGRAM = (int)numPort1.Value;
             PortWIDE = (int)numPort2.Value;
+            Folder = txtFolderLocation.Text;
+            this.DialogResult = DialogResult.OK;
             this.Hide();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
+            this.DialogResult = DialogResult.Cancel;
             this.Hide();
         }
 
         private void txtPassword_Click(object sender, EventArgs e)
         {
             txtPassword.SelectAll();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            DialogResult result = folderBrowserDialog1.ShowDialog();
+            switch (result)
+            {
+                case DialogResult.None:
+                    break;
+                case DialogResult.OK:
+                    txtFolderLocation.Text = folderBrowserDialog1.SelectedPath;
+                    break;
+                case DialogResult.Cancel:
+                    break;
+                case DialogResult.Abort:
+                    break;
+                case DialogResult.Retry:
+                    break;
+                case DialogResult.Ignore:
+                    break;
+                case DialogResult.Yes:
+                    txtFolderLocation.Text = folderBrowserDialog1.SelectedPath;
+                    break;
+                case DialogResult.No:
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

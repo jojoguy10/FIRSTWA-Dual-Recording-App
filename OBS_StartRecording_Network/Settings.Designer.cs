@@ -40,13 +40,17 @@
             this.txtPassword = new System.Windows.Forms.MaskedTextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.txtIPAddressWIDE = new IPAddressControlLib.IPAddressControl();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.label6 = new System.Windows.Forms.Label();
+            this.txtFolderLocation = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numPort1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numPort2)).BeginInit();
             this.SuspendLayout();
             // 
             // btnAccept
             // 
-            this.btnAccept.Location = new System.Drawing.Point(15, 140);
+            this.btnAccept.Location = new System.Drawing.Point(12, 172);
             this.btnAccept.Name = "btnAccept";
             this.btnAccept.Size = new System.Drawing.Size(75, 23);
             this.btnAccept.TabIndex = 3;
@@ -57,7 +61,7 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(133, 140);
+            this.btnCancel.Location = new System.Drawing.Point(167, 172);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 4;
@@ -85,9 +89,9 @@
             this.txtIPAddressPROGRAM.MinimumSize = new System.Drawing.Size(87, 20);
             this.txtIPAddressPROGRAM.Name = "txtIPAddressPROGRAM";
             this.txtIPAddressPROGRAM.ReadOnly = false;
-            this.txtIPAddressPROGRAM.Size = new System.Drawing.Size(87, 20);
+            this.txtIPAddressPROGRAM.Size = new System.Drawing.Size(121, 20);
             this.txtIPAddressPROGRAM.TabIndex = 0;
-            this.txtIPAddressPROGRAM.Text = "192.168.0.103";
+            this.txtIPAddressPROGRAM.Text = "192.168.0.104";
             // 
             // label2
             // 
@@ -107,7 +111,7 @@
             0,
             0});
             this.numPort1.Name = "numPort1";
-            this.numPort1.Size = new System.Drawing.Size(87, 20);
+            this.numPort1.Size = new System.Drawing.Size(121, 20);
             this.numPort1.TabIndex = 1;
             this.numPort1.Value = new decimal(new int[] {
             4444,
@@ -133,7 +137,7 @@
             0,
             0});
             this.numPort2.Name = "numPort2";
-            this.numPort2.Size = new System.Drawing.Size(87, 20);
+            this.numPort2.Size = new System.Drawing.Size(121, 20);
             this.numPort2.TabIndex = 2;
             this.numPort2.Value = new decimal(new int[] {
             4445,
@@ -155,7 +159,7 @@
             this.txtPassword.Location = new System.Drawing.Point(121, 58);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
-            this.txtPassword.Size = new System.Drawing.Size(87, 20);
+            this.txtPassword.Size = new System.Drawing.Size(121, 20);
             this.txtPassword.TabIndex = 5;
             this.txtPassword.Text = "password";
             this.txtPassword.Click += new System.EventHandler(this.txtPassword_Click);
@@ -180,9 +184,36 @@
             this.txtIPAddressWIDE.MinimumSize = new System.Drawing.Size(87, 20);
             this.txtIPAddressWIDE.Name = "txtIPAddressWIDE";
             this.txtIPAddressWIDE.ReadOnly = false;
-            this.txtIPAddressWIDE.Size = new System.Drawing.Size(87, 20);
+            this.txtIPAddressWIDE.Size = new System.Drawing.Size(121, 20);
             this.txtIPAddressWIDE.TabIndex = 0;
-            this.txtIPAddressWIDE.Text = "192.168.0.104";
+            this.txtIPAddressWIDE.Text = "192.168.0.103";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 139);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(91, 13);
+            this.label6.TabIndex = 6;
+            this.label6.Text = "Recording Folder:";
+            // 
+            // txtFolderLocation
+            // 
+            this.txtFolderLocation.Location = new System.Drawing.Point(121, 136);
+            this.txtFolderLocation.Name = "txtFolderLocation";
+            this.txtFolderLocation.Size = new System.Drawing.Size(86, 20);
+            this.txtFolderLocation.TabIndex = 7;
+            this.txtFolderLocation.Text = "D:\\__USER\\Videos\\VM Captures";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(213, 134);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(29, 23);
+            this.button1.TabIndex = 8;
+            this.button1.Text = "...";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Settings
             // 
@@ -190,7 +221,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(225, 181);
+            this.ClientSize = new System.Drawing.Size(248, 208);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.txtFolderLocation);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.txtPassword);
             this.Controls.Add(this.numPort2);
             this.Controls.Add(this.numPort1);
@@ -228,5 +262,9 @@
         private System.Windows.Forms.MaskedTextBox txtPassword;
         private System.Windows.Forms.Label label5;
         private IPAddressControlLib.IPAddressControl txtIPAddressWIDE;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox txtFolderLocation;
+        private System.Windows.Forms.Button button1;
     }
 }
