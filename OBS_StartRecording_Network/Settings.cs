@@ -12,10 +12,11 @@ namespace OBS_StartRecording_Network
 {
     public partial class Settings : Form
     {
-        public string IPAddress { get; private set; } = @"192.168.100.10";
+        public string IPAddressPROGRAM { get; private set; } = @"192.168.0.103";
+        public string IPAddressWIDE { get; private set; } = @"192.168.0.104";
         public string Password { get; private set; } = @"password";
-        public int Port1 { get; private set; } = 4444;
-        public int Port2 { get; private set; } = 4445;
+        public int PortPROGRAM { get; private set; } = 4444;
+        public int PortWIDE { get; private set; } = 4445;
 
         public Settings()
         {
@@ -25,10 +26,11 @@ namespace OBS_StartRecording_Network
 
         private void btnAccept_Click(object sender, EventArgs e)
         {
-            IPAddress = txtIPAddress.Text;
+            IPAddressPROGRAM = txtIPAddressPROGRAM.Text;
+            IPAddressWIDE = txtIPAddressWIDE.Text;
             Password = txtPassword.Text;
-            Port1 = (int)numPort1.Value;
-            Port2 = (int)numPort2.Value;
+            PortPROGRAM = (int)numPort1.Value;
+            PortWIDE = (int)numPort2.Value;
             this.Hide();
         }
 
