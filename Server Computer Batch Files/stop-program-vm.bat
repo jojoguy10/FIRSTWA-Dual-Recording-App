@@ -1,0 +1,1 @@
+VBoxManage controlvm "FIRSTWA_VM_Program" acpipowerbutton

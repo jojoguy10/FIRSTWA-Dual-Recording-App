@@ -41,13 +41,18 @@
             this.label2 = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.recordingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uploadsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.streamingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label3 = new System.Windows.Forms.Label();
-            this.txtEventName = new System.Windows.Forms.TextBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.chkReplay = new System.Windows.Forms.CheckBox();
             this.numReplayNumber = new System.Windows.Forms.NumericUpDown();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.groupEvent = new System.Windows.Forms.GroupBox();
+            this.comboEventName = new System.Windows.Forms.ComboBox();
+            this.chkRecordWide = new System.Windows.Forms.CheckBox();
+            this.chkProgramRecord = new System.Windows.Forms.CheckBox();
             this.groupMatch = new System.Windows.Forms.GroupBox();
             this.timerElapsed = new System.Windows.Forms.Timer(this.components);
             this.lblElapsedTime = new System.Windows.Forms.Label();
@@ -58,9 +63,14 @@
             this.label4 = new System.Windows.Forms.Label();
             this.ledRecordWIDE = new System.Windows.Forms.Panel();
             this.ledRecordPROGRAM = new System.Windows.Forms.Panel();
-            this.chkProgramRecord = new System.Windows.Forms.CheckBox();
-            this.chkRecordWide = new System.Windows.Forms.CheckBox();
             this.btnOpenRecordings = new System.Windows.Forms.Button();
+            this.btnUpload = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.groupOBS = new System.Windows.Forms.GroupBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.lblProgramPath = new System.Windows.Forms.LinkLabel();
+            this.lblWidePath = new System.Windows.Forms.LinkLabel();
             this.groupMatchTypes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -68,13 +78,14 @@
             this.groupEvent.SuspendLayout();
             this.groupMatch.SuspendLayout();
             this.groupStatus.SuspendLayout();
+            this.groupOBS.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnStartRecording
             // 
-            this.btnStartRecording.Location = new System.Drawing.Point(12, 250);
+            this.btnStartRecording.Location = new System.Drawing.Point(12, 285);
             this.btnStartRecording.Name = "btnStartRecording";
-            this.btnStartRecording.Size = new System.Drawing.Size(182, 23);
+            this.btnStartRecording.Size = new System.Drawing.Size(182, 52);
             this.btnStartRecording.TabIndex = 0;
             this.btnStartRecording.Text = "Start Recording";
             this.btnStartRecording.UseVisualStyleBackColor = true;
@@ -84,9 +95,9 @@
             // 
             this.btnStopRecording.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnStopRecording.Enabled = false;
-            this.btnStopRecording.Location = new System.Drawing.Point(221, 250);
+            this.btnStopRecording.Location = new System.Drawing.Point(221, 285);
             this.btnStopRecording.Name = "btnStopRecording";
-            this.btnStopRecording.Size = new System.Drawing.Size(182, 23);
+            this.btnStopRecording.Size = new System.Drawing.Size(182, 52);
             this.btnStopRecording.TabIndex = 0;
             this.btnStopRecording.Text = "Stop Recording";
             this.btnStopRecording.UseVisualStyleBackColor = true;
@@ -101,6 +112,7 @@
             this.radioBtnQual.TabIndex = 2;
             this.radioBtnQual.Text = "Qualification";
             this.radioBtnQual.UseVisualStyleBackColor = true;
+            this.radioBtnQual.CheckedChanged += new System.EventHandler(this.radioBtnMatchType_CheckedChanged);
             // 
             // radioBtnQuarter
             // 
@@ -111,6 +123,7 @@
             this.radioBtnQuarter.TabIndex = 2;
             this.radioBtnQuarter.Text = "Quarterfinal";
             this.radioBtnQuarter.UseVisualStyleBackColor = true;
+            this.radioBtnQuarter.CheckedChanged += new System.EventHandler(this.radioBtnMatchType_CheckedChanged);
             // 
             // radioBtnSemi
             // 
@@ -121,6 +134,7 @@
             this.radioBtnSemi.TabIndex = 2;
             this.radioBtnSemi.Text = "Semifinal";
             this.radioBtnSemi.UseVisualStyleBackColor = true;
+            this.radioBtnSemi.CheckedChanged += new System.EventHandler(this.radioBtnMatchType_CheckedChanged);
             // 
             // radioBtnFinal
             // 
@@ -131,6 +145,7 @@
             this.radioBtnFinal.TabIndex = 2;
             this.radioBtnFinal.Text = "Final";
             this.radioBtnFinal.UseVisualStyleBackColor = true;
+            this.radioBtnFinal.CheckedChanged += new System.EventHandler(this.radioBtnMatchType_CheckedChanged);
             // 
             // groupMatchTypes
             // 
@@ -157,6 +172,7 @@
             this.radioBtnPractice.TabStop = true;
             this.radioBtnPractice.Text = "Practice";
             this.radioBtnPractice.UseVisualStyleBackColor = true;
+            this.radioBtnPractice.CheckedChanged += new System.EventHandler(this.radioBtnMatchType_CheckedChanged);
             // 
             // numMatchNumber
             // 
@@ -195,16 +211,40 @@
             this.settingsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(588, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(579, 24);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "Menu Strip";
             // 
             // settingsToolStripMenuItem
             // 
+            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.recordingToolStripMenuItem,
+            this.uploadsToolStripMenuItem,
+            this.streamingToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
-            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
+            // recordingToolStripMenuItem
+            // 
+            this.recordingToolStripMenuItem.Name = "recordingToolStripMenuItem";
+            this.recordingToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.recordingToolStripMenuItem.Text = "Recording";
+            this.recordingToolStripMenuItem.Click += new System.EventHandler(this.recordingToolStripMenuItem_Click);
+            // 
+            // uploadsToolStripMenuItem
+            // 
+            this.uploadsToolStripMenuItem.Name = "uploadsToolStripMenuItem";
+            this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.uploadsToolStripMenuItem.Text = "Uploading";
+            this.uploadsToolStripMenuItem.Click += new System.EventHandler(this.uploadsToolStripMenuItem_Click);
+            // 
+            // streamingToolStripMenuItem
+            // 
+            this.streamingToolStripMenuItem.Name = "streamingToolStripMenuItem";
+            this.streamingToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.streamingToolStripMenuItem.Text = "Streaming";
+            this.streamingToolStripMenuItem.Click += new System.EventHandler(this.streamingToolStripMenuItem_Click);
             // 
             // label3
             // 
@@ -215,13 +255,6 @@
             this.label3.TabIndex = 9;
             this.label3.Text = "Event Name:";
             // 
-            // txtEventName
-            // 
-            this.txtEventName.Location = new System.Drawing.Point(84, 25);
-            this.txtEventName.Name = "txtEventName";
-            this.txtEventName.Size = new System.Drawing.Size(190, 20);
-            this.txtEventName.TabIndex = 10;
-            // 
             // chkReplay
             // 
             this.chkReplay.AutoSize = true;
@@ -231,6 +264,7 @@
             this.chkReplay.TabIndex = 11;
             this.chkReplay.Text = "Replay";
             this.chkReplay.UseVisualStyleBackColor = true;
+            this.chkReplay.CheckedChanged += new System.EventHandler(this.chkReplay_CheckedChanged);
             // 
             // numReplayNumber
             // 
@@ -253,6 +287,7 @@
             0,
             0,
             0});
+            this.numReplayNumber.ValueChanged += new System.EventHandler(this.numReplayNumber_ValueChanged);
             // 
             // folderBrowserDialog1
             // 
@@ -260,16 +295,49 @@
             // 
             // groupEvent
             // 
+            this.groupEvent.Controls.Add(this.comboEventName);
             this.groupEvent.Controls.Add(this.chkRecordWide);
             this.groupEvent.Controls.Add(this.chkProgramRecord);
-            this.groupEvent.Controls.Add(this.txtEventName);
             this.groupEvent.Controls.Add(this.label3);
-            this.groupEvent.Location = new System.Drawing.Point(12, 59);
+            this.groupEvent.Location = new System.Drawing.Point(12, 100);
             this.groupEvent.Name = "groupEvent";
-            this.groupEvent.Size = new System.Drawing.Size(391, 83);
+            this.groupEvent.Size = new System.Drawing.Size(391, 77);
             this.groupEvent.TabIndex = 12;
             this.groupEvent.TabStop = false;
             this.groupEvent.Text = "Event Specific";
+            // 
+            // comboEventName
+            // 
+            this.comboEventName.FormattingEnabled = true;
+            this.comboEventName.Location = new System.Drawing.Point(85, 25);
+            this.comboEventName.Name = "comboEventName";
+            this.comboEventName.Size = new System.Drawing.Size(247, 21);
+            this.comboEventName.TabIndex = 12;
+            this.comboEventName.SelectedIndexChanged += new System.EventHandler(this.comboEventName_SelectedIndexChanged);
+            // 
+            // chkRecordWide
+            // 
+            this.chkRecordWide.AutoSize = true;
+            this.chkRecordWide.Checked = true;
+            this.chkRecordWide.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkRecordWide.Location = new System.Drawing.Point(118, 54);
+            this.chkRecordWide.Name = "chkRecordWide";
+            this.chkRecordWide.Size = new System.Drawing.Size(89, 17);
+            this.chkRecordWide.TabIndex = 11;
+            this.chkRecordWide.Text = "Record Wide";
+            this.chkRecordWide.UseVisualStyleBackColor = true;
+            // 
+            // chkProgramRecord
+            // 
+            this.chkProgramRecord.AutoSize = true;
+            this.chkProgramRecord.Checked = true;
+            this.chkProgramRecord.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkProgramRecord.Location = new System.Drawing.Point(9, 54);
+            this.chkProgramRecord.Name = "chkProgramRecord";
+            this.chkProgramRecord.Size = new System.Drawing.Size(103, 17);
+            this.chkProgramRecord.TabIndex = 11;
+            this.chkProgramRecord.Text = "Record Program";
+            this.chkProgramRecord.UseVisualStyleBackColor = true;
             // 
             // groupMatch
             // 
@@ -278,7 +346,7 @@
             this.groupMatch.Controls.Add(this.chkReplay);
             this.groupMatch.Controls.Add(this.numReplayNumber);
             this.groupMatch.Controls.Add(this.label2);
-            this.groupMatch.Location = new System.Drawing.Point(12, 148);
+            this.groupMatch.Location = new System.Drawing.Point(12, 183);
             this.groupMatch.Name = "groupMatch";
             this.groupMatch.Size = new System.Drawing.Size(391, 96);
             this.groupMatch.TabIndex = 13;
@@ -294,7 +362,7 @@
             // 
             this.lblElapsedTime.AutoSize = true;
             this.lblElapsedTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElapsedTime.Location = new System.Drawing.Point(140, 278);
+            this.lblElapsedTime.Location = new System.Drawing.Point(140, 342);
             this.lblElapsedTime.Name = "lblElapsedTime";
             this.lblElapsedTime.Size = new System.Drawing.Size(135, 29);
             this.lblElapsedTime.TabIndex = 14;
@@ -302,9 +370,9 @@
             // 
             // btnConnectProgram
             // 
-            this.btnConnectProgram.Location = new System.Drawing.Point(12, 27);
+            this.btnConnectProgram.Location = new System.Drawing.Point(6, 19);
             this.btnConnectProgram.Name = "btnConnectProgram";
-            this.btnConnectProgram.Size = new System.Drawing.Size(163, 26);
+            this.btnConnectProgram.Size = new System.Drawing.Size(176, 26);
             this.btnConnectProgram.TabIndex = 15;
             this.btnConnectProgram.Text = "Connect to Program OBS";
             this.btnConnectProgram.UseVisualStyleBackColor = true;
@@ -312,9 +380,9 @@
             // 
             // btnConnectWide
             // 
-            this.btnConnectWide.Location = new System.Drawing.Point(181, 27);
+            this.btnConnectWide.Location = new System.Drawing.Point(209, 19);
             this.btnConnectWide.Name = "btnConnectWide";
-            this.btnConnectWide.Size = new System.Drawing.Size(163, 26);
+            this.btnConnectWide.Size = new System.Drawing.Size(182, 26);
             this.btnConnectWide.TabIndex = 16;
             this.btnConnectWide.Text = "Connect to Wide OBS";
             this.btnConnectWide.UseVisualStyleBackColor = true;
@@ -326,9 +394,9 @@
             this.groupStatus.Controls.Add(this.label4);
             this.groupStatus.Controls.Add(this.ledRecordWIDE);
             this.groupStatus.Controls.Add(this.ledRecordPROGRAM);
-            this.groupStatus.Location = new System.Drawing.Point(409, 59);
+            this.groupStatus.Location = new System.Drawing.Point(409, 100);
             this.groupStatus.Name = "groupStatus";
-            this.groupStatus.Size = new System.Drawing.Size(158, 83);
+            this.groupStatus.Size = new System.Drawing.Size(158, 77);
             this.groupStatus.TabIndex = 17;
             this.groupStatus.TabStop = false;
             this.groupStatus.Text = "Status";
@@ -369,33 +437,9 @@
             this.ledRecordPROGRAM.Size = new System.Drawing.Size(32, 13);
             this.ledRecordPROGRAM.TabIndex = 0;
             // 
-            // chkProgramRecord
-            // 
-            this.chkProgramRecord.AutoSize = true;
-            this.chkProgramRecord.Checked = true;
-            this.chkProgramRecord.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkProgramRecord.Location = new System.Drawing.Point(12, 53);
-            this.chkProgramRecord.Name = "chkProgramRecord";
-            this.chkProgramRecord.Size = new System.Drawing.Size(103, 17);
-            this.chkProgramRecord.TabIndex = 11;
-            this.chkProgramRecord.Text = "Record Program";
-            this.chkProgramRecord.UseVisualStyleBackColor = true;
-            // 
-            // chkRecordWide
-            // 
-            this.chkRecordWide.AutoSize = true;
-            this.chkRecordWide.Checked = true;
-            this.chkRecordWide.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkRecordWide.Location = new System.Drawing.Point(121, 53);
-            this.chkRecordWide.Name = "chkRecordWide";
-            this.chkRecordWide.Size = new System.Drawing.Size(89, 17);
-            this.chkRecordWide.TabIndex = 11;
-            this.chkRecordWide.Text = "Record Wide";
-            this.chkRecordWide.UseVisualStyleBackColor = true;
-            // 
             // btnOpenRecordings
             // 
-            this.btnOpenRecordings.Location = new System.Drawing.Point(12, 326);
+            this.btnOpenRecordings.Location = new System.Drawing.Point(12, 390);
             this.btnOpenRecordings.Name = "btnOpenRecordings";
             this.btnOpenRecordings.Size = new System.Drawing.Size(182, 23);
             this.btnOpenRecordings.TabIndex = 18;
@@ -403,17 +447,82 @@
             this.btnOpenRecordings.UseVisualStyleBackColor = true;
             this.btnOpenRecordings.Click += new System.EventHandler(this.btnOpenRecordings_Click);
             // 
+            // btnUpload
+            // 
+            this.btnUpload.Location = new System.Drawing.Point(409, 183);
+            this.btnUpload.Name = "btnUpload";
+            this.btnUpload.Size = new System.Drawing.Size(158, 23);
+            this.btnUpload.TabIndex = 19;
+            this.btnUpload.Text = "Upload to Youtube";
+            this.btnUpload.UseVisualStyleBackColor = true;
+            this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 425);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(126, 13);
+            this.label1.TabIndex = 20;
+            this.label1.Text = "Program Recording Path:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 449);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(112, 13);
+            this.label6.TabIndex = 21;
+            this.label6.Text = "Wide Recording Path:";
+            // 
+            // groupOBS
+            // 
+            this.groupOBS.Controls.Add(this.btnConnectProgram);
+            this.groupOBS.Controls.Add(this.btnConnectWide);
+            this.groupOBS.Location = new System.Drawing.Point(12, 40);
+            this.groupOBS.Name = "groupOBS";
+            this.groupOBS.Size = new System.Drawing.Size(391, 54);
+            this.groupOBS.TabIndex = 22;
+            this.groupOBS.TabStop = false;
+            this.groupOBS.Text = "OBS Connections";
+            // 
+            // lblProgramPath
+            // 
+            this.lblProgramPath.AutoSize = true;
+            this.lblProgramPath.Location = new System.Drawing.Point(144, 425);
+            this.lblProgramPath.Name = "lblProgramPath";
+            this.lblProgramPath.Size = new System.Drawing.Size(55, 13);
+            this.lblProgramPath.TabIndex = 23;
+            this.lblProgramPath.TabStop = true;
+            this.lblProgramPath.Text = "linkLabel1";
+            this.lblProgramPath.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblProgramPath_Click);
+            // 
+            // lblWidePath
+            // 
+            this.lblWidePath.AutoSize = true;
+            this.lblWidePath.Location = new System.Drawing.Point(144, 449);
+            this.lblWidePath.Name = "lblWidePath";
+            this.lblWidePath.Size = new System.Drawing.Size(55, 13);
+            this.lblWidePath.TabIndex = 24;
+            this.lblWidePath.TabStop = true;
+            this.lblWidePath.Text = "linkLabel2";
+            this.lblWidePath.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblWidePath_Click);
+            // 
             // frmMain
             // 
             this.AcceptButton = this.btnStartRecording;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
-            this.ClientSize = new System.Drawing.Size(588, 361);
+            this.ClientSize = new System.Drawing.Size(579, 483);
+            this.Controls.Add(this.lblWidePath);
+            this.Controls.Add(this.lblProgramPath);
+            this.Controls.Add(this.groupOBS);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.btnUpload);
             this.Controls.Add(this.btnOpenRecordings);
             this.Controls.Add(this.groupStatus);
-            this.Controls.Add(this.btnConnectWide);
-            this.Controls.Add(this.btnConnectProgram);
             this.Controls.Add(this.lblElapsedTime);
             this.Controls.Add(this.groupMatch);
             this.Controls.Add(this.groupEvent);
@@ -426,6 +535,7 @@
             this.Name = "frmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FIRSTWA Recording";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.groupMatchTypes.ResumeLayout(false);
             this.groupMatchTypes.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).EndInit();
@@ -438,6 +548,7 @@
             this.groupMatch.PerformLayout();
             this.groupStatus.ResumeLayout(false);
             this.groupStatus.PerformLayout();
+            this.groupOBS.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -458,7 +569,6 @@
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.RadioButton radioBtnPractice;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox txtEventName;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.CheckBox chkReplay;
         private System.Windows.Forms.NumericUpDown numReplayNumber;
@@ -477,6 +587,17 @@
         private System.Windows.Forms.CheckBox chkRecordWide;
         private System.Windows.Forms.CheckBox chkProgramRecord;
         private System.Windows.Forms.Button btnOpenRecordings;
+        private System.Windows.Forms.ToolStripMenuItem recordingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uploadsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem streamingToolStripMenuItem;
+        private System.Windows.Forms.Button btnUpload;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox comboEventName;
+        private System.Windows.Forms.GroupBox groupOBS;
+        private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.LinkLabel lblProgramPath;
+        private System.Windows.Forms.LinkLabel lblWidePath;
     }
 }
 

@@ -1,6 +1,6 @@
 ﻿namespace OBS_StartRecording_Network
 {
-    partial class Settings
+    partial class RecordingSettings
     {
         /// <summary>
         /// Required designer variable.
@@ -199,6 +199,7 @@
             // 
             // txtFolderLocation
             // 
+            this.txtFolderLocation.Enabled = false;
             this.txtFolderLocation.Location = new System.Drawing.Point(121, 136);
             this.txtFolderLocation.Name = "txtFolderLocation";
             this.txtFolderLocation.Size = new System.Drawing.Size(86, 20);
@@ -207,6 +208,7 @@
             // 
             // button1
             // 
+            this.button1.Enabled = false;
             this.button1.Location = new System.Drawing.Point(213, 134);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(29, 23);
@@ -215,7 +217,7 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // Settings
+            // RecordingSettings
             // 
             this.AcceptButton = this.btnAccept;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -238,7 +240,7 @@
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnAccept);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Name = "Settings";
+            this.Name = "RecordingSettings";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Settings";
             ((System.ComponentModel.ISupportInitialize)(this.numPort1)).EndInit();
