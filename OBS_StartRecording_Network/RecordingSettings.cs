@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace OBS_StartRecording_Network
 {
-    public partial class Settings : Form
+    public partial class RecordingSettings : Form
     {
         public string IPAddressPROGRAM { get; private set; } = @"192.168.0.104";
         public string IPAddressWIDE { get; private set; } = @"192.168.0.103";
@@ -19,7 +19,7 @@ namespace OBS_StartRecording_Network
         public int PortPROGRAM { get; private set; } = 4444;
         public int PortWIDE { get; private set; } = 4445;
 
-        public Settings()
+        public RecordingSettings()
         {
             InitializeComponent();
         }
