@@ -25,6 +25,7 @@ using System.Threading;
 using System.Reflection;
 
 /* TODO:
+ * Parse CSV file from FMS for team information
  * Upload to YouTube to playlist
  * Settings for streaming
  * Settings for uploading (if any)
@@ -66,6 +67,9 @@ namespace OBS_StartRecording_Network
 
         private string fileProgram, fileWide;
         private string replay = "";
+
+        private string programPlaylistTitle, programPlaylistId, widePlaylistTitle, widePlaylistId;
+        private string programVideoTitle, programVideoId, wideVideoTitle, wideVideoId;
 
         enum MatchType
         {
@@ -197,7 +201,7 @@ namespace OBS_StartRecording_Network
 
             if (chkProgramRecord.Checked)
             {
-                fileProgram = Path.Combine(dirProgram.FullName, currentEvent.year + " " + currentEvent.name + " " + matchType + " " + numMatchNumber.Value + replay + ".mp4");
+                fileProgram = Path.Combine(dirProgram.FullName, programVideoTitle + ".mp4");
 
                 FileInfo[] files = dirProgram.GetFiles();
                 if(File.Exists(fileProgram))
@@ -226,7 +230,7 @@ namespace OBS_StartRecording_Network
 
             if (chkRecordWide.Checked)
             {
-                fileWide = Path.Combine(dirWide.FullName, currentEvent.year + " " + currentEvent.name + " WIDE " + matchType + " " + numMatchNumber.Value + replay + ".mp4");
+                fileWide = Path.Combine(dirWide.FullName, wideVideoTitle + ".mp4");
 
                 FileInfo[] files = dirWide.GetFiles();
                 if (File.Exists(fileWide))
@@ -473,7 +477,11 @@ namespace OBS_StartRecording_Network
 
         private void uploadsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                if (programPlaylistTitle != null) { ListPlaylists(programPlaylistTitle).Wait(); }
+                if (widePlaylistTitle != null) { ListPlaylists(widePlaylistTitle).Wait(); }
+            }
         }
 
         private void streamingToolStripMenuItem_Click(object sender, EventArgs e)
@@ -544,6 +552,12 @@ namespace OBS_StartRecording_Network
                 if (comboEventName.SelectedItem.ToString().Contains(eventDetails[i].first_event_code))
                 {
                     currentEvent = eventDetails[i];
+
+                    programPlaylistTitle = currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
+                    widePlaylistTitle = "(WIDE) " + currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
+
+                    programVideoTitle = currentEvent.year + " " + currentEvent.name + " " + matchType + " " + numMatchNumber.Value + replay;
+                    wideVideoTitle = currentEvent.year + " " + currentEvent.name + " WIDE " + matchType + " " + numMatchNumber.Value + replay;
                     Console.WriteLine(currentEvent.name);
                 }
             }
@@ -647,10 +661,50 @@ namespace OBS_StartRecording_Network
             }
         }
 
+        public async Task ListPlaylists(string playlistName)
+        {
+            UserCredential credential;
+            using (var stream = new FileStream(credFile.FullName, FileMode.Open, FileAccess.Read))
+            {
+                credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    GoogleClientSecrets.Load(stream).Secrets,
+                    // This OAuth 2.0 access scope allows for full read/write access to the
+                    // authenticated user's account.
+                    new[] { YouTubeService.Scope.Youtube },
+                    "user",
+                    CancellationToken.None,
+                    new FileDataStore(this.GetType().ToString())
+                );
+            }
+
+            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = this.GetType().ToString()
+            });
+
+            var channelsListRequest = youtubeService.Channels.List("contentDetails");
+            channelsListRequest.Mine = true;
+            var playlists = youtubeService.Playlists.List("snippit");
+            playlists.PageToken = "";
+            playlists.MaxResults = 50;
+            playlists.Mine = true;
+            PlaylistListResponse presponse = await playlists.ExecuteAsync();
+            
+            foreach (var pl in presponse.Items)
+            {
+                if(pl.Snippet.Title == playlistName)
+                {
+                    Console.WriteLine("Playlist already created");
+                    return;
+                }
+            }
+        }
+
         public async Task AddToPlaylist(string videoID)
         {
             UserCredential credential;
-            using (var stream = new FileStream("client_secrets.json", FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream(credFile.FullName, FileMode.Open, FileAccess.Read))
             {
                 credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
                     GoogleClientSecrets.Load(stream).Secrets,
@@ -724,6 +778,20 @@ namespace OBS_StartRecording_Network
             {
                 this.btnUpload.Text = text;
             }
+        }
+
+        public class YouTubePlaylist
+        {
+            private string title;
+
+            public YouTubePlaylist(string title, string id)
+            {
+                this.title = title;
+                Id = id;
+            }
+
+            public string Name { get; set; }
+            public string Id { get; set; }
         }
 
         public class District
