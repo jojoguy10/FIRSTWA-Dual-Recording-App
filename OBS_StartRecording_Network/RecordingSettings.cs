@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,8 @@ namespace OBS_StartRecording_Network
         public RecordingSettings()
         {
             InitializeComponent();
+
+            txtFolderLocation.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), "VM Captures");
         }
 
 
@@ -40,7 +43,7 @@ namespace OBS_StartRecording_Network
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
-            this.Hide();
+            this.Close();
         }
 
         private void txtPassword_Click(object sender, EventArgs e)
