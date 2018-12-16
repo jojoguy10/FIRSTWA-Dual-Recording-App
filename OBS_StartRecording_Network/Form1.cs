@@ -4,12 +4,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Net;
-using System.Net.Sockets;
 using OBSWebsocketDotNet;
 using System.Diagnostics;
 using RestSharp;
@@ -23,6 +20,7 @@ using Newtonsoft.Json;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Reflection;
+using System.Xml.Linq;
 
 /* TODO:
  * Upload to YouTube to playlist
@@ -41,20 +39,25 @@ namespace OBS_StartRecording_Network
         RecordingSettings frmRecordingSetting = new RecordingSettings();
 
         RestClient tbaClient = new RestClient("http://www.thebluealliance.com/api/v3");
-        RestRequest tbaRequest = new RestRequest($"district/2019pnw/events", Method.GET);
-        
+        RestRequest tbaRequest = new RestRequest($"district/2018pnw/events", Method.GET);
+        private string TBAKEY;
+
         List<District> eventDistrict = new List<District>();
         List<Event> eventDetails = new List<Event>();
         Event currentEvent = new Event();
+        Match currentMatch;
+        string matchKey;
+
+        string[] matchKeys;
 
         protected OBSWebsocket obsProgram, obsWide;
 
-        private string videoFolder = @"D:\__USER\Videos\VM Captures";
+        private string videoFolder;
         DirectoryInfo dirProgram;
         DirectoryInfo dirWide;
 
-        private string strIPAddressPROGRAM = @"192.168.0.104";
-        private string strIPAddressWIDE = @"192.168.0.103";
+        private string strIPAddressPROGRAM = @"172.19.249.253";
+        private string strIPAddressWIDE = @"172.19.249.254";
         private string strPassword = @"password";
         private string strPortPROGRAM = "4444";
         private string strPortWIDE = "4445";
@@ -75,16 +78,22 @@ namespace OBS_StartRecording_Network
             Semifinal,
             Final
         }
-        MatchType matchType = MatchType.Practice;
+        MatchType currentMatchType = MatchType.Practice;
 
         public frmMain()
         {
             InitializeComponent();
+
+            XDocument keysFile = XDocument.Load(@"C:\Users\jojog\Source\Repos\FIRSTWA_StartRecording_Network\OBS_StartRecording_Network\keys.xml");
+
+            var xmlValues = keysFile.Descendants("item").Descendants("value").ToArray();
+
+            TBAKEY = xmlValues[0].Value.Replace('\n',' ').Trim();
             
             tbaRequest.AddHeader
             (
                 "X-TBA-Auth-Key",
-                "9FjTZaWXf1rKVnPneSZlRUGSN5vq9VAH467lSZpxEZ69OtHy4YvvKB9qWbzueSu9"
+                TBAKEY
             );
             IRestResponse tbaResponse = tbaClient.Execute(tbaRequest);
             string tbaContent = tbaResponse.Content;
@@ -94,9 +103,9 @@ namespace OBS_StartRecording_Network
             eventDistrict = JsonConvert.DeserializeObject<List<District>>(tbaContent);
             eventDetails = JsonConvert.DeserializeObject<List<Event>>(tbaContent);
             
-            eventDetails.ForEach(x => comboEventName.Items.Add(x.week + " - " + x.first_event_code + " - " + x.location_name));
+            eventDetails.ForEach(x => comboEventName.Items.Add((x.week + 1) + " - " + x.first_event_code + " - " + x.location_name));
             comboEventName.Sorted = true;
-            
+
             lblProgramPath.Text = "";
             lblWidePath.Text = "";
 
@@ -114,6 +123,8 @@ namespace OBS_StartRecording_Network
             obsWide.Connected += obsWideOnConnect;
             obsWide.Disconnected += obsWideOnDisconnect;
             obsWide.RecordingStateChanged += obsWideRecordingStateChanged;
+
+            videoFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), "VM Captures");
 
             Directory.CreateDirectory(Path.Combine(videoFolder, "Program"));
             Directory.CreateDirectory(Path.Combine(videoFolder, "Wide"));
@@ -197,7 +208,7 @@ namespace OBS_StartRecording_Network
 
             if (chkProgramRecord.Checked)
             {
-                fileProgram = Path.Combine(dirProgram.FullName, currentEvent.year + " " + currentEvent.name + " " + matchType + " " + numMatchNumber.Value + replay + ".mp4");
+                fileProgram = Path.Combine(dirProgram.FullName, currentEvent.year + " " + currentEvent.name + " " + currentMatchType + " " + numMatchNumber.Value + replay + ".mp4");
 
                 FileInfo[] files = dirProgram.GetFiles();
                 if(File.Exists(fileProgram))
@@ -226,7 +237,7 @@ namespace OBS_StartRecording_Network
 
             if (chkRecordWide.Checked)
             {
-                fileWide = Path.Combine(dirWide.FullName, currentEvent.year + " " + currentEvent.name + " WIDE " + matchType + " " + numMatchNumber.Value + replay + ".mp4");
+                fileWide = Path.Combine(dirWide.FullName, currentEvent.year + " " + currentEvent.name + " WIDE " + currentMatchType + " " + numMatchNumber.Value + replay + ".mp4");
 
                 FileInfo[] files = dirWide.GetFiles();
                 if (File.Exists(fileWide))
@@ -489,24 +500,24 @@ namespace OBS_StartRecording_Network
                 switch (btn.Text)
                 {
                     case "Practice":
-                        matchType = MatchType.Practice;
+                        currentMatchType = MatchType.Practice;
                         break;
                     case "Qualification":
-                        matchType = MatchType.Qualification;
+                        currentMatchType = MatchType.Qualification;
                         break;
                     case "Quarterfinal":
-                        matchType = MatchType.Quarterfinal;
+                        currentMatchType = MatchType.Quarterfinal;
                         break;
                     case "Semifinal":
-                        matchType = MatchType.Semifinal;
+                        currentMatchType = MatchType.Semifinal;
                         break;
                     case "Final":
-                        matchType = MatchType.Final;
+                        currentMatchType = MatchType.Final;
                         break;
                     default:
                         break;
                 }
-                Console.WriteLine(matchType);
+                Console.WriteLine(currentMatchType);
             }
         }
 
@@ -545,6 +556,46 @@ namespace OBS_StartRecording_Network
                 {
                     currentEvent = eventDetails[i];
                     Console.WriteLine(currentEvent.name);
+
+                    tbaRequest = new RestRequest(string.Format("event/{0}/matches/keys", currentEvent.key), Method.GET);
+
+                    tbaRequest.AddHeader
+                    (
+                        "X-TBA-Auth-Key",
+                        TBAKEY
+                    );
+
+                    IRestResponse tbaResponse = tbaClient.Execute(tbaRequest);
+                    string tbaContent = tbaResponse.Content;
+                    tbaContent = tbaContent.Trim('"');
+                    matchKeys = JsonConvert.DeserializeObject<string[]>(tbaContent);
+
+                    foreach (string match in matchKeys)
+                    {
+                        string matchIndex;
+                        string newMatch = match.Remove(0, match.IndexOf("_"));
+                        string type = null;
+                        string matchNo = null;
+                        string finalNo = null;
+
+                        if (newMatch.Contains("qm")) { type = "Qualification"; }
+                        else if (newMatch.Contains("qf")) { type = "Quarterfinal"; finalNo = newMatch.Substring(newMatch.IndexOf("qf") + 2, newMatch.IndexOf("m") - 3); }
+                        else if (newMatch.Contains("sf")) { type = "Semifinal"; finalNo = newMatch.Substring(newMatch.IndexOf("sf") + 2, newMatch.IndexOf("m") - 3); }
+                        else if (newMatch.Contains("f")) { type = "Final"; finalNo = newMatch.Substring(newMatch.IndexOf("f") + 1, newMatch.IndexOf("m") - 2); }
+
+                        matchNo = newMatch.Substring(newMatch.IndexOf("m") + 1);
+
+                        if (type == "Qualification")
+                        {
+                            newMatch = string.Format("{0} {1}", type, matchNo);
+                        }
+                        else
+                        {
+                            newMatch = string.Format("{0} {1} {2} {3}", type, finalNo, "Match", matchNo);
+                        }
+
+                        comboMatches.Items.Add(newMatch);
+                    }
                 }
             }
         }
@@ -709,6 +760,15 @@ namespace OBS_StartRecording_Network
             SetText("Upload successful");
         }
 
+        private void btnGetMatchDetails_Click(object sender, EventArgs e)
+        {
+            /* This button will look at the selected match and match type from the UI and 
+             * query TBA to get the specifics.  When the Match
+             */
+
+            
+        }
+
         delegate void SetTextCallback(string text);
         private void SetText(string text)
         {
@@ -724,48 +784,6 @@ namespace OBS_StartRecording_Network
             {
                 this.btnUpload.Text = text;
             }
-        }
-
-        public class District
-        {
-            public string abbreviation { get; set; }
-            public string display_name { get; set; }
-            public string key { get; set; }
-            public int year { get; set; }
-        }
-
-        public class Event
-        {
-            public string address { get; set; }
-            public string city { get; set; }
-            public string country { get; set; }
-            public District district { get; set; }
-            public List<object> division_keys { get; set; }
-            public string end_date { get; set; }
-            public string event_code { get; set; }
-            public int event_type { get; set; }
-            public string event_type_string { get; set; }
-            public string first_event_code { get; set; }
-            public string first_event_id { get; set; }
-            public string gmaps_place_id { get; set; }
-            public string gmaps_url { get; set; }
-            public string key { get; set; }
-            public double lat { get; set; }
-            public double lng { get; set; }
-            public string location_name { get; set; }
-            public string name { get; set; }
-            public object parent_event_key { get; set; }
-            public object playoff_type { get; set; }
-            public object playoff_type_string { get; set; }
-            public string postal_code { get; set; }
-            public string short_name { get; set; }
-            public string start_date { get; set; }
-            public string state_prov { get; set; }
-            public string timezone { get; set; }
-            public List<object> webcasts { get; set; }
-            public string website { get; set; }
-            public int week { get; set; }
-            public int year { get; set; }
         }
     }
 }
