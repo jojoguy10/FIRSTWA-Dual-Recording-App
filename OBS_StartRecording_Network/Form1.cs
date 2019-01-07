@@ -21,6 +21,7 @@ using System.Net.NetworkInformation;
 using System.Threading;
 using System.Reflection;
 using System.Xml.Linq;
+using Microsoft.Win32;
 
 /* TODO:
  * Parse CSV file from FMS for team information
@@ -57,8 +58,8 @@ namespace OBS_StartRecording_Network
         DirectoryInfo dirProgram;
         DirectoryInfo dirWide;
 
-        private string strIPAddressPROGRAM = @"172.19.249.253";
-        private string strIPAddressWIDE = @"172.19.249.254";
+        private string strIPAddressPROGRAM = @"192.168.0.104";
+        private string strIPAddressWIDE = @"192.168.0.103";
         private string strPassword = @"password";
         private string strPortPROGRAM = "4444";
         private string strPortWIDE = "4445";
@@ -88,11 +89,9 @@ namespace OBS_StartRecording_Network
         {
             InitializeComponent();
 
-            XDocument keysFile = XDocument.Load(@"C:\Users\jojog\Source\Repos\FIRSTWA_StartRecording_Network\OBS_StartRecording_Network\keys.xml");
+            RegistryKey apiKey = Registry.CurrentUser.OpenSubKey(@"Software\FIRSTWA", false);
 
-            var xmlValues = keysFile.Descendants("item").Descendants("value").ToArray();
-
-            TBAKEY = xmlValues[0].Value.Replace('\n',' ').Trim();
+            TBAKEY = apiKey.GetValue("apikey").ToString();
             
             tbaRequest.AddHeader
             (
@@ -113,7 +112,7 @@ namespace OBS_StartRecording_Network
             lblProgramPath.Text = "";
             lblWidePath.Text = "";
 
-            groupEvent.Enabled = false;
+            //groupEvent.Enabled = false;
             groupMatch.Enabled = false;
             btnStartRecording.Enabled = false;
             btnStopRecording.Enabled = false;
@@ -509,39 +508,33 @@ namespace OBS_StartRecording_Network
                 {
                     case "Practice":
                         currentMatchType = MatchType.Practice;
+                        lblFinalNo.Visible = false;
+                        numFinalNo.Visible = false;
                         break;
                     case "Qualification":
                         currentMatchType = MatchType.Qualification;
+                        lblFinalNo.Visible = false;
+                        numFinalNo.Visible = false;
                         break;
                     case "Quarterfinal":
                         currentMatchType = MatchType.Quarterfinal;
+                        lblFinalNo.Visible = true;
+                        numFinalNo.Visible = true;
                         break;
                     case "Semifinal":
                         currentMatchType = MatchType.Semifinal;
+                        lblFinalNo.Visible = true;
+                        numFinalNo.Visible = true;
                         break;
                     case "Final":
                         currentMatchType = MatchType.Final;
+                        lblFinalNo.Visible = true;
+                        numFinalNo.Visible = true;
                         break;
                     default:
                         break;
                 }
                 Console.WriteLine(currentMatchType);
-            }
-        }
-
-        private void btnUpload_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                UploadVideo().Wait();
-                AddToPlaylist(videoYT.Id);
-            }
-            catch (AggregateException ex)
-            {
-                foreach (var i in ex.InnerExceptions)
-                {
-                    Console.WriteLine("Error: " + i.Message);
-                }
             }
         }
 
@@ -570,48 +563,81 @@ namespace OBS_StartRecording_Network
                     programVideoTitle = currentEvent.year + " " + currentEvent.name + " " + matchType + " " + numMatchNumber.Value + replay;
                     wideVideoTitle = currentEvent.year + " " + currentEvent.name + " WIDE " + matchType + " " + numMatchNumber.Value + replay;
                     Console.WriteLine(currentEvent.name);
-
-                    tbaRequest = new RestRequest(string.Format("event/{0}/matches/keys", currentEvent.key), Method.GET);
-
-                    tbaRequest.AddHeader
-                    (
-                        "X-TBA-Auth-Key",
-                        TBAKEY
-                    );
-
-                    IRestResponse tbaResponse = tbaClient.Execute(tbaRequest);
-                    string tbaContent = tbaResponse.Content;
-                    tbaContent = tbaContent.Trim('"');
-                    matchKeys = JsonConvert.DeserializeObject<string[]>(tbaContent);
-
-                    foreach (string match in matchKeys)
-                    {
-                        string matchIndex;
-                        string newMatch = match.Remove(0, match.IndexOf("_"));
-                        string type = null;
-                        string matchNo = null;
-                        string finalNo = null;
-
-                        if (newMatch.Contains("qm")) { type = "Qualification"; }
-                        else if (newMatch.Contains("qf")) { type = "Quarterfinal"; finalNo = newMatch.Substring(newMatch.IndexOf("qf") + 2, newMatch.IndexOf("m") - 3); }
-                        else if (newMatch.Contains("sf")) { type = "Semifinal"; finalNo = newMatch.Substring(newMatch.IndexOf("sf") + 2, newMatch.IndexOf("m") - 3); }
-                        else if (newMatch.Contains("f")) { type = "Final"; finalNo = newMatch.Substring(newMatch.IndexOf("f") + 1, newMatch.IndexOf("m") - 2); }
-
-                        matchNo = newMatch.Substring(newMatch.IndexOf("m") + 1);
-
-                        if (type == "Qualification")
-                        {
-                            newMatch = string.Format("{0} {1}", type, matchNo);
-                        }
-                        else
-                        {
-                            newMatch = string.Format("{0} {1} {2} {3}", type, finalNo, "Match", matchNo);
-                        }
-
-                        comboMatches.Items.Add(newMatch);
-                    }
+                    GetMatches();
+                    groupMatch.Enabled = true;
                 }
             }
+        }
+
+        private async Task GetMatches()
+        {
+
+            tbaRequest = new RestRequest(string.Format("event/{0}/matches/keys", currentEvent.key), Method.GET);
+
+            tbaRequest.AddHeader
+            (
+                "X-TBA-Auth-Key",
+                TBAKEY
+            );
+
+            IRestResponse tbaResponse = tbaClient.Execute(tbaRequest);
+            string tbaContent = tbaResponse.Content;
+            tbaContent = tbaContent.Trim('"');
+            matchKeys = JsonConvert.DeserializeObject<string[]>(tbaContent);
+            List<string> newMatchNames = new List<string>();
+            List<Tuple<string, int>> qm = new List<Tuple<string, int>>(); // Qualification matches
+            List<Tuple<string, int, int>> qf = new List<Tuple<string, int, int>>(); // Qualification matches
+            List<Tuple<string, int, int>> sf = new List<Tuple<string, int, int>>(); // Qualification matches
+            List<Tuple<string, int, int>> f = new List<Tuple<string, int, int>>(); // Qualification matches
+
+            foreach (string match in matchKeys)
+            {
+                string newMatch = match.Remove(0, match.IndexOf("_"));
+                string type = null;
+                string matchNo = null;
+                string finalNo = null;
+
+                if (newMatch.Contains("qm")) { type = "Qualification"; }
+                else if (newMatch.Contains("qf")) { type = "Quarterfinal"; finalNo = newMatch.Substring(newMatch.IndexOf("qf") + 2, newMatch.IndexOf("m") - 3); }
+                else if (newMatch.Contains("sf")) { type = "Semifinal"; finalNo = newMatch.Substring(newMatch.IndexOf("sf") + 2, newMatch.IndexOf("m") - 3); }
+                else if (newMatch.Contains("f")) { type = "Final"; finalNo = newMatch.Substring(newMatch.IndexOf("f") + 1, newMatch.IndexOf("m") - 2); }
+
+                matchNo = newMatch.Substring(newMatch.IndexOf("m") + 1);
+
+                if (type == "Qualification")
+                {
+                    newMatch = string.Format("{0} {1}", type, matchNo);
+                }
+                else
+                {
+                    newMatch = string.Format("{0} {1} {2} {3}", type, finalNo, "Match", matchNo);
+                }
+
+                switch (type)
+                {
+                    case "Qualification":
+                        qm.Add(new Tuple<string, int>(newMatch, Convert.ToInt16(matchNo)));
+                        break;
+                    case "Quarterfinal":
+                        qf.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(finalNo), Convert.ToInt16(matchNo)));
+                        break;
+                    case "Semifinal":
+                        sf.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(finalNo), Convert.ToInt16(matchNo)));
+                        break;
+                    case "Final":
+                        f.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(finalNo), Convert.ToInt16(matchNo)));
+                        break;
+
+                    default:
+                        break;
+                }
+
+                newMatchNames.Add(newMatch);
+            }
+            qm = qm.OrderBy(t => t.Item2).ToList();
+            qf = qf.OrderBy(t => t.Item3).ToList();
+            sf = sf.OrderBy(t => t.Item3).ToList();
+            f = f.OrderBy(t => t.Item3).ToList();
         }
 
         private void chkReplay_CheckedChanged(object sender, EventArgs e)
@@ -669,6 +695,21 @@ namespace OBS_StartRecording_Network
             }
         }
 
+        private void btnUpload_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                UploadVideo();
+            }
+            catch (AggregateException ex)
+            {
+                foreach (var i in ex.InnerExceptions)
+                {
+                    Console.WriteLine("Error: " + i.Message);
+                }
+            }
+        }
+
         public async Task UploadVideo()
         {
             SetText("Uploading...");
@@ -693,13 +734,13 @@ namespace OBS_StartRecording_Network
 
             videoYT = new Video();
             videoYT.Snippet = new VideoSnippet();
-            videoYT.Snippet.Title = "Default Video Title";
+            videoYT.Snippet.Title = Path.GetFileNameWithoutExtension(fileProgram);
             videoYT.Snippet.Description = "Default Video Description";
-            videoYT.Snippet.Tags = new string[] { "tag1", "tag2" };
+            videoYT.Snippet.Tags = new string[] { "robots", "frc" };
             videoYT.Snippet.CategoryId = "22"; // See https://developers.google.com/youtube/v3/docs/videoCategories/list
             videoYT.Status = new VideoStatus();
             videoYT.Status.PrivacyStatus = "unlisted"; // or "private" or "public"
-            string filePath = @"D:\__USER\Videos\VM Captures\Program\2018-12-05 18-55-27.mp4"; // Replace with path to actual movie file.
+            string filePath = fileProgram; // Replace with path to actual movie file.
             Console.WriteLine("Video");
 
             using (var fileStream = new FileStream(filePath, FileMode.Open))
@@ -709,6 +750,9 @@ namespace OBS_StartRecording_Network
                 videosInsertRequest.ResponseReceived += videosInsertRequest_ResponseReceived;
 
                 await videosInsertRequest.UploadAsync();
+                Console.WriteLine("Upload Done");
+                await AddToPlaylist(videoYT.Id);
+                Console.WriteLine("Playlist Done");
             }
         }
 
@@ -782,6 +826,7 @@ namespace OBS_StartRecording_Network
             newPlaylist.Status = new PlaylistStatus();
             newPlaylist.Status.PrivacyStatus = "unlisted";
             newPlaylist = await youtubeService.Playlists.Insert(newPlaylist, "snippet,status").ExecuteAsync();
+            Console.WriteLine("Playlist Created");
 
             // Add a video to the newly created playlist.
             var newPlaylistItem = new PlaylistItem();
@@ -791,10 +836,9 @@ namespace OBS_StartRecording_Network
             newPlaylistItem.Snippet.ResourceId.Kind = "youtube#video";
             newPlaylistItem.Snippet.ResourceId.VideoId = videoID;
             newPlaylistItem = await youtubeService.PlaylistItems.Insert(newPlaylistItem, "snippet").ExecuteAsync();
-            
         }
 
-        void videosInsertRequest_ProgressChanged(Google.Apis.Upload.IUploadProgress progress)
+        void videosInsertRequest_ProgressChanged(IUploadProgress progress)
         {
             switch (progress.Status)
             {
@@ -819,8 +863,57 @@ namespace OBS_StartRecording_Network
             /* This button will look at the selected match and match type from the UI and 
              * query TBA to get the specifics.  When the Match
              */
+            string shortMatchType = "";
+            string currentMatchKey = "";
+            switch (currentMatchType)
+            {
+                case MatchType.Practice:
+                    return;
+                case MatchType.Qualification:
+                    currentMatchKey = string.Format("{0}_qm{1}", currentEvent.key, numMatchNumber.Value);
+                    break;
+                case MatchType.Quarterfinal:
+                    currentMatchKey = string.Format("{0}_qf{1}m{2}", currentEvent.key, numMatchNumber.Value, numFinalNo.Value);
+                    break;
+                case MatchType.Semifinal:
+                    currentMatchKey = string.Format("{0}_sf{1}m{2}", currentEvent.key, numMatchNumber.Value, numFinalNo.Value);
+                    break;
+                case MatchType.Final:
+                    currentMatchKey = string.Format("{0}_f{1}m{2}", currentEvent.key, numMatchNumber.Value, numFinalNo.Value);
+                    break;
+                default:
+                    break;
+            }
+            Console.WriteLine(currentMatchKey);
 
+            RestClient tbaClient = new RestClient("http://www.thebluealliance.com/api/v3");
+            RestRequest tbaRequest = new RestRequest(string.Format("match/{0}", currentMatchKey), Method.GET);
+
+            tbaRequest.AddHeader
+            (
+                "X-TBA-Auth-Key",
+                TBAKEY
+            );
+
+            IRestResponse tbaResponse = tbaClient.Execute(tbaRequest);
+            string tbaContent = tbaResponse.Content;
+            tbaContent = tbaContent.Trim('"');
+            currentMatch = JsonConvert.DeserializeObject<Match>(tbaContent);
             
+            if (currentMatch.CompLevel == "qm")
+            {
+                lblMatchNumber.Text = string.Format("{0} {1}", currentMatch.CompLevel.ToUpper(), currentMatch.MatchNumber);
+            }
+            else
+            {
+                lblMatchNumber.Text = string.Format("{0} {1}-{2}", currentMatch.CompLevel.ToUpper(), currentMatch.SetNumber, currentMatch.MatchNumber);
+            }
+            lblRed1.Text = string.Format("RED 1: {0}", currentMatch.Alliances.Red.TeamKeys[0].ToString().Substring(3));
+            lblRed2.Text = string.Format("RED 2: {0}", currentMatch.Alliances.Red.TeamKeys[1].ToString().Substring(3));
+            lblRed3.Text = string.Format("RED 3: {0}", currentMatch.Alliances.Red.TeamKeys[2].ToString().Substring(3));
+            lblBlue1.Text = string.Format("BLUE 1: {0}", currentMatch.Alliances.Blue.TeamKeys[0].ToString().Substring(3));
+            lblBlue2.Text = string.Format("BLUE 2: {0}", currentMatch.Alliances.Blue.TeamKeys[1].ToString().Substring(3));
+            lblBlue3.Text = string.Format("BLUE 3: {0}", currentMatch.Alliances.Blue.TeamKeys[2].ToString().Substring(3));
         }
 
         delegate void SetTextCallback(string text);

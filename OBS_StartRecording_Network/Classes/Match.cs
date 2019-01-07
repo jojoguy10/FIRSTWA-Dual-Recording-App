@@ -10,22 +10,6 @@
 
     public partial class Match
     {
-        public Match(string TBAKEY, string matchKey)
-        {
-            RestClient tbaClient = new RestClient("http://www.thebluealliance.com/api/v3");
-            RestRequest tbaRequest = new RestRequest(string.Format("match/{0}", matchKey), Method.GET);
-
-            tbaRequest.AddHeader
-            (
-                "X-TBA-Auth-Key",
-                TBAKEY
-            );
-
-            IRestResponse tbaResponse = tbaClient.Execute(tbaRequest);
-            string tbaContent = tbaResponse.Content;
-            tbaContent = tbaContent.Trim('"');
-        }
-
         [JsonProperty("actual_time")]
         public long ActualTime { get; set; }
 
