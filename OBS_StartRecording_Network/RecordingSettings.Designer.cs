@@ -114,7 +114,7 @@
             this.numPort1.Size = new System.Drawing.Size(121, 20);
             this.numPort1.TabIndex = 1;
             this.numPort1.Value = new decimal(new int[] {
-            4444,
+            9993,
             0,
             0,
             0});
@@ -140,7 +140,7 @@
             this.numPort2.Size = new System.Drawing.Size(121, 20);
             this.numPort2.TabIndex = 2;
             this.numPort2.Value = new decimal(new int[] {
-            4445,
+            9993,
             0,
             0,
             0});

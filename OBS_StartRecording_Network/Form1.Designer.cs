@@ -58,8 +58,6 @@
             this.lblFinalNo = new System.Windows.Forms.Label();
             this.timerElapsed = new System.Windows.Forms.Timer(this.components);
             this.lblElapsedTime = new System.Windows.Forms.Label();
-            this.btnConnectProgram = new System.Windows.Forms.Button();
-            this.btnConnectWide = new System.Windows.Forms.Button();
             this.groupStatus = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -84,6 +82,9 @@
             this.lblRed2 = new System.Windows.Forms.Label();
             this.lblRed1 = new System.Windows.Forms.Label();
             this.btnGetMatchDetails = new System.Windows.Forms.Button();
+            this.timerTCPWatchDog = new System.Windows.Forms.Timer(this.components);
+            this.btnConnectProgram = new System.Windows.Forms.Button();
+            this.btnConnectWide = new System.Windows.Forms.Button();
             this.groupMatchTypes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -421,26 +422,6 @@
             this.lblElapsedTime.TabIndex = 14;
             this.lblElapsedTime.Text = "00:00:00.00";
             // 
-            // btnConnectProgram
-            // 
-            this.btnConnectProgram.Location = new System.Drawing.Point(6, 19);
-            this.btnConnectProgram.Name = "btnConnectProgram";
-            this.btnConnectProgram.Size = new System.Drawing.Size(176, 26);
-            this.btnConnectProgram.TabIndex = 15;
-            this.btnConnectProgram.Text = "Connect to Program OBS";
-            this.btnConnectProgram.UseVisualStyleBackColor = true;
-            this.btnConnectProgram.Click += new System.EventHandler(this.btnConnectProgram_Click);
-            // 
-            // btnConnectWide
-            // 
-            this.btnConnectWide.Location = new System.Drawing.Point(188, 19);
-            this.btnConnectWide.Name = "btnConnectWide";
-            this.btnConnectWide.Size = new System.Drawing.Size(182, 26);
-            this.btnConnectWide.TabIndex = 16;
-            this.btnConnectWide.Text = "Connect to Wide OBS";
-            this.btnConnectWide.UseVisualStyleBackColor = true;
-            this.btnConnectWide.Click += new System.EventHandler(this.btnConnectWide_Click);
-            // 
             // groupStatus
             // 
             this.groupStatus.Controls.Add(this.label5);
@@ -530,14 +511,14 @@
             // 
             // groupOBS
             // 
-            this.groupOBS.Controls.Add(this.btnConnectProgram);
             this.groupOBS.Controls.Add(this.btnConnectWide);
+            this.groupOBS.Controls.Add(this.btnConnectProgram);
             this.groupOBS.Location = new System.Drawing.Point(12, 40);
             this.groupOBS.Name = "groupOBS";
             this.groupOBS.Size = new System.Drawing.Size(391, 54);
             this.groupOBS.TabIndex = 22;
             this.groupOBS.TabStop = false;
-            this.groupOBS.Text = "OBS Connections";
+            this.groupOBS.Text = "DeckLink Connections";
             // 
             // lblProgramPath
             // 
@@ -688,6 +669,31 @@
             this.btnGetMatchDetails.UseVisualStyleBackColor = true;
             this.btnGetMatchDetails.Click += new System.EventHandler(this.btnGetMatchDetails_Click);
             // 
+            // timerTCPWatchDog
+            // 
+            this.timerTCPWatchDog.Interval = 1000;
+            this.timerTCPWatchDog.Tick += new System.EventHandler(this.timerTCPWatchDog_Tick);
+            // 
+            // btnConnectProgram
+            // 
+            this.btnConnectProgram.Location = new System.Drawing.Point(6, 19);
+            this.btnConnectProgram.Name = "btnConnectProgram";
+            this.btnConnectProgram.Size = new System.Drawing.Size(176, 23);
+            this.btnConnectProgram.TabIndex = 19;
+            this.btnConnectProgram.Text = "Connect to Program Decklink";
+            this.btnConnectProgram.UseVisualStyleBackColor = true;
+            this.btnConnectProgram.Click += new System.EventHandler(this.btnConnectProgram_Click);
+            // 
+            // btnConnectWide
+            // 
+            this.btnConnectWide.Location = new System.Drawing.Point(209, 19);
+            this.btnConnectWide.Name = "btnConnectWide";
+            this.btnConnectWide.Size = new System.Drawing.Size(176, 23);
+            this.btnConnectWide.TabIndex = 19;
+            this.btnConnectWide.Text = "Connect to Wide Decklink";
+            this.btnConnectWide.UseVisualStyleBackColor = true;
+            this.btnConnectWide.Click += new System.EventHandler(this.btnConnectWide_Click);
+            // 
             // frmMain
             // 
             this.AcceptButton = this.btnStartRecording;
@@ -763,8 +769,6 @@
         private System.Windows.Forms.GroupBox groupMatch;
         private System.Windows.Forms.Timer timerElapsed;
         private System.Windows.Forms.Label lblElapsedTime;
-        private System.Windows.Forms.Button btnConnectProgram;
-        private System.Windows.Forms.Button btnConnectWide;
         private System.Windows.Forms.GroupBox groupStatus;
         private System.Windows.Forms.Panel ledRecordPROGRAM;
         private System.Windows.Forms.Label label5;
@@ -797,6 +801,9 @@
         private System.Windows.Forms.Label lblRed1;
         private System.Windows.Forms.NumericUpDown numFinalNo;
         private System.Windows.Forms.Label lblFinalNo;
+        private System.Windows.Forms.Timer timerTCPWatchDog;
+        private System.Windows.Forms.Button btnConnectWide;
+        private System.Windows.Forms.Button btnConnectProgram;
     }
 }
 

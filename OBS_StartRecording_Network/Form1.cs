@@ -7,6 +7,7 @@ using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net.Sockets;
 using OBSWebsocketDotNet;
 using System.Diagnostics;
 using RestSharp;
@@ -22,6 +23,7 @@ using System.Threading;
 using System.Reflection;
 using System.Xml.Linq;
 using Microsoft.Win32;
+using System.Text;
 
 /* TODO:
  * Upload to YouTube to playlist
@@ -51,17 +53,13 @@ namespace OBS_StartRecording_Network
 
         string[] matchKeys;
 
-        protected OBSWebsocket obsProgram, obsWide;
-
-        private string videoFolder;
-        DirectoryInfo dirProgram;
-        DirectoryInfo dirWide;
-
         private string strIPAddressPROGRAM = @"192.168.0.104";
         private string strIPAddressWIDE = @"192.168.0.103";
         private string strPassword = @"password";
-        private string strPortPROGRAM = "4444";
-        private string strPortWIDE = "4445";
+        private string strPortPROGRAM = "9993";
+        private string strPortWIDE = "9993";
+
+        DeckLink dlProgram, dlWide;
 
         private DateTime startTime;
 
@@ -112,86 +110,6 @@ namespace OBS_StartRecording_Network
             groupMatch.Enabled = false;
             btnStartRecording.Enabled = false;
             btnStopRecording.Enabled = false;
-
-            obsProgram = new OBSWebsocket();
-            obsProgram.Connected += obsProgramOnConnect;
-            obsProgram.Disconnected += obsProgramOnDisconnect;
-            obsProgram.RecordingStateChanged += obsProgramRecordingStateChanged;
-
-            obsWide = new OBSWebsocket();
-            obsWide.Connected += obsWideOnConnect;
-            obsWide.Disconnected += obsWideOnDisconnect;
-            obsWide.RecordingStateChanged += obsWideRecordingStateChanged;
-
-            videoFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), "VM Captures");
-
-            Directory.CreateDirectory(Path.Combine(videoFolder, "Program"));
-            Directory.CreateDirectory(Path.Combine(videoFolder, "Wide"));
-
-            dirProgram = new DirectoryInfo(Path.Combine(videoFolder, "Program"));
-            dirWide = new DirectoryInfo(Path.Combine(videoFolder, "Wide"));
-        }
-
-        private void obsProgramRecordingStateChanged(OBSWebsocket sender, OutputState type)
-        {
-            switch (type)
-            {
-                case OutputState.Starting:
-                    ledRecordPROGRAM.BackColor = Color.Green;
-                    break;
-                case OutputState.Started:
-                    ledRecordPROGRAM.BackColor = Color.Lime;
-                    break;
-                case OutputState.Stopping:
-                    ledRecordPROGRAM.BackColor = Color.Yellow;
-                    break;
-                case OutputState.Stopped:
-                    ledRecordPROGRAM.BackColor = Color.Gray;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void obsWideRecordingStateChanged(OBSWebsocket sender, OutputState type)
-        {
-            switch (type)
-            {
-                case OutputState.Starting:
-                    ledRecordWIDE.BackColor = Color.Green;
-                    break;
-                case OutputState.Started:
-                    ledRecordWIDE.BackColor = Color.Lime;
-                    break;
-                case OutputState.Stopping:
-                    ledRecordWIDE.BackColor = Color.Yellow;
-                    break;
-                case OutputState.Stopped:
-                    ledRecordWIDE.BackColor = Color.Gray;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void obsWideOnDisconnect(object sender, EventArgs e)
-        {
-            Console.WriteLine("WideOBS is disconnected");
-        }
-
-        private void obsWideOnConnect(object sender, EventArgs e)
-        {
-            Console.WriteLine("WideOBS is connected");
-        }
-
-        private void obsProgramOnDisconnect(object sender, EventArgs e)
-        {
-            Console.WriteLine("ProgramOBS is disconnected");
-        }
-
-        private void obsProgramOnConnect(object sender, EventArgs e)
-        {
-            Console.WriteLine("ProgramOBS is connected");
         }
 
         private void btnStartRecording_Click(object sender, EventArgs e)
@@ -204,89 +122,31 @@ namespace OBS_StartRecording_Network
 
             groupEvent.Enabled = false;
             groupMatch.Enabled = false;
-
-            if (chkProgramRecord.Checked)
-            {
-                fileProgram = Path.Combine(dirProgram.FullName, currentEvent.year + " " + currentEvent.name + " " + currentMatchType + " " + numMatchNumber.Value + replay + ".mp4");
-
-                FileInfo[] files = dirProgram.GetFiles();
-                if(File.Exists(fileProgram))
-                {
-                    DialogResult result = MessageBox.Show("Match recording for the Program View already exists.  Overwrite?\n\n" + fileProgram, "Overwrite?", MessageBoxButtons.YesNo);
-                    if(result == DialogResult.No)
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        DialogResult confirm = MessageBox.Show("Are you sure you want to overwrite?", "Confirm", MessageBoxButtons.YesNo);
-                        if(confirm == DialogResult.No)
-                        {
-                            return;
-                        }
-                        else
-                        {
-                            File.Delete(fileProgram);
-                        }
-                    }
-                }
-
-                lblProgramPath.Text = fileProgram;
-            }
-
-            if (chkRecordWide.Checked)
-            {
-                fileWide = Path.Combine(dirWide.FullName, currentEvent.year + " " + currentEvent.name + " WIDE " + currentMatchType + " " + numMatchNumber.Value + replay + ".mp4");
-
-                FileInfo[] files = dirWide.GetFiles();
-                if (File.Exists(fileWide))
-                {
-                    DialogResult result = MessageBox.Show("Match recording for the Wide View already exists.  Overwrite?\n\n" + fileWide, "Overwrite?", MessageBoxButtons.YesNo);
-                    if (result == DialogResult.No)
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        DialogResult confirm = MessageBox.Show("Are you sure you want to overwrite?", "Confirm", MessageBoxButtons.YesNo);
-                        if (confirm == DialogResult.No)
-                        {
-                            return;
-                        }
-                        else
-                        {
-                            File.Delete(fileWide);
-                        }
-                    }
-                }
-
-                lblWidePath.Text = fileWide;
-            }
-
+            
             if (chkProgramRecord.Checked)
             {
                 try
                 {
-                    obsProgram.StartRecording();
+                    //obsProgram.StartRecording();
                 }
                 catch
                 {
-                    obsProgram.StopRecording();
-                    System.Threading.Thread.Sleep(1000);
-                    obsProgram.StartRecording();
+                    //obsProgram.StopRecording();
+                    //System.Threading.Thread.Sleep(1000);
+                    //obsProgram.StartRecording();
                 }
             }
             if (chkRecordWide.Checked)
             {
                 try
                 {
-                    obsWide.StartRecording();
+                    //obsWide.StartRecording();
                 }
                 catch
                 {
-                    obsWide.StopRecording();
-                    System.Threading.Thread.Sleep(1000);
-                    obsWide.StartRecording();
+                    //obsWide.StopRecording();
+                    //System.Threading.Thread.Sleep(1000);
+                    //obsWide.StartRecording();
                 }
             }
 
@@ -312,153 +172,23 @@ namespace OBS_StartRecording_Network
 
             if (ledRecordPROGRAM.BackColor == Color.Lime)
             {
-                obsProgram.StopRecording();
+                //obsProgram.StopRecording();
             }
 
             if (ledRecordWIDE.BackColor == Color.Lime)
             {
-                obsWide.StopRecording();
+                //obsWide.StopRecording();
             }
-
-            lblProgramPath.Text = fileProgram;
-            lblWidePath.Text = fileWide;
-            FileInfo recordedProgramFile = dirProgram.GetFiles()
-                                            .OrderByDescending(f => f.LastWriteTime)
-                                            .First();
-            FileInfo recordedWideFile = dirWide.GetFiles()
-                                            .OrderByDescending(f => f.LastWriteTime)
-                                            .First();
-
-            while (!IsFileReady(recordedProgramFile.FullName)) { }
-            while (!IsFileReady(recordedWideFile.FullName)) { }
-            File.Move(recordedProgramFile.FullName, fileProgram);
-            File.Move(recordedWideFile.FullName, fileWide);
 
             btnStartRecording.Enabled = true;
 
             numMatchNumber.Value++;
         }
 
-        private void btnConnectProgram_Click(object sender, EventArgs e)
-        {
-            if (btnConnectProgram.Text.Contains("Connect"))
-            {
-                if (!obsProgram.IsConnected)
-                {
-                    try
-                    {
-                        Ping p1 = new Ping();
-                        PingReply PR = p1.Send(strIPAddressPROGRAM);
-                        if (PR.Status == IPStatus.Success)
-                        {
-                            string connectString = @"ws:\\" + strIPAddressPROGRAM + ":" + strPortPROGRAM;
-                            obsProgram.Connect(connectString, strPassword);
-                            btnConnectProgram.Text = "Disconnect from Program OBS";
-                        }
-                        else
-                        {
-                            throw new ErrorResponseException("The VM is not turned on or OBS isn't started");
-                        }
-                    }
-                    catch (AuthFailureException)
-                    {
-                        MessageBox.Show("Authentication failed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-                    catch (ErrorResponseException ex)
-                    {
-                        MessageBox.Show("Connect failed : " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-                }
-
-                if (obsProgram.IsConnected && obsWide.IsConnected)
-                {
-                    groupEvent.Enabled = true;
-                    groupMatch.Enabled = true;
-                    btnStartRecording.Enabled = true;
-                    btnStopRecording.Enabled = false;
-                }
-            }
-            else
-            {
-                if (obsProgram.IsConnected)
-                {
-                    try
-                    {
-                        obsProgram.Disconnect();
-                        btnConnectProgram.Text = "Connect to Program OBS";
-                    }
-                    catch (ErrorResponseException ex)
-                    {
-                        MessageBox.Show("Disconnection failed : " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-                }
-            }
-        }
-
-        private void btnConnectWide_Click(object sender, EventArgs e)
-        {
-            if (btnConnectWide.Text.Contains("Connect"))
-            {
-                if (!obsWide.IsConnected)
-                {
-                    try
-                    {
-                        Ping p1 = new Ping();
-                        PingReply PR = p1.Send(strIPAddressWIDE);
-                        if (PR.Status == IPStatus.Success)
-                        {
-                            obsWide.Connect(@"ws:\\" + strIPAddressWIDE + ":" + strPortWIDE, strPassword);
-                            btnConnectWide.Text = "Disconnect from Wide OBS";
-                        }
-                        else
-                        {
-                            throw new ErrorResponseException("The VM is not turned on or OBS isn't started");
-                        }
-                    }
-                    catch (AuthFailureException)
-                    {
-                        MessageBox.Show("Authentication failed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-                    catch (ErrorResponseException ex)
-                    {
-                        MessageBox.Show("Connect failed : " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-                }
-
-                if (obsProgram.IsConnected && obsWide.IsConnected)
-                {
-                    groupEvent.Enabled = true;
-                    groupMatch.Enabled = true;
-                    btnStartRecording.Enabled = true;
-                    btnStopRecording.Enabled = false;
-                }
-            }
-            else
-            {
-                if (obsWide.IsConnected)
-                {
-                    try
-                    {
-                        obsWide.Disconnect();
-                        btnConnectWide.Text = "Connect to Wide OBS";
-                    }
-                    catch (ErrorResponseException ex)
-                    {
-                        MessageBox.Show("Disconnection failed : " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-                }
-            }
-        }
 
         private void btnOpenRecordings_Click(object sender, EventArgs e)
         {
-            Process.Start(videoFolder);
+            
         }
 
         private void recordingToolStripMenuItem_Click(object sender, EventArgs e)
@@ -471,24 +201,15 @@ namespace OBS_StartRecording_Network
                 strPassword = frmRecordingSetting.Password;
                 strPortPROGRAM = frmRecordingSetting.PortPROGRAM.ToString();
                 strPortWIDE = frmRecordingSetting.PortWIDE.ToString();
-                videoFolder = frmRecordingSetting.Folder;
-                
-                Directory.CreateDirectory(Path.Combine(videoFolder, "Program"));
-                Directory.CreateDirectory(Path.Combine(videoFolder, "Wide"));
-
-                dirProgram = new DirectoryInfo(Path.Combine(videoFolder, "Program"));
-                dirWide = new DirectoryInfo(Path.Combine(videoFolder, "Wide"));
             }
         }
 
         private void uploadsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
         }
 
         private void streamingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
         }
 
         private void radioBtnMatchType_CheckedChanged(object sender, EventArgs e)
@@ -537,8 +258,8 @@ namespace OBS_StartRecording_Network
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(obsProgram.IsConnected) { obsProgram.Disconnect(); }
-            if(obsWide.IsConnected) { obsWide.Disconnect(); }
+            //if(obsProgram.IsConnected) { obsProgram.Disconnect(); }
+            //if(obsWide.IsConnected) { obsWide.Disconnect(); }
         }
 
         private void comboEventName_SelectedIndexChanged(object sender, EventArgs e)
@@ -798,6 +519,18 @@ namespace OBS_StartRecording_Network
             }
         }
 
+        private void timerTCPWatchDog_Tick(object sender, EventArgs e)
+        {
+            // Poll the DeckLinks and update LEDs if necessary
+
+            // Send a "ping" command to decklinks
+            dlProgram.Write("ping");
+            Console.WriteLine(dlProgram.Read());
+
+            dlWide.Write("ping");
+            Console.WriteLine(dlWide.Read());
+        }
+
         void videosInsertRequest_ResponseReceived(Video video)
         {
             Console.WriteLine("Video id '{0}' was successfully uploaded.", video.Id);
@@ -860,6 +593,16 @@ namespace OBS_StartRecording_Network
             lblBlue1.Text = string.Format("BLUE 1: {0}", currentMatch.Alliances.Blue.TeamKeys[0].ToString().Substring(3));
             lblBlue2.Text = string.Format("BLUE 2: {0}", currentMatch.Alliances.Blue.TeamKeys[1].ToString().Substring(3));
             lblBlue3.Text = string.Format("BLUE 3: {0}", currentMatch.Alliances.Blue.TeamKeys[2].ToString().Substring(3));
+        }
+
+        private void btnConnectProgram_Click(object sender, EventArgs e)
+        {
+            dlProgram = new DeckLink(strIPAddressPROGRAM, Convert.ToInt32(strPortPROGRAM));
+        }
+
+        private void btnConnectWide_Click(object sender, EventArgs e)
+        {
+            dlWide = new DeckLink(strIPAddressWIDE, Convert.ToInt32(strPortWIDE));
         }
 
         delegate void SetTextCallback(string text);
