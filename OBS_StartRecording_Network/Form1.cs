@@ -24,6 +24,8 @@ using System.Reflection;
 using System.Xml.Linq;
 using Microsoft.Win32;
 using System.Text;
+using System.Net;
+using System.Text.RegularExpressions;
 
 /* TODO:
  * Parse CSV file from FMS for team information
@@ -54,8 +56,8 @@ namespace OBS_StartRecording_Network
 
         string[] matchKeys;
 
-        private string strIPAddressPROGRAM = @"192.168.0.104";
-        private string strIPAddressWIDE = @"192.168.0.103";
+        private string strIPAddressPROGRAM = @"192.168.100.32";
+        private string strIPAddressWIDE = @"192.168.100.31";
         private string strPassword = @"password";
         private string strPortPROGRAM = "9993";
         private string strPortWIDE = "9993";
@@ -116,6 +118,31 @@ namespace OBS_StartRecording_Network
             btnStopRecording.Enabled = false;
         }
 
+        private bool CopyFTPFile(string filename)
+        {
+            try
+            {
+                DirectoryInfo dir = new DirectoryInfo("ftp://" + strIPAddressPROGRAM);
+                FileInfo file = (from f in dir.GetFiles()
+                            orderby f.LastWriteTime descending
+                            select f).First();
+                Console.WriteLine(file.FullName);
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://" + strIPAddressPROGRAM + "/" + filename);
+                request.Method = WebRequestMethods.Ftp.DownloadFile;
+
+                request.Credentials = new NetworkCredential("FTP_User", "");
+                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+                Stream responseStream = response.GetResponseStream();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+        
+
         private void btnStartRecording_Click(object sender, EventArgs e)
         {
             if(comboEventName.SelectedItem == null)
@@ -131,6 +158,7 @@ namespace OBS_StartRecording_Network
             {
                 try
                 {
+                    dlProgram.Write("record");
                     //obsProgram.StartRecording();
                 }
                 catch
@@ -144,6 +172,7 @@ namespace OBS_StartRecording_Network
             {
                 try
                 {
+                    dlWide.Write("record");
                     //obsWide.StartRecording();
                 }
                 catch
@@ -178,21 +207,121 @@ namespace OBS_StartRecording_Network
             {
                 //obsProgram.StopRecording();
             }
+            dlProgram.Write("stop");
 
             if (ledRecordWIDE.BackColor == Color.Lime)
             {
                 //obsWide.StopRecording();
             }
+            dlWide.Write("stop");
 
             btnStartRecording.Enabled = true;
 
             numMatchNumber.Value++;
         }
-
-
+        
         private void btnOpenRecordings_Click(object sender, EventArgs e)
         {
+            string uri = "ftp://192.168.100.32/1";
+
+            List<string> directories = GetFTPFiles(uri);
+            List<DateTime> timestamps = new List<DateTime>();
+            List<string> fileNames = new List<string>();
+
+            Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
+            RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+
+            foreach (string file in directories)
+            {
+                System.Text.RegularExpressions.Match match = regex.Match(file);
+                Console.WriteLine(match.Groups[5].ToString());
+                timestamps.Add(DateTime.Parse(match.Groups[5].ToString()));
+                fileNames.Add(match.Groups[6].ToString());
+            }
+
+            if (directories.Count > 5)
+            {
+                DeleteFTPFile("ftp://192.168.100.32/1", fileNames[timestamps.IndexOf(timestamps.Min())]);
+
+                directories = GetFTPFiles("ftp://192.168.100.32/1");
+                
+                foreach (string file in directories)
+                {
+                    Console.WriteLine(file);
+                }
+            }
+
+            CopyFTPFile(uri, "ftp://192.168.100.7/2019/Corvallis/PROGRAM", fileNames[timestamps.IndexOf(timestamps.Max())], "test.mp4");
+        }
+
+        private void CopyFTPFile(string fromURI, string toURI, string fromFilename, string toFilename)
+        {
+            string video = DownloadFileFTP(fromURI, fromFilename, "temp.mp4");
+            UploadFileFTP(toURI + "/" + toFilename, video);
+        }
+
+        private string DownloadFileFTP(string uri, string ftpFileName, string fileName)
+        {
+            string inputfilepath = @"C:\Temp\" + fileName;
+
+            string ftpfullpath = uri + "/" + ftpFileName;
+
+            using (WebClient request = new WebClient())
+            {
+                byte[] fileData = request.DownloadData(ftpfullpath);
+
+                using (FileStream file = File.Create(inputfilepath))
+                {
+                    file.Write(fileData, 0, fileData.Length);
+                    file.Close();
+                }
+                Console.WriteLine("Download from Recorder: Complete");
+            }
+
+            return inputfilepath;
+        }
+
+        public void UploadFileFTP(string uri, string filePath)
+        {
+            using (WebClient client = new WebClient())
+            {
+                client.Credentials = new NetworkCredential("FTP_User", "");
+                client.UploadFile(uri, WebRequestMethods.Ftp.UploadFile, filePath);
+            }
+            Console.WriteLine("Upload to PC: Complete");
+        }
+
+        private void DeleteFTPFile(string uri, string filename)
+        {
+            string fullDir = uri + "/" + filename;
+            FtpWebRequest ftpRequest = (FtpWebRequest)WebRequest.Create(fullDir);
+            ftpRequest.Method = WebRequestMethods.Ftp.DeleteFile;
             
+            FtpWebResponse response = (FtpWebResponse)ftpRequest.GetResponse();
+            Console.WriteLine("Delete status of {0}: {0}", filename, response.StatusDescription);
+            response.Close();
+        }
+
+        private List<string> GetFTPFiles(string uri)
+        {
+            FtpWebRequest ftpRequest = (FtpWebRequest)WebRequest.Create(uri);
+            ftpRequest.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
+
+            FtpWebResponse response = (FtpWebResponse)ftpRequest.GetResponse();
+            StreamReader streamReader = new StreamReader(response.GetResponseStream());
+
+            List<string> directories = new List<string>();
+
+            string line = streamReader.ReadLine();
+            while (!string.IsNullOrEmpty(line))
+            {
+                directories.Add(line);
+                line = streamReader.ReadLine();
+            }
+
+            streamReader.Close();
+
+            return directories;
         }
 
         private void recordingToolStripMenuItem_Click(object sender, EventArgs e)
@@ -648,11 +777,19 @@ namespace OBS_StartRecording_Network
         private void btnConnectProgram_Click(object sender, EventArgs e)
         {
             dlProgram = new DeckLink(strIPAddressPROGRAM, Convert.ToInt32(strPortPROGRAM));
+            Console.WriteLine("Program Connected");
+            dlProgram.Write("ping");
+            Console.WriteLine(dlProgram.Read());
+            btnStartRecording.Enabled = true;
         }
 
         private void btnConnectWide_Click(object sender, EventArgs e)
         {
             dlWide = new DeckLink(strIPAddressWIDE, Convert.ToInt32(strPortWIDE));
+            Console.WriteLine("Wide Connected");
+            dlProgram.Write("ping");
+            Console.WriteLine(dlWide.Read());
+            btnStartRecording.Enabled = true;
         }
 
         delegate void SetTextCallback(string text);
