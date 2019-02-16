@@ -20,7 +20,7 @@ namespace OBS_StartRecording_Network
 
         public void Write(string command)
         {
-            byte[] data = Encoding.ASCII.GetBytes(command);
+            byte[] data = Encoding.ASCII.GetBytes(command + "\r\n");
             stream.Write(data, 0, data.Length);
         }
 
