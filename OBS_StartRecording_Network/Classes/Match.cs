@@ -1,4 +1,4 @@
-﻿namespace OBS_StartRecording_Network
+﻿namespace FIRSTWA_Recorder
 {
     using System;
     using System.Collections.Generic;

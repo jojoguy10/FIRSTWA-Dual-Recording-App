@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 
-namespace OBS_StartRecording_Network
+namespace FIRSTWA_Recorder
 {
     class DeckLink
     {

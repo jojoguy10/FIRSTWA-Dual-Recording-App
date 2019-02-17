@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BE060DF2-395E-4920-A648-73C727B520DB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>OBS_StartRecording_Network</RootNamespace>
-    <AssemblyName>OBS_StartRecording_Network</AssemblyName>
+    <RootNamespace>FIRSTWA_Recorder</RootNamespace>
+    <AssemblyName>FIRSTWA-Dual-Recording-App</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -83,11 +83,11 @@
     <Compile Include="Classes\District.cs" />
     <Compile Include="Classes\Event.cs" />
     <Compile Include="Classes\DeckLink.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\Match.cs" />
     <Compile Include="Program.cs" />
@@ -98,8 +98,8 @@
     <Compile Include="RecordingSettings.Designer.cs">
       <DependentUpon>RecordingSettings.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -109,6 +109,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="RecordingSettings.resx">
       <DependentUpon>RecordingSettings.cs</DependentUpon>
