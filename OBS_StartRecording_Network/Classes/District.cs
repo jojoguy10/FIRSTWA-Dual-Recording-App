@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OBS_StartRecording_Network
+namespace FIRSTWA_Recorder
 {
     class District
     {

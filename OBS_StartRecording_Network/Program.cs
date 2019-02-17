@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace OBS_StartRecording_Network
+namespace FIRSTWA_Recorder
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace OBS_StartRecording_Network
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmMain());
+            Application.Run(new MainForm());
         }
     }
 }

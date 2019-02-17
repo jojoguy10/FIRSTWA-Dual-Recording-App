@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace OBS_StartRecording_Network
+namespace FIRSTWA_Recorder
 {
     public partial class RecordingSettings : Form
     {

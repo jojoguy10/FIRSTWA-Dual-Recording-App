@@ -37,9 +37,9 @@ using System.Text.RegularExpressions;
  * Layout/UI Design
  */
 
-namespace OBS_StartRecording_Network
+namespace FIRSTWA_Recorder
 {
-    public partial class frmMain : Form
+    public partial class MainForm : Form
     {
         RecordingSettings frmRecordingSetting = new RecordingSettings();
 
@@ -81,7 +81,7 @@ namespace OBS_StartRecording_Network
         }
         MatchType currentMatchType = MatchType.Practice;
 
-        public frmMain()
+        public MainForm()
         {
             InitializeComponent();
 
