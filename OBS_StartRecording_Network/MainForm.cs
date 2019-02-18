@@ -94,10 +94,20 @@ namespace FIRSTWA_Recorder
         {
             InitializeComponent();
 
-            RegistryKey apiKey = Registry.CurrentUser.OpenSubKey(@"Software\FIRSTWA", false);
+            try
+            {
+                TBAKEY = ReadRegistryKey("apikey");
+            }
+            catch
+            {
+                DialogResult dr = MessageBox.Show("Could not find a TBA API key in the registry.  Closing...");
 
-            TBAKEY = apiKey.GetValue("apikey").ToString();
-            
+                if (dr == DialogResult.OK)
+                {
+                    Application.Exit();
+                }
+            }
+
             tbaRequest.AddHeader
             (
                 "X-TBA-Auth-Key",
