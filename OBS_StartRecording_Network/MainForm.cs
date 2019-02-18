@@ -41,7 +41,7 @@ namespace FIRSTWA_Recorder
 {
     public partial class MainForm : Form
     {
-        RecordingSettings frmRecordingSetting = new RecordingSettings();
+        RecordingSettings frmRecordingSetting;
 
         RestClient tbaClient = new RestClient("http://www.thebluealliance.com/api/v3");
         RestRequest tbaRequest = new RestRequest($"district/2019pnw/events", Method.GET);
@@ -60,6 +60,10 @@ namespace FIRSTWA_Recorder
         private string strIPAddressWIDE = @"192.168.100.34";
         private string strPortPROGRAM = "9993";
         private string strPortWIDE = "9993";
+
+        string regPROGRAM = "PROGRAM_IPAddress";
+        string regWIDE = "WIDE_IPAddress";
+        string regPC = "PC_IPAddress";
 
         DeckLink dlProgram, dlWide;
 
@@ -106,13 +110,55 @@ namespace FIRSTWA_Recorder
             eventDetails.ForEach(x => comboEventName.Items.Add((x.week + 1) + " - " + x.first_event_code + " - " + x.location_name));
             comboEventName.Sorted = true;
 
-            lblProgramPath.Text = "";
-            lblWidePath.Text = "";
+            if (ReadRegistryKey(regPC) == "")
+            {
+                UpdateRegistryKeys();
+            }
+            else
+            {
+                strIPAddressPC = ReadRegistryKey(regPC);
+                strIPAddressPROGRAM = ReadRegistryKey(regPROGRAM);
+                strIPAddressWIDE = ReadRegistryKey(regWIDE);
+            }
+
+            frmRecordingSetting = new RecordingSettings(strIPAddressPC, strIPAddressPROGRAM, strIPAddressWIDE);
 
             //groupEvent.Enabled = false;
             groupMatch.Enabled = false;
             btnStartRecording.Enabled = false;
             btnStopRecording.Enabled = false;
+        }
+
+        private string ReadRegistryKey(string key)
+        {
+            RegistryKey firstwaKey = Registry.CurrentUser.OpenSubKey(@"Software\FIRSTWA", true);
+            if (firstwaKey == null)
+            {
+                return "";
+            }
+            else
+            {
+                return firstwaKey.GetValue(key).ToString();
+            }
+
+        }
+
+        private void UpdateRegistryKeys()
+        {
+            WriteRegistryKey(regPC, strIPAddressPC);
+            WriteRegistryKey(regPROGRAM, strIPAddressPROGRAM);
+            WriteRegistryKey(regWIDE, strIPAddressWIDE);
+        }
+
+        private void WriteRegistryKey(string key, string value)
+        {
+            RegistryKey firstwaKey = Registry.CurrentUser.OpenSubKey(@"Software\FIRSTWA", true);
+            if (firstwaKey == null)
+            {
+                firstwaKey = Registry.CurrentUser.CreateSubKey(@"Software\FIRSTWA");
+            }
+            
+            firstwaKey.SetValue(key, value);
         }
 
         private bool CopyFTPFile(string filename)
@@ -383,6 +429,8 @@ namespace FIRSTWA_Recorder
                 strIPAddressPROGRAM = frmRecordingSetting.IPAddressPROGRAM;
                 strIPAddressWIDE = frmRecordingSetting.IPAddressWIDE;
                 strIPAddressPC = frmRecordingSetting.IPAddressPC;
+
+                UpdateRegistryKeys();
             }
         }
 
@@ -766,6 +814,7 @@ namespace FIRSTWA_Recorder
                 dlProgram.Write("ping");
                 Console.WriteLine(dlProgram.Read());
                 btnStartRecording.Enabled = true;
+                btnConnectProgram.BackColor = Color.Green;
             }
             catch
             {
@@ -782,6 +831,7 @@ namespace FIRSTWA_Recorder
                 dlProgram.Write("ping");
                 Console.WriteLine(dlWide.Read());
                 btnStartRecording.Enabled = true;
+                btnConnectProgram.BackColor = Color.Green;
             }
             catch
             {

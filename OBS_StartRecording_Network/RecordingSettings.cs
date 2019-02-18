@@ -8,10 +8,18 @@ namespace FIRSTWA_Recorder
         public string IPAddressPROGRAM { get; private set; } = @"192.168.100.35";
         public string IPAddressWIDE { get; private set; } = @"192.168.100.34";
         public string IPAddressPC { get; private set; } = @"192.168.100.70";
-
-        public RecordingSettings()
+        
+        public RecordingSettings(string pc, string program, string wide)
         {
             InitializeComponent();
+
+            IPAddressPROGRAM = pc;
+            IPAddressPROGRAM = program;
+            IPAddressWIDE = wide;
+
+            txtIPAddressPC.Text = pc;
+            txtIPAddressPROGRAM.Text = program;
+            txtIPAddressWIDE.Text = wide;
         }
 
 
