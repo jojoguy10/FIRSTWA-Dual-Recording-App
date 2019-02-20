@@ -120,15 +120,23 @@ namespace FIRSTWA_Recorder
             eventDetails.ForEach(x => comboEventName.Items.Add((x.week + 1) + " - " + x.first_event_code + " - " + x.location_name));
             comboEventName.Sorted = true;
 
-            if (ReadRegistryKey(regPC) == "")
+            try
             {
-                UpdateRegistryKeys();
+                if (ReadRegistryKey(regPC) == "")
+                {
+                    UpdateRegistryKeys();
+                }
+                else
+                {
+                    strIPAddressPC = ReadRegistryKey(regPC);
+                    strIPAddressPROGRAM = ReadRegistryKey(regPROGRAM);
+                    strIPAddressWIDE = ReadRegistryKey(regWIDE);
+                }
             }
-            else
+            catch
             {
-                strIPAddressPC = ReadRegistryKey(regPC);
-                strIPAddressPROGRAM = ReadRegistryKey(regPROGRAM);
-                strIPAddressWIDE = ReadRegistryKey(regWIDE);
+                MessageBox.Show("There was a problem reading the registry" + regPC + ".  Have you created the registry keys?");
+                Application.Exit();
             }
 
             frmRecordingSetting = new RecordingSettings(strIPAddressPC, strIPAddressPROGRAM, strIPAddressWIDE);
