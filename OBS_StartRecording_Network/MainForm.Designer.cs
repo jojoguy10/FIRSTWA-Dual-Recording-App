@@ -74,7 +74,6 @@
             this.lblRed2 = new System.Windows.Forms.Label();
             this.lblRed1 = new System.Windows.Forms.Label();
             this.btnGetMatchDetails = new System.Windows.Forms.Button();
-            this.timerTCPWatchDog = new System.Windows.Forms.Timer(this.components);
             this.bgWorker_FTP = new System.ComponentModel.BackgroundWorker();
             this.groupMatchTypes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).BeginInit();
@@ -220,7 +219,7 @@
             this.settingsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(415, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(416, 24);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "Menu Strip";
             // 
@@ -245,7 +244,6 @@
             this.uploadsToolStripMenuItem.Name = "uploadsToolStripMenuItem";
             this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.uploadsToolStripMenuItem.Text = "Uploading";
-            this.uploadsToolStripMenuItem.Click += new System.EventHandler(this.uploadsToolStripMenuItem_Click);
             // 
             // label3
             // 
@@ -412,7 +410,6 @@
             this.btnOpenRecordings.TabIndex = 18;
             this.btnOpenRecordings.Text = "Open Recordings Folder";
             this.btnOpenRecordings.UseVisualStyleBackColor = true;
-            this.btnOpenRecordings.Click += new System.EventHandler(this.btnOpenRecordings_Click);
             // 
             // btnUpload
             // 
@@ -422,7 +419,6 @@
             this.btnUpload.TabIndex = 19;
             this.btnUpload.Text = "Upload to Youtube";
             this.btnUpload.UseVisualStyleBackColor = true;
-            this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
             // 
             // groupOBS
             // 
@@ -461,9 +457,9 @@
             this.groupMatchDetails.Controls.Add(this.groupBlueAlliance);
             this.groupMatchDetails.Controls.Add(this.groupRedAlliance);
             this.groupMatchDetails.Location = new System.Drawing.Point(482, 151);
-            this.groupMatchDetails.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupMatchDetails.Margin = new System.Windows.Forms.Padding(2);
             this.groupMatchDetails.Name = "groupMatchDetails";
-            this.groupMatchDetails.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupMatchDetails.Padding = new System.Windows.Forms.Padding(2);
             this.groupMatchDetails.Size = new System.Drawing.Size(235, 129);
             this.groupMatchDetails.TabIndex = 25;
             this.groupMatchDetails.TabStop = false;
@@ -488,9 +484,9 @@
             this.groupBlueAlliance.Controls.Add(this.lblBlue2);
             this.groupBlueAlliance.ForeColor = System.Drawing.Color.Blue;
             this.groupBlueAlliance.Location = new System.Drawing.Point(117, 45);
-            this.groupBlueAlliance.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBlueAlliance.Margin = new System.Windows.Forms.Padding(2);
             this.groupBlueAlliance.Name = "groupBlueAlliance";
-            this.groupBlueAlliance.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBlueAlliance.Padding = new System.Windows.Forms.Padding(2);
             this.groupBlueAlliance.Size = new System.Drawing.Size(109, 74);
             this.groupBlueAlliance.TabIndex = 1;
             this.groupBlueAlliance.TabStop = false;
@@ -533,9 +529,9 @@
             this.groupRedAlliance.Controls.Add(this.lblRed1);
             this.groupRedAlliance.ForeColor = System.Drawing.Color.Red;
             this.groupRedAlliance.Location = new System.Drawing.Point(4, 45);
-            this.groupRedAlliance.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupRedAlliance.Margin = new System.Windows.Forms.Padding(2);
             this.groupRedAlliance.Name = "groupRedAlliance";
-            this.groupRedAlliance.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupRedAlliance.Padding = new System.Windows.Forms.Padding(2);
             this.groupRedAlliance.Size = new System.Drawing.Size(109, 74);
             this.groupRedAlliance.TabIndex = 0;
             this.groupRedAlliance.TabStop = false;
@@ -574,18 +570,13 @@
             // btnGetMatchDetails
             // 
             this.btnGetMatchDetails.Location = new System.Drawing.Point(516, 124);
-            this.btnGetMatchDetails.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnGetMatchDetails.Margin = new System.Windows.Forms.Padding(2);
             this.btnGetMatchDetails.Name = "btnGetMatchDetails";
             this.btnGetMatchDetails.Size = new System.Drawing.Size(158, 23);
             this.btnGetMatchDetails.TabIndex = 26;
             this.btnGetMatchDetails.Text = "Get Match Details";
             this.btnGetMatchDetails.UseVisualStyleBackColor = true;
             this.btnGetMatchDetails.Click += new System.EventHandler(this.btnGetMatchDetails_Click);
-            // 
-            // timerTCPWatchDog
-            // 
-            this.timerTCPWatchDog.Interval = 1000;
-            this.timerTCPWatchDog.Tick += new System.EventHandler(this.timerTCPWatchDog_Tick);
             // 
             // bgWorker_FTP
             // 
@@ -597,7 +588,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
-            this.ClientSize = new System.Drawing.Size(415, 381);
+            this.ClientSize = new System.Drawing.Size(416, 381);
             this.Controls.Add(this.btnGetMatchDetails);
             this.Controls.Add(this.groupMatchDetails);
             this.Controls.Add(this.groupOBS);
@@ -615,7 +606,6 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FIRSTWA Recording";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.groupMatchTypes.ResumeLayout(false);
             this.groupMatchTypes.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).EndInit();
@@ -681,7 +671,6 @@
         private System.Windows.Forms.Label lblRed1;
         private System.Windows.Forms.NumericUpDown numFinalNo;
         private System.Windows.Forms.Label lblFinalNo;
-        private System.Windows.Forms.Timer timerTCPWatchDog;
         private System.Windows.Forms.Button btnConnectWide;
         private System.Windows.Forms.Button btnConnectProgram;
         private System.ComponentModel.BackgroundWorker bgWorker_FTP;
