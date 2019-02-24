@@ -45,7 +45,7 @@ namespace FIRSTWA_Recorder
         RecordingSettings frmRecordingSetting;
 
         RestClient tbaClient = new RestClient("http://www.thebluealliance.com/api/v3");
-        RestRequest tbaRequest = new RestRequest($"district/2019pnw/events", Method.GET);
+        RestRequest tbaRequest = new RestRequest($"district/2018pnw/events", Method.GET);
         private string TBAKEY;
 
         List<District> eventDistrict = new List<District>();
@@ -69,6 +69,7 @@ namespace FIRSTWA_Recorder
         DeckLink dlProgram, dlWide;
 
         private string fileNameProgram, fileNameWide;
+        private string ytDescription, ytTags;
 
         private DateTime startTime;
 
@@ -145,9 +146,11 @@ namespace FIRSTWA_Recorder
 
             frmRecordingSetting = new RecordingSettings(strIPAddressPC, strIPAddressPROGRAM, strIPAddressWIDE);
 
-            //groupEvent.Enabled = false;
+#if RELEASE
+            groupEvent.Enabled = false;
             groupMatch.Enabled = false;
             btnStartRecording.Enabled = false;
+#endif
             btnStopRecording.Enabled = false;
         }
 
@@ -207,7 +210,6 @@ namespace FIRSTWA_Recorder
 
         }
         
-
         private void btnStartRecording_Click(object sender, EventArgs e)
         {
             if(comboEventName.SelectedItem == null)
@@ -221,99 +223,87 @@ namespace FIRSTWA_Recorder
             
             if (chkProgramRecord.Checked)
             {
-                try
+#if RELEASE
+                dlProgram.Write("record");
+#endif
+
+                string matchType, matchNumber;
+                switch (currentMatchType)
                 {
-                    dlProgram.Write("record");
-
-                    string matchType, matchNumber;
-                    switch (currentMatchType)
-                    {
-                        case MatchType.Practice:
-                            matchType = "Practice";
-                            break;
-                        case MatchType.Qualification:
-                            matchType = "Qual";
-                            break;
-                        case MatchType.Quarterfinal:
-                            matchType = "Quarterfinal";
-                            break;
-                        case MatchType.Semifinal:
-                            matchType = "Semifinal";
-                            break;
-                        case MatchType.Final:
-                            matchType = "Final";
-                            break;
-                        default:
-                            matchType = "";
-                            break;
-                    }
-
-                    if (currentMatchType == MatchType.Practice || currentMatchType == MatchType.Qualification)
-                    {
-                        matchNumber = numMatchNumber.Value.ToString();
-                    }
-                    else
-                    {
-                        matchNumber = string.Format("{0}-{1}", numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
-                    }
-
-                    fileNameProgram = string.Format("{0} {1} {2} {3}.mp4", currentEvent.year, currentEvent.name, matchType, matchNumber);
-                    //obsProgram.StartRecording();
+                    case MatchType.Practice:
+                        matchType = "Practice";
+                        break;
+                    case MatchType.Qualification:
+                        matchType = "Qual";
+                        break;
+                    case MatchType.Quarterfinal:
+                        matchType = "Quarterfinal";
+                        break;
+                    case MatchType.Semifinal:
+                        matchType = "Semifinal";
+                        break;
+                    case MatchType.Final:
+                        matchType = "Final";
+                        break;
+                    default:
+                        matchType = "";
+                        break;
                 }
-                catch
+
+                if (currentMatchType == MatchType.Practice || currentMatchType == MatchType.Qualification)
                 {
-                    //obsProgram.StopRecording();
-                    //System.Threading.Thread.Sleep(1000);
-                    //obsProgram.StartRecording();
+                    matchNumber = numMatchNumber.Value.ToString();
                 }
+                else
+                {
+                    matchNumber = string.Format("{0}-{1}", numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
+                }
+
+                fileNameProgram = string.Format("{0} {1} {2} {3}.mp4", currentEvent.year, currentEvent.name, matchType, matchNumber);
             }
+
             if (chkRecordWide.Checked)
             {
-                try
+#if RELEASE
+                dlWide.Write("record");
+#endif
+
+                string matchType, matchNumber;
+                switch (currentMatchType)
                 {
-                    dlWide.Write("record");
-
-                    string matchType, matchNumber;
-                    switch (currentMatchType)
-                    {
-                        case MatchType.Practice:
-                            matchType = "Practice";
-                            break;
-                        case MatchType.Qualification:
-                            matchType = "Qual";
-                            break;
-                        case MatchType.Quarterfinal:
-                            matchType = "Quarterfinal";
-                            break;
-                        case MatchType.Semifinal:
-                            matchType = "Semifinal";
-                            break;
-                        case MatchType.Final:
-                            matchType = "Final";
-                            break;
-                        default:
-                            matchType = "";
-                            break;
-                    }
-
-                    if (currentMatchType == MatchType.Practice || currentMatchType == MatchType.Qualification)
-                    {
-                        matchNumber = numMatchNumber.Value.ToString();
-                    }
-                    else
-                    {
-                        matchNumber = string.Format("{0}-{1}", numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
-                    }
-
-                    fileNameWide = string.Format("{0} {1} WIDE {2} {3}.mp4", currentEvent.year, currentEvent.name, matchType, matchNumber);
+                    case MatchType.Practice:
+                        matchType = "Practice";
+                        break;
+                    case MatchType.Qualification:
+                        matchType = "Qual";
+                        break;
+                    case MatchType.Quarterfinal:
+                        matchType = "Quarterfinal";
+                        break;
+                    case MatchType.Semifinal:
+                        matchType = "Semifinal";
+                        break;
+                    case MatchType.Final:
+                        matchType = "Final";
+                        break;
+                    default:
+                        matchType = "";
+                        break;
                 }
-                catch
+
+                if (currentMatchType == MatchType.Practice || currentMatchType == MatchType.Qualification)
                 {
-                    //obsWide.StopRecording();
-                    //System.Threading.Thread.Sleep(1000);
-                    //obsWide.StartRecording();
+                    matchNumber = numMatchNumber.Value.ToString();
                 }
+                else
+                {
+                    matchNumber = string.Format("{0}-{1}", numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
+                }
+
+                fileNameWide = string.Format("{0} {1} WIDE {2} {3}.mp4", currentEvent.year, currentEvent.name, matchType, matchNumber);
             }
+
+            GetMatchDetails();
 
             startTime = DateTime.Now;
             timerElapsed.Start();
@@ -334,21 +324,49 @@ namespace FIRSTWA_Recorder
                 chkReplay.Checked = false;
                 replay = "";
             }
-            
+#if RELEASE
             dlProgram.Write("stop");
             
             dlWide.Write("stop");
 
             bgWorker_FTP.RunWorkerAsync();
+#endif
 
             btnStartRecording.Enabled = true;
 
             numMatchNumber.Value++;
-        }
-        
-        private void btnOpenRecordings_Click(object sender, EventArgs e)
-        {
 
+            ytDescription = string.Format("{0} FRC {1} Week #{2}\n" +
+                            "Red Alliance: {3} {4} {5}\n" +
+                            "Blue Alliance: {6} {7} {8}\n\n" +
+                            "Footage of the {0} FRC {1} is coutesy of the FIRST Washington A/V Crew\n\n" +
+                            //"To view match schedules and results for this event, visit the FRC Event Results Portal:\n" +
+                            //"{9}\n\n" +
+                            "Folow the PNW District social media accounts for updates throughout the season!\n" +
+                            "Facebook: Washington FIRST Robotics / OregonFRC\n" +
+                            "Twitter: @first_wa / @OregonRobotics\n" +
+                            "Youtube: Washington FIRST Robotics\n\n" +
+                            "For more information and future event schedules, visit our websites:\n" +
+                            "http://www.firstwa.org | http://www.oregonfirst.org \n\n" +
+                            "Thanks for watching!",
+                            currentEvent.year,
+                            currentEvent.name,
+                            currentEvent.week + 1,
+                            currentMatch.Alliances.Red.TeamKeys[0].ToString().Substring(3),
+                            currentMatch.Alliances.Red.TeamKeys[1].ToString().Substring(3),
+                            currentMatch.Alliances.Red.TeamKeys[2].ToString().Substring(3),
+                            currentMatch.Alliances.Blue.TeamKeys[0].ToString().Substring(3),
+                            currentMatch.Alliances.Blue.TeamKeys[1].ToString().Substring(3),
+                            currentMatch.Alliances.Blue.TeamKeys[2].ToString().Substring(3));
+
+            ytTags = "first,robotics,frc," + currentEvent.year.ToString() + "," + currentEvent.event_code;
+
+            YoutubeUpload ytForm = new YoutubeUpload(
+                                    fileNameProgram.Replace(".mp4",""), 
+                                    fileNameWide.Replace(".mp4",""), 
+                                    ytDescription, 
+                                    ytTags);
+            ytForm.ShowDialog();
         }
 
         private void CreateEventDirectory(string uriPath)
@@ -456,10 +474,6 @@ namespace FIRSTWA_Recorder
             }
         }
 
-        private void uploadsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-        }
-
         private void radioBtnMatchType_CheckedChanged(object sender, EventArgs e)
         {
             RadioButton btn = sender as RadioButton;
@@ -502,12 +516,6 @@ namespace FIRSTWA_Recorder
         private void timerElapsed_Tick(object sender, EventArgs e)
         {
             lblElapsedTime.Text = (DateTime.Now - startTime).ToString(@"hh\:mm\:ss\.ff");
-        }
-
-        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            //if(obsProgram.IsConnected) { obsProgram.Disconnect(); }
-            //if(obsWide.IsConnected) { obsWide.Disconnect(); }
         }
 
         private void comboEventName_SelectedIndexChanged(object sender, EventArgs e)
@@ -624,198 +632,8 @@ namespace FIRSTWA_Recorder
                 replay = "";
             }
         }
-
-        private static bool IsFileReady(string filename)
-        {
-            // If the file can be opened for exclusive access it means that the file
-            // is no longer locked by another process.
-            try
-            {
-                using (FileStream inputStream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.None))
-                    return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        private void btnUpload_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                UploadVideo();
-            }
-            catch (AggregateException ex)
-            {
-                foreach (var i in ex.InnerExceptions)
-                {
-                    Console.WriteLine("Error: " + i.Message);
-                }
-            }
-        }
-
-        public async Task UploadVideo()
-        {
-            SetText("Uploading...");
-
-            UserCredential credential;
-            using (FileStream stream = new FileStream(credFile.FullName, FileMode.Open, FileAccess.Read))
-            {
-                credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    // This OAuth 2.0 access scope allows an application to upload files to the
-                    // authenticated user's YouTube channel, but doesn't allow other types of access.
-                    new[] { YouTubeService.Scope.YoutubeUpload },
-                    "user",
-                    CancellationToken.None
-                );
-            }
-            YouTubeService youtubeService = new YouTubeService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = Assembly.GetExecutingAssembly().GetName().Name
-            });
-
-            videoYT = new Video();
-            videoYT.Snippet = new VideoSnippet();
-            videoYT.Snippet.Title = Path.GetFileNameWithoutExtension("");
-            videoYT.Snippet.Description = "Default Video Description";
-            videoYT.Snippet.Tags = new string[] { "robots", "frc" };
-            videoYT.Snippet.CategoryId = "22"; // See https://developers.google.com/youtube/v3/docs/videoCategories/list
-            videoYT.Status = new VideoStatus();
-            videoYT.Status.PrivacyStatus = "unlisted"; // or "private" or "public"
-            string filePath = ""; // Replace with path to actual movie file.
-            Console.WriteLine("Video");
-
-            using (var fileStream = new FileStream(filePath, FileMode.Open))
-            {
-                var videosInsertRequest = youtubeService.Videos.Insert(videoYT, "snippet,status", fileStream, "video/*");
-                videosInsertRequest.ProgressChanged += videosInsertRequest_ProgressChanged;
-                videosInsertRequest.ResponseReceived += videosInsertRequest_ResponseReceived;
-
-                await videosInsertRequest.UploadAsync();
-                Console.WriteLine("Upload Done");
-                await AddToPlaylist(videoYT.Id);
-                Console.WriteLine("Playlist Done");
-            }
-        }
-
-        public async Task ListPlaylists(string playlistName)
-        {
-            UserCredential credential;
-            using (var stream = new FileStream(credFile.FullName, FileMode.Open, FileAccess.Read))
-            {
-                credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    // This OAuth 2.0 access scope allows for full read/write access to the
-                    // authenticated user's account.
-                    new[] { YouTubeService.Scope.Youtube },
-                    "user",
-                    CancellationToken.None,
-                    new FileDataStore(this.GetType().ToString())
-                );
-            }
-
-            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = this.GetType().ToString()
-            });
-
-            var channelsListRequest = youtubeService.Channels.List("contentDetails");
-            channelsListRequest.Mine = true;
-            var playlists = youtubeService.Playlists.List("snippit");
-            playlists.PageToken = "";
-            playlists.MaxResults = 50;
-            playlists.Mine = true;
-            PlaylistListResponse presponse = await playlists.ExecuteAsync();
-            
-            foreach (var pl in presponse.Items)
-            {
-                if(pl.Snippet.Title == playlistName)
-                {
-                    Console.WriteLine("Playlist already created");
-                    return;
-                }
-            }
-        }
-
-        public async Task AddToPlaylist(string videoID)
-        {
-            UserCredential credential;
-            using (var stream = new FileStream(credFile.FullName, FileMode.Open, FileAccess.Read))
-            {
-                credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    // This OAuth 2.0 access scope allows for full read/write access to the
-                    // authenticated user's account.
-                    new[] { YouTubeService.Scope.Youtube },
-                    "user",
-                    CancellationToken.None,
-                    new FileDataStore(this.GetType().ToString())
-                );
-            }
-
-            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = this.GetType().ToString()
-            });
-
-            // Create a new, private playlist in the authorized user's channel.
-            var newPlaylist = new Playlist();
-            newPlaylist.Snippet = new PlaylistSnippet();
-            newPlaylist.Snippet.Title = "Test Playlist";
-            newPlaylist.Snippet.Description = "A playlist created with the YouTube API v3";
-            newPlaylist.Status = new PlaylistStatus();
-            newPlaylist.Status.PrivacyStatus = "unlisted";
-            newPlaylist = await youtubeService.Playlists.Insert(newPlaylist, "snippet,status").ExecuteAsync();
-            Console.WriteLine("Playlist Created");
-
-            // Add a video to the newly created playlist.
-            var newPlaylistItem = new PlaylistItem();
-            newPlaylistItem.Snippet = new PlaylistItemSnippet();
-            newPlaylistItem.Snippet.PlaylistId = newPlaylist.Id;
-            newPlaylistItem.Snippet.ResourceId = new ResourceId();
-            newPlaylistItem.Snippet.ResourceId.Kind = "youtube#video";
-            newPlaylistItem.Snippet.ResourceId.VideoId = videoID;
-            newPlaylistItem = await youtubeService.PlaylistItems.Insert(newPlaylistItem, "snippet").ExecuteAsync();
-        }
-
-        void videosInsertRequest_ProgressChanged(IUploadProgress progress)
-        {
-            switch (progress.Status)
-            {
-                case UploadStatus.Uploading:
-                    Console.WriteLine("{0} bytes sent.", progress.BytesSent);
-                    break;
-
-                case UploadStatus.Failed:
-                    Console.WriteLine("An error prevented the upload from completing.\n{0}", progress.Exception);
-                    break;
-            }
-        }
-
-        private void timerTCPWatchDog_Tick(object sender, EventArgs e)
-        {
-            // Poll the DeckLinks and update LEDs if necessary
-
-            // Send a "ping" command to decklinks
-            dlProgram.Write("ping");
-            Console.WriteLine(dlProgram.Read());
-
-            dlWide.Write("ping");
-            Console.WriteLine(dlWide.Read());
-        }
-
-        void videosInsertRequest_ResponseReceived(Video video)
-        {
-            Console.WriteLine("Video id '{0}' was successfully uploaded.", video.Id);
-            SetText("Upload successful");
-        }
-
-        private void btnGetMatchDetails_Click(object sender, EventArgs e)
+        
+        private async Task GetMatchDetails()
         {
             /* This button will look at the selected match and match type from the UI and 
              * query TBA to get the specifics.  When the Match
@@ -856,7 +674,7 @@ namespace FIRSTWA_Recorder
             string tbaContent = tbaResponse.Content;
             tbaContent = tbaContent.Trim('"');
             currentMatch = JsonConvert.DeserializeObject<Match>(tbaContent);
-            
+
             if (currentMatch.CompLevel == "qm")
             {
                 lblMatchNumber.Text = string.Format("{0} {1}", currentMatch.CompLevel.ToUpper(), currentMatch.MatchNumber);
@@ -871,6 +689,11 @@ namespace FIRSTWA_Recorder
             lblBlue1.Text = string.Format("BLUE 1: {0}", currentMatch.Alliances.Blue.TeamKeys[0].ToString().Substring(3));
             lblBlue2.Text = string.Format("BLUE 2: {0}", currentMatch.Alliances.Blue.TeamKeys[1].ToString().Substring(3));
             lblBlue3.Text = string.Format("BLUE 3: {0}", currentMatch.Alliances.Blue.TeamKeys[2].ToString().Substring(3));
+        }
+
+        private void btnGetMatchDetails_Click(object sender, EventArgs e)
+        {
+            GetMatchDetails();
         }
 
         private void btnConnectProgram_Click(object sender, EventArgs e)
@@ -906,9 +729,7 @@ namespace FIRSTWA_Recorder
                 MessageBox.Show(string.Format("Could not connect to the Wide recorder\nat the IP address: {0}", strIPAddressPROGRAM));
             }
         }
-
-        delegate void SetTextCallback(string text);
-
+        
         private void bgWorker_FTP_DoWork(object sender, DoWorkEventArgs e)
         {
             List<string> URIs = new List<string>();
@@ -966,6 +787,7 @@ namespace FIRSTWA_Recorder
             File.Delete(@"C:\Temp\temp.mp4");
         }
 
+        delegate void SetTextCallback(string text);
         private void SetText(string text)
         {
             // InvokeRequired required compares the thread ID of the

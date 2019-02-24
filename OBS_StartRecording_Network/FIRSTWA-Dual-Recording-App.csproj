@@ -98,6 +98,12 @@
     <Compile Include="RecordingSettings.Designer.cs">
       <DependentUpon>RecordingSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="YoutubeUpload.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="YoutubeUpload.Designer.cs">
+      <DependentUpon>YoutubeUpload.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -114,6 +120,9 @@
     <EmbeddedResource Include="RecordingSettings.resx">
       <DependentUpon>RecordingSettings.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="YoutubeUpload.resx">
+      <DependentUpon>YoutubeUpload.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -127,9 +136,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="keys.xml" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
