@@ -44,7 +44,7 @@ namespace FIRSTWA_Recorder
         RecordingSettings frmRecordingSetting;
 
         RestClient tbaClient = new RestClient("http://www.thebluealliance.com/api/v3");
-        RestRequest tbaRequest = new RestRequest($"district/2018pnw/events", Method.GET);
+        RestRequest tbaRequest = new RestRequest($"district/2019pnw/events", Method.GET);
         private string TBAKEY;
 
         List<District> eventDistrict = new List<District>();
@@ -53,7 +53,7 @@ namespace FIRSTWA_Recorder
         Match currentMatch;
         string matchKey;
 
-        string[] matchKeys;
+        Match matchKeys;
 
         private string strIPAddressPC = @"192.168.100.70";
         private string strIPAddressPROGRAM = @"192.168.100.35";
@@ -64,6 +64,8 @@ namespace FIRSTWA_Recorder
         string regPROGRAM = "PROGRAM_IPAddress";
         string regWIDE = "WIDE_IPAddress";
         string regPC = "PC_IPAddress";
+
+        int progress = 0;
 
         DeckLink dlProgram, dlWide;
 
@@ -141,12 +143,10 @@ namespace FIRSTWA_Recorder
             }
 
             frmRecordingSetting = new RecordingSettings(strIPAddressPC, strIPAddressPROGRAM, strIPAddressWIDE);
-
-#if RELEASE
+            
             groupEvent.Enabled = false;
             groupMatch.Enabled = false;
             btnStartRecording.Enabled = false;
-#endif
             btnStopRecording.Enabled = false;
         }
 
@@ -219,9 +219,7 @@ namespace FIRSTWA_Recorder
             
             if (chkProgramRecord.Checked)
             {
-#if RELEASE
                 dlProgram.Write("record");
-#endif
 
                 string matchType, matchNumber;
                 switch (currentMatchType)
@@ -260,9 +258,7 @@ namespace FIRSTWA_Recorder
 
             if (chkRecordWide.Checked)
             {
-#if RELEASE
                 dlWide.Write("record");
-#endif
 
                 string matchType, matchNumber;
                 switch (currentMatchType)
@@ -305,6 +301,8 @@ namespace FIRSTWA_Recorder
             timerElapsed.Start();
             btnStartRecording.Enabled = false;
             btnStopRecording.Enabled = true;
+            SetProgress(0);
+            progress = 0;
         }
 
         private void btnStopRecording_Click(object sender, EventArgs e)
@@ -320,49 +318,49 @@ namespace FIRSTWA_Recorder
                 chkReplay.Checked = false;
                 replay = "";
             }
-#if RELEASE
+
             dlProgram.Write("stop");
             
             dlWide.Write("stop");
 
-            bgWorker_FTP.RunWorkerAsync();
-#endif
+            bgWorker_FTP_Program.RunWorkerAsync();
+            bgWorker_FTP_Wide.RunWorkerAsync();
 
             btnStartRecording.Enabled = true;
 
             numMatchNumber.Value++;
 
-            ytDescription = string.Format("{0} FRC {1} Week #{2}\n" +
-                            "Red Alliance: {3} {4} {5}\n" +
-                            "Blue Alliance: {6} {7} {8}\n\n" +
-                            "Footage of the {0} FRC {1} is coutesy of the FIRST Washington A/V Crew\n\n" +
-                            //"To view match schedules and results for this event, visit the FRC Event Results Portal:\n" +
-                            //"{9}\n\n" +
-                            "Folow the PNW District social media accounts for updates throughout the season!\n" +
-                            "Facebook: Washington FIRST Robotics / OregonFRC\n" +
-                            "Twitter: @first_wa / @OregonRobotics\n" +
-                            "Youtube: Washington FIRST Robotics\n\n" +
-                            "For more information and future event schedules, visit our websites:\n" +
-                            "http://www.firstwa.org | http://www.oregonfirst.org \n\n" +
-                            "Thanks for watching!",
-                            currentEvent.year,
-                            currentEvent.name,
-                            currentEvent.week + 1,
-                            currentMatch.Alliances.Red.TeamKeys[0].ToString().Substring(3),
-                            currentMatch.Alliances.Red.TeamKeys[1].ToString().Substring(3),
-                            currentMatch.Alliances.Red.TeamKeys[2].ToString().Substring(3),
-                            currentMatch.Alliances.Blue.TeamKeys[0].ToString().Substring(3),
-                            currentMatch.Alliances.Blue.TeamKeys[1].ToString().Substring(3),
-                            currentMatch.Alliances.Blue.TeamKeys[2].ToString().Substring(3));
+            //ytDescription = string.Format("{0} FRC {1} Week #{2}\n" +
+            //                "Red Alliance: {3} {4} {5}\n" +
+            //                "Blue Alliance: {6} {7} {8}\n\n" +
+            //                "Footage of the {0} FRC {1} is coutesy of the FIRST Washington A/V Crew\n\n" +
+            //                //"To view match schedules and results for this event, visit the FRC Event Results Portal:\n" +
+            //                //"{9}\n\n" +
+            //                "Folow the PNW District social media accounts for updates throughout the season!\n" +
+            //                "Facebook: Washington FIRST Robotics / OregonFRC\n" +
+            //                "Twitter: @first_wa / @OregonRobotics\n" +
+            //                "Youtube: Washington FIRST Robotics\n\n" +
+            //                "For more information and future event schedules, visit our websites:\n" +
+            //                "http://www.firstwa.org | http://www.oregonfirst.org \n\n" +
+            //                "Thanks for watching!",
+            //                currentEvent.year,
+            //                currentEvent.name,
+            //                currentEvent.week + 1,
+            //                currentMatch.Alliances.Red.TeamKeys[0].ToString().Substring(3),
+            //                currentMatch.Alliances.Red.TeamKeys[1].ToString().Substring(3),
+            //                currentMatch.Alliances.Red.TeamKeys[2].ToString().Substring(3),
+            //                currentMatch.Alliances.Blue.TeamKeys[0].ToString().Substring(3),
+            //                currentMatch.Alliances.Blue.TeamKeys[1].ToString().Substring(3),
+            //                currentMatch.Alliances.Blue.TeamKeys[2].ToString().Substring(3));
 
-            ytTags = "first,robotics,frc," + currentEvent.year.ToString() + "," + currentEvent.event_code;
+            //ytTags = "first,robotics,frc," + currentEvent.year.ToString() + "," + currentEvent.event_code;
 
-            YoutubeUpload ytForm = new YoutubeUpload(
-                                    fileNameProgram.Replace(".mp4",""), 
-                                    fileNameWide.Replace(".mp4",""), 
-                                    ytDescription, 
-                                    ytTags);
-            ytForm.ShowDialog();
+            //YoutubeUpload ytForm = new YoutubeUpload(
+            //                        fileNameProgram.Replace(".mp4",""), 
+            //                        fileNameWide.Replace(".mp4",""), 
+            //                        ytDescription, 
+            //                        ytTags);
+            //ytForm.ShowDialog();
         }
 
         private void CreateEventDirectory(string uriPath)
@@ -383,44 +381,58 @@ namespace FIRSTWA_Recorder
             }
         }
 
-        private void CopyFTPFile(string fromURI, string toURI, string fromFilename, string toFilename)
+        private void CopyFTPFile(string fromURI, string toURI, string fromFilename, string toFilename, string tempFile)
         {
-            string video = DownloadFileFTP(fromURI, fromFilename, "temp.mp4");
+            progress++;
+            SetProgress(progress);
+            string video = DownloadFileFTP(fromURI, fromFilename, tempFile);
             UploadFileFTP(toURI + "/" + toFilename, video);
+            progress++;
+            SetProgress(progress);
         }
 
         private string DownloadFileFTP(string uri, string ftpFileName, string fileName)
         {
+            progress++;
+            SetProgress(progress);
+            Console.WriteLine(ftpFileName);
+            ftpFileName = ftpFileName.Replace(".mcc", ".mp4");
             if (!Directory.Exists(@"C:\Temp"))
             {
                 Directory.CreateDirectory(@"C:\Temp");
             }
-            string inputfilepath = @"C:\Temp\" + fileName;
+            string inputfilepath = fileName;
 
             string ftpfullpath = uri + "/" + ftpFileName;
 
             using (WebClient request = new WebClient())
             {
-                byte[] fileData = request.DownloadData(ftpfullpath);
+                request.DownloadFile(ftpfullpath, inputfilepath);
 
-                using (FileStream file = File.Create(inputfilepath))
-                {
-                    file.Write(fileData, 0, fileData.Length);
-                    file.Close();
-                }
+                //using (FileStream file = File.Create(inputfilepath))
+                //{
+
+                //    file.Write(fileData, 0, fileData.Length);
+                //    file.Close();
+                //}
                 Console.WriteLine("Download from Recorder: Complete");
             }
-
+            progress++;
+            SetProgress(progress);
             return inputfilepath;
         }
 
         public void UploadFileFTP(string uri, string filePath)
         {
+            progress++;
+            SetProgress(progress);
             using (WebClient client = new WebClient())
             {
                 client.Credentials = new NetworkCredential("FTP_User", "");
                 client.UploadFile(uri, WebRequestMethods.Ftp.UploadFile, filePath);
             }
+            progress++;
+            SetProgress(progress);
             Console.WriteLine("Upload to PC: Complete");
         }
 
@@ -437,6 +449,8 @@ namespace FIRSTWA_Recorder
 
         private List<string> GetFTPFiles(string uri)
         {
+            progress++;
+            SetProgress(progress);
             FtpWebRequest ftpRequest = (FtpWebRequest)WebRequest.Create(uri);
             ftpRequest.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
 
@@ -453,7 +467,8 @@ namespace FIRSTWA_Recorder
             }
 
             streamReader.Close();
-
+            progress++;
+            SetProgress(progress);
             return directories;
         }
 
@@ -522,7 +537,7 @@ namespace FIRSTWA_Recorder
                 {
                     currentEvent = eventDetails[i];
                     Console.WriteLine(currentEvent.name);
-                    GetMatches();
+                    //GetMatches();
                     groupMatch.Enabled = true;
                 }
             }
@@ -531,7 +546,7 @@ namespace FIRSTWA_Recorder
         private async Task GetMatches()
         {
 
-            tbaRequest = new RestRequest(string.Format("event/{0}/matches/keys", currentEvent.key), Method.GET);
+            tbaRequest = new RestRequest(string.Format("event/{0}/matches/simple", currentEvent.key), Method.GET);
 
             tbaRequest.AddHeader
             (
@@ -541,62 +556,69 @@ namespace FIRSTWA_Recorder
 
             IRestResponse tbaResponse = tbaClient.Execute(tbaRequest);
             string tbaContent = tbaResponse.Content;
-            tbaContent = tbaContent.Trim('"');
-            matchKeys = JsonConvert.DeserializeObject<string[]>(tbaContent);
+            Console.Write(tbaContent);
+            try
+            {
+                var matches = Match.FromJson(tbaContent);
+            }
+            catch
+            {
+                throw;
+            }
             List<string> newMatchNames = new List<string>();
             List<Tuple<string, int>> qm = new List<Tuple<string, int>>(); // Qualification matches
             List<Tuple<string, int, int>> qf = new List<Tuple<string, int, int>>(); // Qualification matches
             List<Tuple<string, int, int>> sf = new List<Tuple<string, int, int>>(); // Qualification matches
             List<Tuple<string, int, int>> f = new List<Tuple<string, int, int>>(); // Qualification matches
 
-            foreach (string match in matchKeys)
-            {
-                string newMatch = match.Remove(0, match.IndexOf("_"));
-                string type = null;
-                string matchNo = null;
-                string finalNo = null;
+            //foreach (Match match in matchKeys)
+            //{
+            //    string newMatch = match.Remove(0, match.IndexOf("_"));
+            //    string type = null;
+            //    string matchNo = null;
+            //    string finalNo = null;
 
-                if (newMatch.Contains("qm")) { type = "Qualification"; }
-                else if (newMatch.Contains("qf")) { type = "Quarterfinal"; finalNo = newMatch.Substring(newMatch.IndexOf("qf") + 2, newMatch.IndexOf("m") - 3); }
-                else if (newMatch.Contains("sf")) { type = "Semifinal"; finalNo = newMatch.Substring(newMatch.IndexOf("sf") + 2, newMatch.IndexOf("m") - 3); }
-                else if (newMatch.Contains("f")) { type = "Final"; finalNo = newMatch.Substring(newMatch.IndexOf("f") + 1, newMatch.IndexOf("m") - 2); }
+            //    if (newMatch.Contains("qm")) { type = "Qualification"; }
+            //    else if (newMatch.Contains("qf")) { type = "Quarterfinal"; finalNo = newMatch.Substring(newMatch.IndexOf("qf") + 2, newMatch.IndexOf("m") - 3); }
+            //    else if (newMatch.Contains("sf")) { type = "Semifinal"; finalNo = newMatch.Substring(newMatch.IndexOf("sf") + 2, newMatch.IndexOf("m") - 3); }
+            //    else if (newMatch.Contains("f")) { type = "Final"; finalNo = newMatch.Substring(newMatch.IndexOf("f") + 1, newMatch.IndexOf("m") - 2); }
 
-                matchNo = newMatch.Substring(newMatch.IndexOf("m") + 1);
+            //    matchNo = newMatch.Substring(newMatch.IndexOf("m") + 1);
 
-                if (type == "Qualification")
-                {
-                    newMatch = string.Format("{0} {1}", type, matchNo);
-                }
-                else
-                {
-                    newMatch = string.Format("{0} {1} {2} {3}", type, finalNo, "Match", matchNo);
-                }
+            //    if (type == "Qualification")
+            //    {
+            //        newMatch = string.Format("{0} {1}", type, matchNo);
+            //    }
+            //    else
+            //    {
+            //        newMatch = string.Format("{0} {1} {2} {3}", type, finalNo, "Match", matchNo);
+            //    }
 
-                switch (type)
-                {
-                    case "Qualification":
-                        qm.Add(new Tuple<string, int>(newMatch, Convert.ToInt16(matchNo)));
-                        break;
-                    case "Quarterfinal":
-                        qf.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(finalNo), Convert.ToInt16(matchNo)));
-                        break;
-                    case "Semifinal":
-                        sf.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(finalNo), Convert.ToInt16(matchNo)));
-                        break;
-                    case "Final":
-                        f.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(finalNo), Convert.ToInt16(matchNo)));
-                        break;
+            //    switch (type)
+            //    {
+            //        case "Qualification":
+            //            qm.Add(new Tuple<string, int>(newMatch, Convert.ToInt16(matchNo)));
+            //            break;
+            //        case "Quarterfinal":
+            //            qf.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(finalNo), Convert.ToInt16(matchNo)));
+            //            break;
+            //        case "Semifinal":
+            //            sf.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(finalNo), Convert.ToInt16(matchNo)));
+            //            break;
+            //        case "Final":
+            //            f.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(finalNo), Convert.ToInt16(matchNo)));
+            //            break;
 
-                    default:
-                        break;
-                }
+            //        default:
+            //            break;
+            //    }
 
-                newMatchNames.Add(newMatch);
-            }
-            qm = qm.OrderBy(t => t.Item2).ToList();
-            qf = qf.OrderBy(t => t.Item3).ToList();
-            sf = sf.OrderBy(t => t.Item3).ToList();
-            f = f.OrderBy(t => t.Item3).ToList();
+            //    newMatchNames.Add(newMatch);
+            //}
+            //qm = qm.OrderBy(t => t.Item2).ToList();
+            //qf = qf.OrderBy(t => t.Item3).ToList();
+            //sf = sf.OrderBy(t => t.Item3).ToList();
+            //f = f.OrderBy(t => t.Item3).ToList();
         }
 
         private void chkReplay_CheckedChanged(object sender, EventArgs e)
@@ -652,7 +674,7 @@ namespace FIRSTWA_Recorder
             Console.WriteLine(currentMatchKey);
 
             RestClient tbaClient = new RestClient("http://www.thebluealliance.com/api/v3");
-            RestRequest tbaRequest = new RestRequest(string.Format("match/{0}", currentMatchKey), Method.GET);
+            RestRequest tbaRequest = new RestRequest(string.Format("event/{0}/matches", currentEvent.key), Method.GET);
 
             tbaRequest.AddHeader
             (
@@ -695,6 +717,8 @@ namespace FIRSTWA_Recorder
                 dlProgram.Write("ping");
                 Console.WriteLine(dlProgram.Read());
                 btnStartRecording.Enabled = true;
+                groupEvent.Enabled = true;
+                groupMatch.Enabled = true;
                 btnConnectProgram.BackColor = Color.Green;
             }
             catch
@@ -712,72 +736,136 @@ namespace FIRSTWA_Recorder
                 dlProgram.Write("ping");
                 Console.WriteLine(dlWide.Read());
                 btnStartRecording.Enabled = true;
-                btnConnectProgram.BackColor = Color.Green;
+                groupEvent.Enabled = true;
+                groupMatch.Enabled = true;
+                btnConnectWide.BackColor = Color.Green;
             }
             catch
             {
                 MessageBox.Show(string.Format("Could not connect to the Wide recorder\nat the IP address: {0}", strIPAddressPROGRAM));
             }
         }
-        
-        private void bgWorker_FTP_DoWork(object sender, DoWorkEventArgs e)
+
+        private void bgWorker_FTP_Wide_DoWork(object sender, DoWorkEventArgs e)
         {
-            List<string> URIs = new List<string>();
-            List<string> FilePaths = new List<string>();
-            List<string> FileNames = new List<string>();
-            string programURI = string.Format("ftp://{0}/1", strIPAddressPROGRAM);
+            progress++;
+            SetProgress(progress);
             string wideURI = string.Format("ftp://{0}/1", strIPAddressWIDE);
-            string programPath = string.Format("ftp://{0}/2019/{1}/PROGRAM", strIPAddressPC, currentEvent.short_name);
             string widePath = string.Format("ftp://{0}/2019/{1}/WIDE", strIPAddressPC, currentEvent.short_name);
 
-            URIs.Add(programURI);
-            URIs.Add(wideURI);
-            
-            CreateEventDirectory(programPath);
             CreateEventDirectory(widePath);
+            List<string> directories = GetFTPFiles(wideURI);
+            List<DateTime> timestamps = new List<DateTime>();
+            List<string> fileNames = new List<string>();
 
-            FilePaths.Add(programPath);
-            FilePaths.Add(widePath);
+            Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
+            RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
 
-            FileNames.Add(fileNameProgram);
-            FileNames.Add(fileNameWide);
-
-            for (int i = 0; i < URIs.Count; i++)
+            foreach (string file in directories)
             {
-                List<string> directories = GetFTPFiles(URIs[i]);
-                List<DateTime> timestamps = new List<DateTime>();
-                List<string> fileNames = new List<string>();
+                System.Text.RegularExpressions.Match match = regex.Match(file);
+                Console.WriteLine(match.Groups[5].ToString());
+                timestamps.Add(DateTime.Parse(match.Groups[5].ToString()));
+                fileNames.Add(match.Groups[6].ToString());
+            }
 
-                Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
-                RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+            if (directories.Count > 5)
+            {
+                DeleteFTPFile(wideURI, fileNames[timestamps.IndexOf(timestamps.Min())]);
+
+                directories = GetFTPFiles(wideURI);
 
                 foreach (string file in directories)
                 {
-                    System.Text.RegularExpressions.Match match = regex.Match(file);
-                    Console.WriteLine(match.Groups[5].ToString());
-                    timestamps.Add(DateTime.Parse(match.Groups[5].ToString()));
-                    fileNames.Add(match.Groups[6].ToString());
+                    Console.WriteLine(file);
                 }
+            }
+            progress++;
+            SetProgress(progress);
+            string tempFile = @"C:\Temp\temp_Wide.mp4";
+            CopyFTPFile(wideURI, widePath, fileNames[timestamps.IndexOf(timestamps.Max())], fileNameWide, tempFile);
+            progress++;
+            SetProgress(progress);
+            File.Delete(tempFile);
+            Console.WriteLine("Wide: Done!");
+            Console.WriteLine("Wide: Progress = " + progress);
+        }
 
-                if (directories.Count > 5)
+        private void bgWorker_FTP_Program_DoWork(object sender, DoWorkEventArgs e)
+        {
+            progress++;
+            SetProgress(progress);
+            string programURI = string.Format("ftp://{0}/1", strIPAddressPROGRAM);
+            string programPath = string.Format("ftp://{0}/2019/{1}/PROGRAM", strIPAddressPC, currentEvent.short_name);
+
+            CreateEventDirectory(programPath);
+            List<string> directories = GetFTPFiles(programURI);
+            List<DateTime> timestamps = new List<DateTime>();
+            List<string> fileNames = new List<string>();
+
+            Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
+            RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+
+            foreach (string file in directories)
+            {
+                System.Text.RegularExpressions.Match match = regex.Match(file);
+                Console.WriteLine(match.Groups[5].ToString());
+                timestamps.Add(DateTime.Parse(match.Groups[5].ToString()));
+                fileNames.Add(match.Groups[6].ToString());
+            }
+
+            if (directories.Count > 5)
+            {
+                while (directories.Count > 5)
                 {
-                    DeleteFTPFile(URIs[i], fileNames[timestamps.IndexOf(timestamps.Min())]);
-
-                    directories = GetFTPFiles(URIs[i]);
+                    DeleteFTPFile(programURI, fileNames[timestamps.IndexOf(timestamps.Min())]);
+                    directories = GetFTPFiles(programURI);
 
                     foreach (string file in directories)
                     {
-                        Console.WriteLine(file);
+                        System.Text.RegularExpressions.Match match = regex.Match(file);
+                        Console.WriteLine(match.Groups[5].ToString());
+                        timestamps.Add(DateTime.Parse(match.Groups[5].ToString()));
+                        fileNames.Add(match.Groups[6].ToString());
                     }
                 }
 
-                CopyFTPFile(URIs[i], FilePaths[i], fileNames[timestamps.IndexOf(timestamps.Max())], FileNames[i]);
-            }
+                directories = GetFTPFiles(programURI);
 
-            File.Delete(@"C:\Temp\temp.mp4");
+                foreach (string file in directories)
+                {
+                    Console.WriteLine(file);
+                }
+            }
+            progress++;
+            SetProgress(progress);
+            string tempFile = @"C:\Temp\temp_Program.mp4";
+            CopyFTPFile(programURI, programPath, fileNames[timestamps.IndexOf(timestamps.Max())], fileNameProgram, tempFile);
+            progress++;
+            SetProgress(progress);
+            File.Delete(tempFile);
+            Console.WriteLine("Program: Done!");
+            Console.WriteLine("Prgram: Progress = " + progress);
         }
 
         delegate void SetTextCallback(string text);
+
+        private void bgWorker_FTP_Program_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (!bgWorker_FTP_Wide.IsBusy)
+            {
+                SetProgress(progressBar1.Maximum);
+            }
+        }
+
+        private void bgWorker_FTP_Wide_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (!bgWorker_FTP_Program.IsBusy)
+            {
+                SetProgress(progressBar1.Maximum);
+            }
+        }
+
         private void SetText(string text)
         {
             // InvokeRequired required compares the thread ID of the
@@ -791,6 +879,23 @@ namespace FIRSTWA_Recorder
             else
             {
                 this.btnUpload.Text = text;
+            }
+        }
+
+        delegate void SetProgressCallback(int progress);
+        private void SetProgress(int progress)
+        {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (this.progressBar1.InvokeRequired)
+            {
+                SetProgressCallback d = new SetProgressCallback(SetProgress);
+                this.Invoke(d, new object[] { progress });
+            }
+            else
+            {
+                this.progressBar1.Value = progress;
             }
         }
     }
