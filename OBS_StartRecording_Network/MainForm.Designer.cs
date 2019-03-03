@@ -36,7 +36,6 @@
             this.radioBtnSemi = new System.Windows.Forms.RadioButton();
             this.radioBtnFinal = new System.Windows.Forms.RadioButton();
             this.groupMatchTypes = new System.Windows.Forms.GroupBox();
-            this.radioBtnPractice = new System.Windows.Forms.RadioButton();
             this.numMatchNumber = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -45,8 +44,6 @@
             this.uploadsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label3 = new System.Windows.Forms.Label();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.chkReplay = new System.Windows.Forms.CheckBox();
-            this.numReplayNumber = new System.Windows.Forms.NumericUpDown();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.groupEvent = new System.Windows.Forms.GroupBox();
             this.comboEventName = new System.Windows.Forms.ComboBox();
@@ -77,10 +74,14 @@
             this.bgWorker_FTP_Program = new System.ComponentModel.BackgroundWorker();
             this.bgWorker_FTP_Wide = new System.ComponentModel.BackgroundWorker();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.ledProgram = new System.Windows.Forms.Panel();
+            this.lblProgramReady = new System.Windows.Forms.Label();
+            this.lblWideReady = new System.Windows.Forms.Label();
+            this.ledWide = new System.Windows.Forms.Panel();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.groupMatchTypes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).BeginInit();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numReplayNumber)).BeginInit();
             this.groupEvent.SuspendLayout();
             this.groupMatch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFinalNo)).BeginInit();
@@ -117,11 +118,13 @@
             // radioBtnQual
             // 
             this.radioBtnQual.AutoSize = true;
-            this.radioBtnQual.Location = new System.Drawing.Point(139, 35);
+            this.radioBtnQual.Checked = true;
+            this.radioBtnQual.Location = new System.Drawing.Point(12, 35);
             this.radioBtnQual.Margin = new System.Windows.Forms.Padding(6);
             this.radioBtnQual.Name = "radioBtnQual";
             this.radioBtnQual.Size = new System.Drawing.Size(144, 29);
             this.radioBtnQual.TabIndex = 2;
+            this.radioBtnQual.TabStop = true;
             this.radioBtnQual.Text = "Qualification";
             this.radioBtnQual.UseVisualStyleBackColor = true;
             this.radioBtnQual.CheckedChanged += new System.EventHandler(this.radioBtnMatchType_CheckedChanged);
@@ -129,7 +132,7 @@
             // radioBtnQuarter
             // 
             this.radioBtnQuarter.AutoSize = true;
-            this.radioBtnQuarter.Location = new System.Drawing.Point(303, 35);
+            this.radioBtnQuarter.Location = new System.Drawing.Point(171, 35);
             this.radioBtnQuarter.Margin = new System.Windows.Forms.Padding(6);
             this.radioBtnQuarter.Name = "radioBtnQuarter";
             this.radioBtnQuarter.Size = new System.Drawing.Size(138, 29);
@@ -141,7 +144,7 @@
             // radioBtnSemi
             // 
             this.radioBtnSemi.AutoSize = true;
-            this.radioBtnSemi.Location = new System.Drawing.Point(458, 35);
+            this.radioBtnSemi.Location = new System.Drawing.Point(332, 35);
             this.radioBtnSemi.Margin = new System.Windows.Forms.Padding(6);
             this.radioBtnSemi.Name = "radioBtnSemi";
             this.radioBtnSemi.Size = new System.Drawing.Size(117, 29);
@@ -153,7 +156,7 @@
             // radioBtnFinal
             // 
             this.radioBtnFinal.AutoSize = true;
-            this.radioBtnFinal.Location = new System.Drawing.Point(592, 35);
+            this.radioBtnFinal.Location = new System.Drawing.Point(461, 34);
             this.radioBtnFinal.Margin = new System.Windows.Forms.Padding(6);
             this.radioBtnFinal.Name = "radioBtnFinal";
             this.radioBtnFinal.Size = new System.Drawing.Size(79, 29);
@@ -164,7 +167,6 @@
             // 
             // groupMatchTypes
             // 
-            this.groupMatchTypes.Controls.Add(this.radioBtnPractice);
             this.groupMatchTypes.Controls.Add(this.radioBtnQual);
             this.groupMatchTypes.Controls.Add(this.radioBtnFinal);
             this.groupMatchTypes.Controls.Add(this.radioBtnSemi);
@@ -178,23 +180,9 @@
             this.groupMatchTypes.TabStop = false;
             this.groupMatchTypes.Text = "Match Type";
             // 
-            // radioBtnPractice
-            // 
-            this.radioBtnPractice.AutoSize = true;
-            this.radioBtnPractice.Checked = true;
-            this.radioBtnPractice.Location = new System.Drawing.Point(11, 35);
-            this.radioBtnPractice.Margin = new System.Windows.Forms.Padding(6);
-            this.radioBtnPractice.Name = "radioBtnPractice";
-            this.radioBtnPractice.Size = new System.Drawing.Size(107, 29);
-            this.radioBtnPractice.TabIndex = 2;
-            this.radioBtnPractice.TabStop = true;
-            this.radioBtnPractice.Text = "Practice";
-            this.radioBtnPractice.UseVisualStyleBackColor = true;
-            this.radioBtnPractice.CheckedChanged += new System.EventHandler(this.radioBtnMatchType_CheckedChanged);
-            // 
             // numMatchNumber
             // 
-            this.numMatchNumber.Location = new System.Drawing.Point(127, 120);
+            this.numMatchNumber.Location = new System.Drawing.Point(125, 124);
             this.numMatchNumber.Margin = new System.Windows.Forms.Padding(6);
             this.numMatchNumber.Maximum = new decimal(new int[] {
             200,
@@ -233,7 +221,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(11, 4, 0, 4);
-            this.menuStrip1.Size = new System.Drawing.Size(763, 42);
+            this.menuStrip1.Size = new System.Drawing.Size(758, 42);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "Menu Strip";
             // 
@@ -255,8 +243,9 @@
             // 
             // uploadsToolStripMenuItem
             // 
+            this.uploadsToolStripMenuItem.Enabled = false;
             this.uploadsToolStripMenuItem.Name = "uploadsToolStripMenuItem";
-            this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(199, 34);
+            this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(288, 34);
             this.uploadsToolStripMenuItem.Text = "Uploading";
             // 
             // label3
@@ -268,42 +257,6 @@
             this.label3.Size = new System.Drawing.Size(125, 25);
             this.label3.TabIndex = 9;
             this.label3.Text = "Event Name:";
-            // 
-            // chkReplay
-            // 
-            this.chkReplay.AutoSize = true;
-            this.chkReplay.Location = new System.Drawing.Point(469, 122);
-            this.chkReplay.Margin = new System.Windows.Forms.Padding(6);
-            this.chkReplay.Name = "chkReplay";
-            this.chkReplay.Size = new System.Drawing.Size(98, 29);
-            this.chkReplay.TabIndex = 11;
-            this.chkReplay.Text = "Replay";
-            this.chkReplay.UseVisualStyleBackColor = true;
-            this.chkReplay.CheckedChanged += new System.EventHandler(this.chkReplay_CheckedChanged);
-            // 
-            // numReplayNumber
-            // 
-            this.numReplayNumber.Location = new System.Drawing.Point(589, 120);
-            this.numReplayNumber.Margin = new System.Windows.Forms.Padding(6);
-            this.numReplayNumber.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.numReplayNumber.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numReplayNumber.Name = "numReplayNumber";
-            this.numReplayNumber.Size = new System.Drawing.Size(95, 29);
-            this.numReplayNumber.TabIndex = 6;
-            this.numReplayNumber.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numReplayNumber.ValueChanged += new System.EventHandler(this.numReplayNumber_ValueChanged);
             // 
             // folderBrowserDialog1
             // 
@@ -326,11 +279,12 @@
             // 
             // comboEventName
             // 
+            this.comboEventName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboEventName.FormattingEnabled = true;
             this.comboEventName.Location = new System.Drawing.Point(156, 46);
             this.comboEventName.Margin = new System.Windows.Forms.Padding(6);
             this.comboEventName.Name = "comboEventName";
-            this.comboEventName.Size = new System.Drawing.Size(450, 32);
+            this.comboEventName.Size = new System.Drawing.Size(548, 32);
             this.comboEventName.TabIndex = 12;
             this.comboEventName.SelectedIndexChanged += new System.EventHandler(this.comboEventName_SelectedIndexChanged);
             // 
@@ -365,8 +319,6 @@
             this.groupMatch.Controls.Add(this.groupMatchTypes);
             this.groupMatch.Controls.Add(this.numFinalNo);
             this.groupMatch.Controls.Add(this.numMatchNumber);
-            this.groupMatch.Controls.Add(this.chkReplay);
-            this.groupMatch.Controls.Add(this.numReplayNumber);
             this.groupMatch.Controls.Add(this.lblFinalNo);
             this.groupMatch.Controls.Add(this.label2);
             this.groupMatch.Location = new System.Drawing.Point(22, 338);
@@ -629,13 +581,64 @@
             this.progressBar1.Size = new System.Drawing.Size(717, 48);
             this.progressBar1.TabIndex = 27;
             // 
+            // ledProgram
+            // 
+            this.ledProgram.BackColor = System.Drawing.Color.Red;
+            this.ledProgram.Location = new System.Drawing.Point(127, 647);
+            this.ledProgram.Name = "ledProgram";
+            this.ledProgram.Size = new System.Drawing.Size(62, 29);
+            this.ledProgram.TabIndex = 28;
+            // 
+            // lblProgramReady
+            // 
+            this.lblProgramReady.AutoSize = true;
+            this.lblProgramReady.Location = new System.Drawing.Point(28, 651);
+            this.lblProgramReady.Name = "lblProgramReady";
+            this.lblProgramReady.Size = new System.Drawing.Size(92, 25);
+            this.lblProgramReady.TabIndex = 29;
+            this.lblProgramReady.Text = "Program:";
+            // 
+            // lblWideReady
+            // 
+            this.lblWideReady.AutoSize = true;
+            this.lblWideReady.Location = new System.Drawing.Point(607, 651);
+            this.lblWideReady.Name = "lblWideReady";
+            this.lblWideReady.Size = new System.Drawing.Size(64, 25);
+            this.lblWideReady.TabIndex = 31;
+            this.lblWideReady.Text = "Wide:";
+            // 
+            // ledWide
+            // 
+            this.ledWide.BackColor = System.Drawing.Color.Red;
+            this.ledWide.Location = new System.Drawing.Point(677, 647);
+            this.ledWide.Name = "ledWide";
+            this.ledWide.Size = new System.Drawing.Size(62, 29);
+            this.ledWide.TabIndex = 30;
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.BackColor = System.Drawing.Color.Red;
+            this.btnCancel.Enabled = false;
+            this.btnCancel.Location = new System.Drawing.Point(265, 756);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(217, 62);
+            this.btnCancel.TabIndex = 32;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = false;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
             // MainForm
             // 
             this.AcceptButton = this.btnStartRecording;
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
-            this.ClientSize = new System.Drawing.Size(763, 763);
+            this.ClientSize = new System.Drawing.Size(758, 830);
+            this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.lblWideReady);
+            this.Controls.Add(this.ledWide);
+            this.Controls.Add(this.lblProgramReady);
+            this.Controls.Add(this.ledProgram);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.btnGetMatchDetails);
             this.Controls.Add(this.groupMatchDetails);
@@ -660,7 +663,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numReplayNumber)).EndInit();
             this.groupEvent.ResumeLayout(false);
             this.groupEvent.PerformLayout();
             this.groupMatch.ResumeLayout(false);
@@ -688,11 +690,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
-        private System.Windows.Forms.RadioButton radioBtnPractice;
         private System.Windows.Forms.Label label3;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private System.Windows.Forms.CheckBox chkReplay;
-        private System.Windows.Forms.NumericUpDown numReplayNumber;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.GroupBox groupEvent;
         private System.Windows.Forms.GroupBox groupMatch;
@@ -725,6 +724,11 @@
         private System.ComponentModel.BackgroundWorker bgWorker_FTP_Program;
         private System.ComponentModel.BackgroundWorker bgWorker_FTP_Wide;
         private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Panel ledProgram;
+        private System.Windows.Forms.Label lblProgramReady;
+        private System.Windows.Forms.Label lblWideReady;
+        private System.Windows.Forms.Panel ledWide;
+        private System.Windows.Forms.Button btnCancel;
     }
 }
 

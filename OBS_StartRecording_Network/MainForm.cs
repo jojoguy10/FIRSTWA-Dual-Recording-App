@@ -303,21 +303,18 @@ namespace FIRSTWA_Recorder
             btnStopRecording.Enabled = true;
             SetProgress(0);
             progress = 0;
+            ledProgram.BackColor = Color.Red;
+            ledWide.BackColor = Color.Red;
         }
 
         private void btnStopRecording_Click(object sender, EventArgs e)
         {
+            btnCancel.Enabled = true;
             groupEvent.Enabled = true;
             groupMatch.Enabled = true;
             btnStopRecording.Enabled = false;
 
             timerElapsed.Stop();
-
-            if (chkReplay.Checked)
-            {
-                chkReplay.Checked = false;
-                replay = "";
-            }
 
             dlProgram.Write("stop");
             
@@ -620,30 +617,6 @@ namespace FIRSTWA_Recorder
             //sf = sf.OrderBy(t => t.Item3).ToList();
             //f = f.OrderBy(t => t.Item3).ToList();
         }
-
-        private void chkReplay_CheckedChanged(object sender, EventArgs e)
-        {
-            if(chkReplay.Checked)
-            {
-                replay = " Replay " + numReplayNumber.Value;
-            }
-            else
-            {
-                replay = "";
-            }
-        }
-
-        private void numReplayNumber_ValueChanged(object sender, EventArgs e)
-        {
-            if (chkReplay.Checked)
-            {
-                replay = " Replay " + numReplayNumber.Value;
-            }
-            else
-            {
-                replay = "";
-            }
-        }
         
         private async Task GetMatchDetails()
         {
@@ -718,7 +691,6 @@ namespace FIRSTWA_Recorder
                 Console.WriteLine(dlProgram.Read());
                 btnStartRecording.Enabled = true;
                 groupEvent.Enabled = true;
-                groupMatch.Enabled = true;
                 btnConnectProgram.BackColor = Color.Green;
             }
             catch
@@ -737,7 +709,6 @@ namespace FIRSTWA_Recorder
                 Console.WriteLine(dlWide.Read());
                 btnStartRecording.Enabled = true;
                 groupEvent.Enabled = true;
-                groupMatch.Enabled = true;
                 btnConnectWide.BackColor = Color.Green;
             }
             catch
@@ -789,6 +760,7 @@ namespace FIRSTWA_Recorder
             File.Delete(tempFile);
             Console.WriteLine("Wide: Done!");
             Console.WriteLine("Wide: Progress = " + progress);
+            ledWide.BackColor = Color.Green;
         }
 
         private void bgWorker_FTP_Program_DoWork(object sender, DoWorkEventArgs e)
@@ -846,6 +818,7 @@ namespace FIRSTWA_Recorder
             File.Delete(tempFile);
             Console.WriteLine("Program: Done!");
             Console.WriteLine("Prgram: Progress = " + progress);
+            ledProgram.BackColor = Color.Green;
         }
 
         delegate void SetTextCallback(string text);
@@ -864,6 +837,25 @@ namespace FIRSTWA_Recorder
             {
                 SetProgress(progressBar1.Maximum);
             }
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            DialogResult r = MessageBox.Show("WARNING!  This operation will ccancel the file copy process!\n\nDo you want to continue?", "Warning!", MessageBoxButtons.YesNo);
+
+            if (r == DialogResult.Yes)
+            {
+                if (bgWorker_FTP_Program.IsBusy)
+                {
+                    bgWorker_FTP_Program.CancelAsync();
+                }
+
+                if (bgWorker_FTP_Wide.IsBusy)
+                {
+                    bgWorker_FTP_Wide.CancelAsync();
+                }
+            }
+            btnCancel.Enabled = false;
         }
 
         private void SetText(string text)
