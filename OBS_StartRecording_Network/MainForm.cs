@@ -54,7 +54,7 @@ namespace FIRSTWA_Recorder
         Match currentMatch;
         string matchKey;
 
-        Match matchKeys;
+        Match[] matches;
 
         private string strIPAddressPC = @"192.168.100.70";
         private string strIPAddressPROGRAM = @"192.168.100.35";
@@ -85,13 +85,12 @@ namespace FIRSTWA_Recorder
 
         enum MatchType
         {
-            Practice,
             Qualification,
             Quarterfinal,
             Semifinal,
             Final
         }
-        MatchType currentMatchType = MatchType.Practice;
+        MatchType currentMatchType = MatchType.Qualification;
 
         public MainForm()
         {
@@ -220,35 +219,38 @@ namespace FIRSTWA_Recorder
 
             groupEvent.Enabled = false;
             groupMatch.Enabled = false;
+            string matchAbrev = "qm";
             
             if (chkProgramRecord.Checked)
             {
-                dlProgram.Write("record");
+                //dlProgram.Write("record");
 
                 string matchType, matchNumber;
                 switch (currentMatchType)
                 {
-                    case MatchType.Practice:
-                        matchType = "Practice";
-                        break;
                     case MatchType.Qualification:
                         matchType = "Qual";
+                        matchAbrev = "qm";
                         break;
                     case MatchType.Quarterfinal:
                         matchType = "Quarterfinal";
+                        matchAbrev = "qf";
                         break;
                     case MatchType.Semifinal:
                         matchType = "Semifinal";
+                        matchAbrev = "sf";
                         break;
                     case MatchType.Final:
                         matchType = "Final";
+                        matchAbrev = "f";
                         break;
                     default:
                         matchType = "";
+                        matchAbrev = "";
                         break;
                 }
 
-                if (currentMatchType == MatchType.Practice || currentMatchType == MatchType.Qualification)
+                if (currentMatchType == MatchType.Qualification)
                 {
                     matchNumber = numMatchNumber.Value.ToString();
                 }
@@ -257,19 +259,19 @@ namespace FIRSTWA_Recorder
                     matchNumber = string.Format("{0}-{1}", numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
                 }
 
-                fileNameProgram = string.Format("{0} {1} {2} {3}.mp4", currentEvent.year, currentEvent.name, matchType, matchNumber);
+                string matchNameProgram = string.Format("{0} {1} {2} {3}", currentEvent.year, currentEvent.name, matchType, matchNumber);
+                fileNameProgram = matchNameProgram + ".mp4";
+
+                dlProgram.Write("record: name: " + matchNameProgram);
             }
 
             if (chkRecordWide.Checked)
             {
-                dlWide.Write("record");
+                //dlWide.Write("record");
 
                 string matchType, matchNumber;
                 switch (currentMatchType)
                 {
-                    case MatchType.Practice:
-                        matchType = "Practice";
-                        break;
                     case MatchType.Qualification:
                         matchType = "Qual";
                         break;
@@ -287,7 +289,7 @@ namespace FIRSTWA_Recorder
                         break;
                 }
 
-                if (currentMatchType == MatchType.Practice || currentMatchType == MatchType.Qualification)
+                if (currentMatchType == MatchType.Qualification)
                 {
                     matchNumber = numMatchNumber.Value.ToString();
                 }
@@ -296,10 +298,29 @@ namespace FIRSTWA_Recorder
                     matchNumber = string.Format("{0}-{1}", numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
                 }
 
-                fileNameWide = string.Format("{0} {1} WIDE {2} {3}.mp4", currentEvent.year, currentEvent.name, matchType, matchNumber);
+                string matchNameWide = string.Format("{0} {1} WIDE {2} {3}", currentEvent.year, currentEvent.name, matchType, matchNumber);
+                fileNameWide = matchNameWide + ".mp4";
+
+                dlWide.Write("record: name: " + matchNameWide);
+
             }
 
-            GetMatchDetails();
+            foreach (Match match in matches)
+            {
+                if (match.CompLevel.Equals(matchAbrev))
+                {
+                    if (match.MatchNumber == numMatchNumber.Value && match.SetNumber == numFinalNo.Value)
+                    {
+                        currentMatch = match;
+                        break;
+                    }
+                }
+            }
+            if (currentMatch == null)
+            {
+                MessageBox.Show("Match does not exist!");
+                return;
+            }
 
             startTime = DateTime.Now;
             timerElapsed.Start();
@@ -321,7 +342,7 @@ namespace FIRSTWA_Recorder
             timerElapsed.Stop();
 
             dlProgram.Write("stop");
-            
+
             dlWide.Write("stop");
 
             bgWorker_FTP_Program.RunWorkerAsync();
@@ -331,37 +352,37 @@ namespace FIRSTWA_Recorder
 
             numMatchNumber.Value++;
 
-            //ytDescription = string.Format("{0} FRC {1} Week #{2}\n" +
-            //                "Red Alliance: {3} {4} {5}\n" +
-            //                "Blue Alliance: {6} {7} {8}\n\n" +
-            //                "Footage of the {0} FRC {1} is coutesy of the FIRST Washington A/V Crew\n\n" +
-            //                //"To view match schedules and results for this event, visit the FRC Event Results Portal:\n" +
-            //                //"{9}\n\n" +
-            //                "Folow the PNW District social media accounts for updates throughout the season!\n" +
-            //                "Facebook: Washington FIRST Robotics / OregonFRC\n" +
-            //                "Twitter: @first_wa / @OregonRobotics\n" +
-            //                "Youtube: Washington FIRST Robotics\n\n" +
-            //                "For more information and future event schedules, visit our websites:\n" +
-            //                "http://www.firstwa.org | http://www.oregonfirst.org \n\n" +
-            //                "Thanks for watching!",
-            //                currentEvent.year,
-            //                currentEvent.name,
-            //                currentEvent.week + 1,
-            //                currentMatch.Alliances.Red.TeamKeys[0].ToString().Substring(3),
-            //                currentMatch.Alliances.Red.TeamKeys[1].ToString().Substring(3),
-            //                currentMatch.Alliances.Red.TeamKeys[2].ToString().Substring(3),
-            //                currentMatch.Alliances.Blue.TeamKeys[0].ToString().Substring(3),
-            //                currentMatch.Alliances.Blue.TeamKeys[1].ToString().Substring(3),
-            //                currentMatch.Alliances.Blue.TeamKeys[2].ToString().Substring(3));
+            ytDescription = string.Format("{0} FRC {1} Week #{2}\n" +
+                            "Red Alliance: {3} {4} {5}\n" +
+                            "Blue Alliance: {6} {7} {8}\n\n" +
+                            "Footage of the {0} FRC {1} is coutesy of the FIRST Washington A/V Crew\n\n" +
+                            //"To view match schedules and results for this event, visit the FRC Event Results Portal:\n" +
+                            //"{9}\n\n" +
+                            "Folow the PNW District social media accounts for updates throughout the season!\n" +
+                            "Facebook: Washington FIRST Robotics / OregonFRC\n" +
+                            "Twitter: @first_wa / @OregonRobotics\n" +
+                            "Youtube: Washington FIRST Robotics\n\n" +
+                            "For more information and future event schedules, visit our websites:\n" +
+                            "http://www.firstwa.org | http://www.oregonfirst.org \n\n" +
+                            "Thanks for watching!",
+                            currentEvent.year,
+                            currentEvent.name,
+                            currentEvent.week + 1,
+                            currentMatch.Alliances.Red.TeamKeys[0].ToString().Substring(3),
+                            currentMatch.Alliances.Red.TeamKeys[1].ToString().Substring(3),
+                            currentMatch.Alliances.Red.TeamKeys[2].ToString().Substring(3),
+                            currentMatch.Alliances.Blue.TeamKeys[0].ToString().Substring(3),
+                            currentMatch.Alliances.Blue.TeamKeys[1].ToString().Substring(3),
+                            currentMatch.Alliances.Blue.TeamKeys[2].ToString().Substring(3));
 
-            //ytTags = "first,robotics,frc," + currentEvent.year.ToString() + "," + currentEvent.event_code;
+            ytTags = "first,robotics,frc," + currentEvent.year.ToString() + "," + currentEvent.event_code;
 
-            //YoutubeUpload ytForm = new YoutubeUpload(
-            //                        fileNameProgram.Replace(".mp4",""), 
-            //                        fileNameWide.Replace(".mp4",""), 
-            //                        ytDescription, 
-            //                        ytTags);
-            //ytForm.ShowDialog();
+            YoutubeUpload ytForm = new YoutubeUpload(
+                                    fileNameProgram.Replace(".mp4", ""),
+                                    fileNameWide.Replace(".mp4", ""),
+                                    ytDescription,
+                                    ytTags);
+            ytForm.ShowDialog();
         }
 
         private void CreateEventDirectory(string uriPath)
@@ -493,11 +514,6 @@ namespace FIRSTWA_Recorder
             {
                 switch (btn.Text)
                 {
-                    case "Practice":
-                        currentMatchType = MatchType.Practice;
-                        lblFinalNo.Visible = false;
-                        numFinalNo.Visible = false;
-                        break;
                     case "Qualification":
                         currentMatchType = MatchType.Qualification;
                         lblFinalNo.Visible = false;
@@ -544,7 +560,7 @@ namespace FIRSTWA_Recorder
                     programVideoTitle = currentEvent.year + " " + currentEvent.name + " " + matchType + " " + numMatchNumber.Value + replay;
                     wideVideoTitle = currentEvent.year + " " + currentEvent.name + " WIDE " + matchType + " " + numMatchNumber.Value + replay;
                     Console.WriteLine(currentEvent.name);
-                    //GetMatches();
+                    GetMatches();
                     groupMatch.Enabled = true;
                 }
             }
@@ -552,7 +568,6 @@ namespace FIRSTWA_Recorder
 
         private async Task GetMatches()
         {
-
             tbaRequest = new RestRequest(string.Format("event/{0}/matches/simple", currentEvent.key), Method.GET);
 
             tbaRequest.AddHeader
@@ -563,34 +578,26 @@ namespace FIRSTWA_Recorder
 
             IRestResponse tbaResponse = tbaClient.Execute(tbaRequest);
             string tbaContent = tbaResponse.Content;
-            Console.Write(tbaContent);
-            try
-            {
-                var matches = Match.FromJson(tbaContent);
-            }
-            catch
-            {
-                throw;
-            }
-            List<string> newMatchNames = new List<string>();
-            List<Tuple<string, int>> qm = new List<Tuple<string, int>>(); // Qualification matches
-            List<Tuple<string, int, int>> qf = new List<Tuple<string, int, int>>(); // Qualification matches
-            List<Tuple<string, int, int>> sf = new List<Tuple<string, int, int>>(); // Qualification matches
-            List<Tuple<string, int, int>> f = new List<Tuple<string, int, int>>(); // Qualification matches
+            matches = JsonConvert.DeserializeObject<Match[]>(tbaContent);
+            Console.WriteLine("Done");
+            //List<string> newMatchNames = new List<string>();
+            //List<Tuple<string, int>> qm = new List<Tuple<string, int>>(); // Qualification matches
+            //List<Tuple<string, int, int>> qf = new List<Tuple<string, int, int>>(); // Qualification matches
+            //List<Tuple<string, int, int>> sf = new List<Tuple<string, int, int>>(); // Qualification matches
+            //List<Tuple<string, int, int>> f = new List<Tuple<string, int, int>>(); // Qualification matches
 
-            //foreach (Match match in matchKeys)
+            //foreach (Match match in matches)
             //{
-            //    string newMatch = match.Remove(0, match.IndexOf("_"));
             //    string type = null;
-            //    string matchNo = null;
-            //    string finalNo = null;
+            //    int matchNo = 0;
+            //    int setNo = 0;
 
-            //    if (newMatch.Contains("qm")) { type = "Qualification"; }
-            //    else if (newMatch.Contains("qf")) { type = "Quarterfinal"; finalNo = newMatch.Substring(newMatch.IndexOf("qf") + 2, newMatch.IndexOf("m") - 3); }
-            //    else if (newMatch.Contains("sf")) { type = "Semifinal"; finalNo = newMatch.Substring(newMatch.IndexOf("sf") + 2, newMatch.IndexOf("m") - 3); }
-            //    else if (newMatch.Contains("f")) { type = "Final"; finalNo = newMatch.Substring(newMatch.IndexOf("f") + 1, newMatch.IndexOf("m") - 2); }
+            //    if (match.CompLevel.Equals("qm")) { type = "Qualification"; }
+            //    else if (match.CompLevel.Equals("qf")) { type = "Quarterfinal"; setNo = match.SetNumber; }
+            //    else if (match.CompLevel.Equals("sf")) { type = "Semifinal"; setNo = match.SetNumber; }
+            //    else if (match.CompLevel.Equals("f")) { type = "Final"; setNo = match.SetNumber; }
 
-            //    matchNo = newMatch.Substring(newMatch.IndexOf("m") + 1);
+            //    matchNo = match.MatchNumber;
 
             //    if (type == "Qualification")
             //    {
@@ -598,7 +605,7 @@ namespace FIRSTWA_Recorder
             //    }
             //    else
             //    {
-            //        newMatch = string.Format("{0} {1} {2} {3}", type, finalNo, "Match", matchNo);
+            //        newMatch = string.Format("{0} {1} {2} {3}", type, setNo, "Match", matchNo);
             //    }
 
             //    switch (type)
@@ -607,13 +614,13 @@ namespace FIRSTWA_Recorder
             //            qm.Add(new Tuple<string, int>(newMatch, Convert.ToInt16(matchNo)));
             //            break;
             //        case "Quarterfinal":
-            //            qf.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(finalNo), Convert.ToInt16(matchNo)));
+            //            qf.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(setNo), Convert.ToInt16(matchNo)));
             //            break;
             //        case "Semifinal":
-            //            sf.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(finalNo), Convert.ToInt16(matchNo)));
+            //            sf.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(setNo), Convert.ToInt16(matchNo)));
             //            break;
             //        case "Final":
-            //            f.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(finalNo), Convert.ToInt16(matchNo)));
+            //            f.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(setNo), Convert.ToInt16(matchNo)));
             //            break;
 
             //        default:
@@ -637,8 +644,6 @@ namespace FIRSTWA_Recorder
             string currentMatchKey = "";
             switch (currentMatchType)
             {
-                case MatchType.Practice:
-                    return;
                 case MatchType.Qualification:
                     currentMatchKey = string.Format("{0}_qm{1}", currentEvent.key, numMatchNumber.Value);
                     break;
@@ -866,6 +871,11 @@ namespace FIRSTWA_Recorder
                 }
             }
             btnCancel.Enabled = false;
+        }
+
+        private void btnOpenRecordings_Click(object sender, EventArgs e)
+        {
+            
         }
 
         private void SetText(string text)

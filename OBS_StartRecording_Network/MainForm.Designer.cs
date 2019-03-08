@@ -221,7 +221,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(11, 4, 0, 4);
-            this.menuStrip1.Size = new System.Drawing.Size(758, 42);
+            this.menuStrip1.Size = new System.Drawing.Size(771, 42);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "Menu Strip";
             // 
@@ -245,7 +245,7 @@
             // 
             this.uploadsToolStripMenuItem.Enabled = false;
             this.uploadsToolStripMenuItem.Name = "uploadsToolStripMenuItem";
-            this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(288, 34);
+            this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(199, 34);
             this.uploadsToolStripMenuItem.Text = "Uploading";
             // 
             // label3
@@ -390,6 +390,7 @@
             this.btnOpenRecordings.TabIndex = 18;
             this.btnOpenRecordings.Text = "Open Recordings Folder";
             this.btnOpenRecordings.UseVisualStyleBackColor = true;
+            this.btnOpenRecordings.Click += new System.EventHandler(this.btnOpenRecordings_Click);
             // 
             // btnUpload
             // 
@@ -633,7 +634,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
-            this.ClientSize = new System.Drawing.Size(758, 830);
+            this.ClientSize = new System.Drawing.Size(771, 830);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.lblWideReady);
             this.Controls.Add(this.ledWide);
