@@ -5,7 +5,6 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net.Sockets;
 using OBSWebsocketDotNet;
@@ -20,6 +19,8 @@ using Google.Apis.YouTube.v3.Data;
 using Newtonsoft.Json;
 using System.Net.NetworkInformation;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using System.Reflection;
 using System.Xml.Linq;
 using Microsoft.Win32;
@@ -47,6 +48,7 @@ using System.Threading;
 
 namespace FIRSTWA_Recorder
 {
+
     public partial class MainForm : Form
     {
         RecordingSettings frmRecordingSetting;
@@ -84,8 +86,14 @@ namespace FIRSTWA_Recorder
 
         private DateTime startTime;
 
+        private struct YoutubeTask
+        {
+            string targetRemoteFile;
+        }
+
         private FileInfo credFile = new FileInfo(@"D:\__USER\Documents\GitHub\FIRSTWA_PC_RecordingApplication\FIRSTWA_StartRecording_Network\client_secret_613443767055-pvnp5ugap7kgj1i7rid6in7tnm3podmv.apps.googleusercontent.com.json");
         private Video videoYT;
+        private BufferBlock<YoutubeTask> YoutubeBuffer;
 
         enum MatchType
         {
@@ -204,94 +212,44 @@ namespace FIRSTWA_Recorder
                 return;
             }
 
-            groupEvent.Enabled = false;
-            groupMatch.Enabled = false;
             string matchAbrev = "qm";
-            
-            if (chkProgramRecord.Checked)
+            string matchType;
+            switch (currentMatchType)
             {
-                //dlProgram.Write("record");
-
-                string matchType, matchNumber;
-                switch (currentMatchType)
-                {
-                    case MatchType.Qualification:
-                        matchType = "Qual";
-                        matchAbrev = "qm";
-                        break;
-                    case MatchType.Quarterfinal:
-                        matchType = "Quarterfinal";
-                        matchAbrev = "qf";
-                        break;
-                    case MatchType.Semifinal:
-                        matchType = "Semifinal";
-                        matchAbrev = "sf";
-                        break;
-                    case MatchType.Final:
-                        matchType = "Final";
-                        matchAbrev = "f";
-                        break;
-                    default:
-                        matchType = "";
-                        matchAbrev = "";
-                        break;
-                }
-
-                if (currentMatchType == MatchType.Qualification)
-                {
-                    matchNumber = numMatchNumber.Value.ToString();
-                }
-                else
-                {
-                    matchNumber = string.Format("{0}-{1}", numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
-                }
-
-                matchNameProgram = string.Format("{0} {1} {2} {3}", currentEvent.year, currentEvent.name, matchType, matchNumber);
-                fileNameProgram = matchNameProgram + ".mp4";
-
-                dlProgram.Write("record: name: " + matchNameProgram);
+                case MatchType.Qualification:
+                    matchType = "Qual";
+                    matchAbrev = "qm";
+                    break;
+                case MatchType.Quarterfinal:
+                    matchType = "Quarterfinal";
+                    matchAbrev = "qf";
+                    break;
+                case MatchType.Semifinal:
+                    matchType = "Semifinal";
+                    matchAbrev = "sf";
+                    break;
+                case MatchType.Final:
+                    matchType = "Final";
+                    matchAbrev = "f";
+                    break;
+                default:
+                    matchType = "";
+                    matchAbrev = "";
+                    break;
             }
 
-            if (chkRecordWide.Checked)
+            string matchNumber;
+
+            if (currentMatchType == MatchType.Qualification || currentMatchType == MatchType.Final)
             {
-                //dlWide.Write("record");
-
-                string matchType, matchNumber;
-                switch (currentMatchType)
-                {
-                    case MatchType.Qualification:
-                        matchType = "Qual";
-                        break;
-                    case MatchType.Quarterfinal:
-                        matchType = "Quarterfinal";
-                        break;
-                    case MatchType.Semifinal:
-                        matchType = "Semifinal";
-                        break;
-                    case MatchType.Final:
-                        matchType = "Final";
-                        break;
-                    default:
-                        matchType = "";
-                        break;
-                }
-
-                if (currentMatchType == MatchType.Qualification)
-                {
-                    matchNumber = numMatchNumber.Value.ToString();
-                }
-                else
-                {
-                    matchNumber = string.Format("{0}-{1}", numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
-                }
-
-                matchNameWide = string.Format("{0} {1} WIDE {2} {3}", currentEvent.year, currentEvent.name, matchType, matchNumber);
-                fileNameWide = matchNameWide + ".mp4";
-
-                dlWide.Write("record: name: " + matchNameWide);
-
+                matchNumber = numMatchNumber.Value.ToString();
+            }
+            else
+            {
+                matchNumber = string.Format("{0}-{1}", numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
             }
 
+            currentMatch = null;
             foreach (Match match in matches)
             {
                 if (match.CompLevel.Equals(matchAbrev))
@@ -305,16 +263,41 @@ namespace FIRSTWA_Recorder
             }
             if (currentMatch == null)
             {
-                MessageBox.Show("Match does not exist!");
-                return;
+                var result = MessageBox.Show("Match does not exist!\n\nDo you want to continue recording?", "Error", MessageBoxButtons.YesNo);
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+            }
+
+            groupEvent.Enabled = false;
+            groupMatch.Enabled = false;
+
+            if (chkProgramRecord.Checked)
+            {
+                matchNameProgram = string.Format("{0} {1} {2} {3}", currentEvent.year, currentEvent.name, matchType, matchNumber);
+                fileNameProgram = matchNameProgram + ".mp4";
+
+                dlProgram.Write("record: name: " + matchNameProgram);
+            }
+
+            if (chkRecordWide.Checked)
+            {
+                matchNameWide = string.Format("{0} {1} WIDE {2} {3}", currentEvent.year, currentEvent.name, matchType, matchNumber);
+                fileNameWide = matchNameWide + ".mp4";
+
+                dlWide.Write("record: name: " + matchNameWide);
             }
 
             startTime = DateTime.Now;
             timerElapsed.Start();
+
             btnStartRecording.Enabled = false;
             btnStopRecording.Enabled = true;
+
             SetProgress(0);
             progress = 0;
+
             ledProgram.BackColor = Color.Red;
             ledWide.BackColor = Color.Red;
         }
@@ -337,39 +320,30 @@ namespace FIRSTWA_Recorder
 
             btnStartRecording.Enabled = true;
 
-            numMatchNumber.Value++;
+            if(currentMatchType == MatchType.Qualification || currentMatchType == MatchType.Final)
+            {
+                if (numMatchNumber.Value < numMatchNumber.Maximum)
+                {
+                    numMatchNumber.Value++;
+                }
+            }
+            else
+            {
+                if(numFinalNo.Value < 4)
+                {
+                    numFinalNo.Value++;
+                }
+                else
+                {
+                    numFinalNo.Value = 1;
+                    if (numMatchNumber.Value < numMatchNumber.Maximum)
+                    {
+                        numMatchNumber.Value++;
+                    }
+                }
+            }
 
-            ytDescription = string.Format("{0} FRC {1} Week #{2}\n" +
-                            "Red Alliance: {3} {4} {5}\n" +
-                            "Blue Alliance: {6} {7} {8}\n\n" +
-                            "Footage of the {0} FRC {1} is coutesy of the FIRST Washington A/V Crew\n\n" +
-                            //"To view match schedules and results for this event, visit the FRC Event Results Portal:\n" +
-                            //"{9}\n\n" +
-                            "Folow the PNW District social media accounts for updates throughout the season!\n" +
-                            "Facebook: Washington FIRST Robotics / OregonFRC\n" +
-                            "Twitter: @first_wa / @OregonRobotics\n" +
-                            "Youtube: Washington FIRST Robotics\n\n" +
-                            "For more information and future event schedules, visit our websites:\n" +
-                            "http://www.firstwa.org | http://www.oregonfirst.org \n\n" +
-                            "Thanks for watching!",
-                            currentEvent.year,
-                            currentEvent.name,
-                            currentEvent.week + 1,
-                            currentMatch.Alliances.Red.TeamKeys[0].ToString().Substring(3),
-                            currentMatch.Alliances.Red.TeamKeys[1].ToString().Substring(3),
-                            currentMatch.Alliances.Red.TeamKeys[2].ToString().Substring(3),
-                            currentMatch.Alliances.Blue.TeamKeys[0].ToString().Substring(3),
-                            currentMatch.Alliances.Blue.TeamKeys[1].ToString().Substring(3),
-                            currentMatch.Alliances.Blue.TeamKeys[2].ToString().Substring(3));
-
-            ytTags = "first,robotics,frc," + currentEvent.year.ToString() + "," + currentEvent.event_code;
-
-            YoutubeUpload ytForm = new YoutubeUpload(
-                                    fileNameProgram.Replace(".mp4", ""),
-                                    fileNameWide.Replace(".mp4", ""),
-                                    ytDescription,
-                                    ytTags);
-            ytForm.ShowDialog();
+            GetMatches();
         }
 
         #region FTP Stuff
@@ -570,25 +544,33 @@ namespace FIRSTWA_Recorder
                         currentMatchType = MatchType.Qualification;
                         lblFinalNo.Visible = false;
                         numFinalNo.Visible = false;
+                        numMatchNumber.Maximum = 200;
                         break;
                     case "Quarterfinal":
                         currentMatchType = MatchType.Quarterfinal;
                         lblFinalNo.Visible = true;
                         numFinalNo.Visible = true;
+                        numMatchNumber.Maximum = 3;
                         break;
                     case "Semifinal":
                         currentMatchType = MatchType.Semifinal;
                         lblFinalNo.Visible = true;
                         numFinalNo.Visible = true;
+                        numMatchNumber.Maximum = 3;
                         break;
                     case "Final":
                         currentMatchType = MatchType.Final;
-                        lblFinalNo.Visible = true;
-                        numFinalNo.Visible = true;
+                        lblFinalNo.Visible = false;
+                        numFinalNo.Visible = false;
+                        numMatchNumber.Maximum = 3;
                         break;
                     default:
                         break;
                 }
+
+                numMatchNumber.Value = 1;
+                numFinalNo.Value = 1;
+
                 Console.WriteLine(currentMatchType);
             }
         }
@@ -783,7 +765,7 @@ namespace FIRSTWA_Recorder
 
             foreach (string file in fileNames)
             {
-                if (file.Contains(currentMatch.MatchNumber.ToString()))
+                if (file.Contains(numMatchNumber.Value.ToString()))
                 {
                     matchIndex = fileNames.IndexOf(file);
                 }
@@ -861,7 +843,7 @@ namespace FIRSTWA_Recorder
 
             foreach (string file in fileNames)
             {
-                if (file.Contains(currentMatch.MatchNumber.ToString()))
+                if (file.Contains(numMatchNumber.Value.ToString()))
                 {
                     matchIndex = fileNames.IndexOf(file);
                 }
@@ -876,11 +858,71 @@ namespace FIRSTWA_Recorder
             ledProgram.BackColor = Color.Green;
         }
 
+        private void launch_youtube()
+        {
+            if (currentMatch != null)
+            {
+                ytDescription = string.Format("{0} FRC {1} Week #{2}\n" +
+                           "Red Alliance: {3} {4} {5}\n" +
+                           "Blue Alliance: {6} {7} {8}\n\n" +
+                           "Footage of the {0} FRC {1} is coutesy of the FIRST Washington A/V Crew\n\n" +
+                           //"To view match schedules and results for this event, visit the FRC Event Results Portal:\n" +
+                           //"{9}\n\n" +
+                           "Folow the PNW District social media accounts for updates throughout the season!\n" +
+                           "Facebook: Washington FIRST Robotics / OregonFRC\n" +
+                           "Twitter: @first_wa / @OregonRobotics\n" +
+                           "Youtube: Washington FIRST Robotics\n\n" +
+                           "For more information and future event schedules, visit our websites:\n" +
+                           "http://www.firstwa.org | http://www.oregonfirst.org \n\n" +
+                           "Thanks for watching!",
+                           currentEvent.year,
+                           currentEvent.name,
+                           currentEvent.week + 1,
+                           currentMatch.Alliances.Red.TeamKeys[0].ToString().Substring(3),
+                           currentMatch.Alliances.Red.TeamKeys[1].ToString().Substring(3),
+                           currentMatch.Alliances.Red.TeamKeys[2].ToString().Substring(3),
+                           currentMatch.Alliances.Blue.TeamKeys[0].ToString().Substring(3),
+                           currentMatch.Alliances.Blue.TeamKeys[1].ToString().Substring(3),
+                           currentMatch.Alliances.Blue.TeamKeys[2].ToString().Substring(3));
+            }
+            else
+            {
+                MessageBox.Show("Please enter team numbers in the description template.");
+                ytDescription = string.Format("{0} FRC {1} Week #{2}\n" +
+                           "Red Alliance: [RED 1] [RED 2] [RED3]\n" +
+                           "Blue Alliance: [BLUE 1] [BLUE 2] [BLUE 3]\n\n" +
+                           "Footage of the {0} FRC {1} is coutesy of the FIRST Washington A/V Crew\n\n" +
+                           //"To view match schedules and results for this event, visit the FRC Event Results Portal:\n" +
+                           //"{9}\n\n" +
+                           "Folow the PNW District social media accounts for updates throughout the season!\n" +
+                           "Facebook: Washington FIRST Robotics / OregonFRC\n" +
+                           "Twitter: @first_wa / @OregonRobotics\n" +
+                           "Youtube: Washington FIRST Robotics\n\n" +
+                           "For more information and future event schedules, visit our websites:\n" +
+                           "http://www.firstwa.org | http://www.oregonfirst.org \n\n" +
+                           "Thanks for watching!",
+                           currentEvent.year,
+                           currentEvent.name,
+                           currentEvent.week + 1);
+            }
+            
+
+            ytTags = "first,robotics,frc," + currentEvent.year.ToString() + "," + currentEvent.event_code;
+
+            YoutubeUpload ytForm = new YoutubeUpload(
+                                    fileNameProgram,
+                                    fileNameWide,
+                                    ytDescription,
+                                    ytTags);
+            ytForm.ShowDialog();
+        }
+
         private void bgWorker_FTP_Program_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (!bgWorker_FTP_Wide.IsBusy)
             {
                 SetProgress(progressBar1.Maximum);
+                launch_youtube();
             }
         }
 
@@ -889,7 +931,9 @@ namespace FIRSTWA_Recorder
             if (!bgWorker_FTP_Program.IsBusy)
             {
                 SetProgress(progressBar1.Maximum);
+                launch_youtube();
             }
+
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
