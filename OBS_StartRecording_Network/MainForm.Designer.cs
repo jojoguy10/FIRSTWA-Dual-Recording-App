@@ -182,7 +182,7 @@
             // 
             // numMatchNumber
             // 
-            this.numMatchNumber.Location = new System.Drawing.Point(125, 124);
+            this.numMatchNumber.Location = new System.Drawing.Point(362, 126);
             this.numMatchNumber.Margin = new System.Windows.Forms.Padding(6);
             this.numMatchNumber.Maximum = new decimal(new int[] {
             200,
@@ -206,7 +206,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(11, 124);
+            this.label2.Location = new System.Drawing.Point(248, 130);
             this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(102, 25);
@@ -336,10 +336,10 @@
             // 
             // numFinalNo
             // 
-            this.numFinalNo.Location = new System.Drawing.Point(343, 120);
+            this.numFinalNo.Location = new System.Drawing.Point(118, 126);
             this.numFinalNo.Margin = new System.Windows.Forms.Padding(6);
             this.numFinalNo.Maximum = new decimal(new int[] {
-            3,
+            4,
             0,
             0,
             0});
@@ -361,7 +361,7 @@
             // lblFinalNo
             // 
             this.lblFinalNo.AutoSize = true;
-            this.lblFinalNo.Location = new System.Drawing.Point(242, 124);
+            this.lblFinalNo.Location = new System.Drawing.Point(17, 130);
             this.lblFinalNo.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblFinalNo.Name = "lblFinalNo";
             this.lblFinalNo.Size = new System.Drawing.Size(78, 25);
@@ -727,6 +727,7 @@
         private System.Windows.Forms.Button btnConnectProgram;
         private System.ComponentModel.BackgroundWorker bgWorker_FTP_Program;
         private System.ComponentModel.BackgroundWorker bgWorker_FTP_Wide;
+        private System.ComponentModel.BackgroundWorker bgWorker_Youtube;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Panel ledProgram;
         private System.Windows.Forms.Label lblProgramReady;
