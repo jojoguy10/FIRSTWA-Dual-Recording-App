@@ -26,6 +26,11 @@ using Microsoft.Win32;
 using System.Text;
 using System.Net;
 using System.Text.RegularExpressions;
+using FFMpegSharp;
+using System.Diagnostics;
+using FFMpegSharp.FFMPEG;
+using FFMpegSharp.FFMPEG.Enums;
+using System.Threading;
 
 /* TODO:
  * Parse CSV file from FMS for team information
@@ -37,6 +42,9 @@ using System.Text.RegularExpressions;
  * Commenting
  * Layout/UI Design
  */
+
+//using FileName = string;
+//using FilePath = string;
 
 namespace FIRSTWA_Recorder
 {
@@ -52,7 +60,6 @@ namespace FIRSTWA_Recorder
         List<Event> eventDetails = new List<Event>();
         Event currentEvent = new Event();
         Match currentMatch;
-        string matchKey;
 
         Match[] matches;
 
@@ -70,6 +77,9 @@ namespace FIRSTWA_Recorder
 
         DeckLink dlProgram, dlWide;
 
+        string matchNameProgram = "";
+        string matchNameWide = "";
+
         private string fileNameProgram, fileNameWide;
         private string ytDescription, ytTags;
 
@@ -77,8 +87,6 @@ namespace FIRSTWA_Recorder
 
         private FileInfo credFile = new FileInfo(@"D:\__USER\Documents\GitHub\FIRSTWA_PC_RecordingApplication\FIRSTWA_StartRecording_Network\client_secret_613443767055-pvnp5ugap7kgj1i7rid6in7tnm3podmv.apps.googleusercontent.com.json");
         private Video videoYT;
-        
-        private string replay = "";
 
         private string programPlaylistTitle, programPlaylistId, widePlaylistTitle, widePlaylistId;
         private string programVideoTitle, programVideoId, wideVideoTitle, wideVideoId;
@@ -145,6 +153,11 @@ namespace FIRSTWA_Recorder
                 Application.Exit();
             }
 
+            if (!Directory.Exists(@"C:\Temp"))
+            {
+                Directory.CreateDirectory(@"C:\Temp");
+            }
+
             frmRecordingSetting = new RecordingSettings(strIPAddressPC, strIPAddressPROGRAM, strIPAddressWIDE);
             
             groupEvent.Enabled = false;
@@ -153,6 +166,7 @@ namespace FIRSTWA_Recorder
             btnStopRecording.Enabled = false;
         }
 
+        #region Registry
         private string ReadRegistryKey(string key)
         {
             RegistryKey firstwaKey = Registry.CurrentUser.OpenSubKey(@"Software\FIRSTWA", true);
@@ -184,31 +198,8 @@ namespace FIRSTWA_Recorder
             
             firstwaKey.SetValue(key, value);
         }
+        #endregion
 
-        private bool CopyFTPFile(string filename)
-        {
-            try
-            {
-                DirectoryInfo dir = new DirectoryInfo("ftp://" + strIPAddressPROGRAM);
-                FileInfo file = (from f in dir.GetFiles()
-                            orderby f.LastWriteTime descending
-                            select f).First();
-                Console.WriteLine(file.FullName);
-                FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://" + strIPAddressPROGRAM + "/" + filename);
-                request.Method = WebRequestMethods.Ftp.DownloadFile;
-
-                request.Credentials = new NetworkCredential("FTP_User", "");
-                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
-                Stream responseStream = response.GetResponseStream();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-
-        }
-        
         private void btnStartRecording_Click(object sender, EventArgs e)
         {
             if(comboEventName.SelectedItem == null)
@@ -259,7 +250,7 @@ namespace FIRSTWA_Recorder
                     matchNumber = string.Format("{0}-{1}", numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
                 }
 
-                string matchNameProgram = string.Format("{0} {1} {2} {3}", currentEvent.year, currentEvent.name, matchType, matchNumber);
+                matchNameProgram = string.Format("{0} {1} {2} {3}", currentEvent.year, currentEvent.name, matchType, matchNumber);
                 fileNameProgram = matchNameProgram + ".mp4";
 
                 dlProgram.Write("record: name: " + matchNameProgram);
@@ -298,7 +289,7 @@ namespace FIRSTWA_Recorder
                     matchNumber = string.Format("{0}-{1}", numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
                 }
 
-                string matchNameWide = string.Format("{0} {1} WIDE {2} {3}", currentEvent.year, currentEvent.name, matchType, matchNumber);
+                matchNameWide = string.Format("{0} {1} WIDE {2} {3}", currentEvent.year, currentEvent.name, matchType, matchNumber);
                 fileNameWide = matchNameWide + ".mp4";
 
                 dlWide.Write("record: name: " + matchNameWide);
@@ -385,6 +376,7 @@ namespace FIRSTWA_Recorder
             ytForm.ShowDialog();
         }
 
+        #region FTP Stuff
         private void CreateEventDirectory(string uriPath)
         {
             try
@@ -403,33 +395,91 @@ namespace FIRSTWA_Recorder
             }
         }
 
-        private void CopyFTPFile(string fromURI, string toURI, string fromFilename, string toFilename, string tempFile)
+        //convert the mp4 from uncompressed audio to mp3 audio using ffmpeg
+        //videoPath - filepath of mp4 to convert
+        private void ConvertVideo(string videoPath, bool mapMono = false)
+        {
+            string videoName = videoPath.Substring(0,videoPath.Length - 4);
+            string outVideo = videoName + "test.mp4";
+
+            StringBuilder args_proto = new StringBuilder();
+
+            if (mapMono)
+            {
+                args_proto.AppendFormat("-y -acodec pcm_s24le -i \"{0}\" -acodec mp3 -vcodec copy -af \"pan=mono|c0=c0\" \"{1}\"", videoPath, outVideo);
+                Console.WriteLine("Mono");
+            }
+            else
+            {
+                args_proto.AppendFormat("-y -acodec pcm_s24le -i \"{0}\" -acodec mp3 -vcodec copy \"{1}\"", videoPath, outVideo);
+                Console.WriteLine("Standard");
+            }
+
+            string args = args_proto.ToString();
+            Console.WriteLine(mapMono.ToString() + "::" + args);
+
+            var process = new Process
+            {
+                StartInfo =
+                {
+                    WorkingDirectory = Directory.GetCurrentDirectory(),
+                    FileName = "ffmpeg.exe",
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    Arguments = args
+                }
+            };
+
+            process.ErrorDataReceived += (sender, eventArgs) =>
+            {
+                Console.WriteLine(eventArgs.Data);
+                MessageBox.Show(eventArgs.Data);
+            };
+
+            process.Start();
+
+            process.WaitForExit();
+
+            Console.WriteLine("Audio Conversion: Done!");
+
+            File.Delete(videoPath);
+
+            File.Move(outVideo, videoPath);
+        }
+
+        //download an mp4 from a remote server, convert its audio track, and upload it to a remote server
+        //fromURI - server connection to download from
+        //toURI - server connection to upload to
+        //fromFilePath - file path to downloaded file
+        //toFilePath - file path to upload
+        private void CopyFTPFile(string fromURI, string toURI, string fromFilePath, string toFilePath, string localTempFileName, bool mapMono=false)
         {
             progress++;
             SetProgress(progress);
-            string video = DownloadFileFTP(fromURI, fromFilename, tempFile);
-            UploadFileFTP(toURI + "/" + toFilename, video);
+
+            //string localTempFilePath = @"C:\Temp" + localTempFileName;
+
+            DownloadFileFTP(fromURI +"/" + fromFilePath, localTempFileName);
+
+            ConvertVideo(localTempFileName, mapMono);
+            UploadFileFTP(toURI + "/" + toFilePath, localTempFileName);
             progress++;
             SetProgress(progress);
         }
 
-        private string DownloadFileFTP(string uri, string ftpFileName, string fileName)
+        //download an mp4 from a remote server
+        //uri - connection to download from
+        //ftpFileName - file path at target remote server
+        //localFilePath - file path at local
+        private void DownloadFileFTP(string remotePath, string localFilePath)
         {
             progress++;
             SetProgress(progress);
-            Console.WriteLine(ftpFileName);
-            ftpFileName = ftpFileName.Replace(".mcc", ".mp4");
-            if (!Directory.Exists(@"C:\Temp"))
-            {
-                Directory.CreateDirectory(@"C:\Temp");
-            }
-            string inputfilepath = fileName;
-
-            string ftpfullpath = uri + "/" + ftpFileName;
+            string ftpfullpath = remotePath.Replace(".mcc", ".mp4");
 
             using (WebClient request = new WebClient())
             {
-                request.DownloadFile(ftpfullpath, inputfilepath);
+                request.DownloadFile(ftpfullpath, localFilePath);
 
                 //using (FileStream file = File.Create(inputfilepath))
                 //{
@@ -441,9 +491,11 @@ namespace FIRSTWA_Recorder
             }
             progress++;
             SetProgress(progress);
-            return inputfilepath;
         }
 
+        //upload an mp4 to a remote server
+        //uri - connection and file path at remote to upload to
+        //filePath - file path at local to upload from
         public void UploadFileFTP(string uri, string filePath)
         {
             progress++;
@@ -458,6 +510,9 @@ namespace FIRSTWA_Recorder
             Console.WriteLine("Upload to PC: Complete");
         }
 
+        //delete a file at a remote server
+        //uri - remote server to delete at
+        //filename - 
         private void DeleteFTPFile(string uri, string filename)
         {
             string fullDir = uri + "/" + filename;
@@ -493,6 +548,7 @@ namespace FIRSTWA_Recorder
             SetProgress(progress);
             return directories;
         }
+        #endregion
 
         private void recordingToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -635,67 +691,6 @@ namespace FIRSTWA_Recorder
             //f = f.OrderBy(t => t.Item3).ToList();
         }
         
-        private async Task GetMatchDetails()
-        {
-            /* This button will look at the selected match and match type from the UI and 
-             * query TBA to get the specifics.  When the Match
-             */
-            string shortMatchType = "";
-            string currentMatchKey = "";
-            switch (currentMatchType)
-            {
-                case MatchType.Qualification:
-                    currentMatchKey = string.Format("{0}_qm{1}", currentEvent.key, numMatchNumber.Value);
-                    break;
-                case MatchType.Quarterfinal:
-                    currentMatchKey = string.Format("{0}_qf{1}m{2}", currentEvent.key, numMatchNumber.Value, numFinalNo.Value);
-                    break;
-                case MatchType.Semifinal:
-                    currentMatchKey = string.Format("{0}_sf{1}m{2}", currentEvent.key, numMatchNumber.Value, numFinalNo.Value);
-                    break;
-                case MatchType.Final:
-                    currentMatchKey = string.Format("{0}_f{1}m{2}", currentEvent.key, numMatchNumber.Value, numFinalNo.Value);
-                    break;
-                default:
-                    break;
-            }
-            Console.WriteLine(currentMatchKey);
-
-            RestClient tbaClient = new RestClient("http://www.thebluealliance.com/api/v3");
-            RestRequest tbaRequest = new RestRequest(string.Format("event/{0}/matches", currentEvent.key), Method.GET);
-
-            tbaRequest.AddHeader
-            (
-                "X-TBA-Auth-Key",
-                TBAKEY
-            );
-
-            IRestResponse tbaResponse = tbaClient.Execute(tbaRequest);
-            string tbaContent = tbaResponse.Content;
-            tbaContent = tbaContent.Trim('"');
-            currentMatch = JsonConvert.DeserializeObject<Match>(tbaContent);
-
-            if (currentMatch.CompLevel == "qm")
-            {
-                lblMatchNumber.Text = string.Format("{0} {1}", currentMatch.CompLevel.ToUpper(), currentMatch.MatchNumber);
-            }
-            else
-            {
-                lblMatchNumber.Text = string.Format("{0} {1}-{2}", currentMatch.CompLevel.ToUpper(), currentMatch.SetNumber, currentMatch.MatchNumber);
-            }
-            lblRed1.Text = string.Format("RED 1: {0}", currentMatch.Alliances.Red.TeamKeys[0].ToString().Substring(3));
-            lblRed2.Text = string.Format("RED 2: {0}", currentMatch.Alliances.Red.TeamKeys[1].ToString().Substring(3));
-            lblRed3.Text = string.Format("RED 3: {0}", currentMatch.Alliances.Red.TeamKeys[2].ToString().Substring(3));
-            lblBlue1.Text = string.Format("BLUE 1: {0}", currentMatch.Alliances.Blue.TeamKeys[0].ToString().Substring(3));
-            lblBlue2.Text = string.Format("BLUE 2: {0}", currentMatch.Alliances.Blue.TeamKeys[1].ToString().Substring(3));
-            lblBlue3.Text = string.Format("BLUE 3: {0}", currentMatch.Alliances.Blue.TeamKeys[2].ToString().Substring(3));
-        }
-
-        private void btnGetMatchDetails_Click(object sender, EventArgs e)
-        {
-            GetMatchDetails();
-        }
-
         private void btnConnectProgram_Click(object sender, EventArgs e)
         {
             try
@@ -732,8 +727,11 @@ namespace FIRSTWA_Recorder
             }
         }
 
+        #region Background Workers
         private void bgWorker_FTP_Wide_DoWork(object sender, DoWorkEventArgs e)
         {
+            Thread.Sleep(1000);
+
             progress++;
             SetProgress(progress);
             string wideURI = string.Format("ftp://{0}/1", strIPAddressWIDE);
@@ -757,7 +755,27 @@ namespace FIRSTWA_Recorder
 
             if (directories.Count > 5)
             {
-                DeleteFTPFile(wideURI, fileNames[timestamps.IndexOf(timestamps.Min())]);
+                while (directories.Count > 5)
+                {
+                    int minTimstampIndex = timestamps.IndexOf(timestamps.Min());
+
+                    DeleteFTPFile(wideURI, fileNames[minTimstampIndex]);
+                    fileNames.RemoveAt(minTimstampIndex);
+                    timestamps.RemoveAt(minTimstampIndex);
+                    directories.RemoveAt(minTimstampIndex);
+
+                    //directories = GetFTPFiles(wideURI);
+                    //timestamps.Clear();
+                    //fileNames.Clear();
+
+                    //foreach (string file in directories)
+                    //{
+                    //    System.Text.RegularExpressions.Match match = regex.Match(file);
+                    //    Console.WriteLine(match.Groups[5].ToString());
+                    //    timestamps.Add(DateTime.Parse(match.Groups[5].ToString()));
+                    //    fileNames.Add(match.Groups[6].ToString());
+                    //}
+                }
 
                 directories = GetFTPFiles(wideURI);
 
@@ -768,8 +786,20 @@ namespace FIRSTWA_Recorder
             }
             progress++;
             SetProgress(progress);
-            string tempFile = @"C:\Temp\temp_Wide.mp4";
-            CopyFTPFile(wideURI, widePath, fileNames[timestamps.IndexOf(timestamps.Max())], fileNameWide, tempFile);
+
+            string tempFile = @"C:\Temp\" + fileNameWide;
+
+            int matchIndex = 0;
+
+            foreach (string file in fileNames)
+            {
+                if (file.Contains(currentMatch.MatchNumber.ToString()))
+                {
+                    matchIndex = fileNames.IndexOf(file);
+                }
+            }
+
+            CopyFTPFile(wideURI, widePath, fileNames[matchIndex], fileNameWide, tempFile, false);
             progress++;
             SetProgress(progress);
             File.Delete(tempFile);
@@ -780,6 +810,8 @@ namespace FIRSTWA_Recorder
 
         private void bgWorker_FTP_Program_DoWork(object sender, DoWorkEventArgs e)
         {
+            Thread.Sleep(1000);
+
             progress++;
             SetProgress(progress);
             string programURI = string.Format("ftp://{0}/1", strIPAddressPROGRAM);
@@ -805,16 +837,22 @@ namespace FIRSTWA_Recorder
             {
                 while (directories.Count > 5)
                 {
-                    DeleteFTPFile(programURI, fileNames[timestamps.IndexOf(timestamps.Min())]);
-                    directories = GetFTPFiles(programURI);
+                    int minTimstampIndex = timestamps.IndexOf(timestamps.Min());
+                    DeleteFTPFile(programURI, fileNames[minTimstampIndex]);
 
-                    foreach (string file in directories)
-                    {
-                        System.Text.RegularExpressions.Match match = regex.Match(file);
-                        Console.WriteLine(match.Groups[5].ToString());
-                        timestamps.Add(DateTime.Parse(match.Groups[5].ToString()));
-                        fileNames.Add(match.Groups[6].ToString());
-                    }
+                    fileNames.RemoveAt(minTimstampIndex);
+                    timestamps.RemoveAt(minTimstampIndex);
+                    directories.RemoveAt(minTimstampIndex);
+                    //directories = GetFTPFiles(programURI);
+                    //timestamps.Clear();
+                    //fileNames.Clear();
+                    //foreach (string file in directories)
+                    //{
+                    //    System.Text.RegularExpressions.Match match = regex.Match(file);
+                    //    Console.WriteLine(match.Groups[5].ToString());
+                    //    timestamps.Add(DateTime.Parse(match.Groups[5].ToString()));
+                    //    fileNames.Add(match.Groups[6].ToString());
+                    //}
                 }
 
                 directories = GetFTPFiles(programURI);
@@ -826,8 +864,20 @@ namespace FIRSTWA_Recorder
             }
             progress++;
             SetProgress(progress);
-            string tempFile = @"C:\Temp\temp_Program.mp4";
-            CopyFTPFile(programURI, programPath, fileNames[timestamps.IndexOf(timestamps.Max())], fileNameProgram, tempFile);
+
+            string tempFile = @"C:\Temp\" + fileNameProgram;
+
+            int matchIndex = 0;
+
+            foreach (string file in fileNames)
+            {
+                if (file.Contains(currentMatch.MatchNumber.ToString()))
+                {
+                    matchIndex = fileNames.IndexOf(file);
+                }
+            }
+
+            CopyFTPFile(programURI, programPath, fileNames[matchIndex], fileNameProgram, tempFile, true);
             progress++;
             SetProgress(progress);
             File.Delete(tempFile);
@@ -835,8 +885,6 @@ namespace FIRSTWA_Recorder
             Console.WriteLine("Prgram: Progress = " + progress);
             ledProgram.BackColor = Color.Green;
         }
-
-        delegate void SetTextCallback(string text);
 
         private void bgWorker_FTP_Program_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -872,10 +920,21 @@ namespace FIRSTWA_Recorder
             }
             btnCancel.Enabled = false;
         }
+        #endregion
 
         private void btnOpenRecordings_Click(object sender, EventArgs e)
         {
-            
+        }
+
+        //youtube upload handler
+        //
+
+        #region Callbacks
+        delegate void SetTextCallback(string text);
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+
         }
 
         private void SetText(string text)
@@ -910,5 +969,6 @@ namespace FIRSTWA_Recorder
                 this.progressBar1.Value = progress;
             }
         }
+        #endregion
     }
 }

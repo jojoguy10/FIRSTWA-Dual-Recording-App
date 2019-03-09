@@ -221,7 +221,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(11, 4, 0, 4);
-            this.menuStrip1.Size = new System.Drawing.Size(771, 42);
+            this.menuStrip1.Size = new System.Drawing.Size(769, 42);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "Menu Strip";
             // 
@@ -257,6 +257,10 @@
             this.label3.Size = new System.Drawing.Size(125, 25);
             this.label3.TabIndex = 9;
             this.label3.Text = "Event Name:";
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
             // folderBrowserDialog1
             // 
@@ -383,7 +387,7 @@
             // 
             // btnOpenRecordings
             // 
-            this.btnOpenRecordings.Location = new System.Drawing.Point(926, 554);
+            this.btnOpenRecordings.Location = new System.Drawing.Point(1355, 568);
             this.btnOpenRecordings.Margin = new System.Windows.Forms.Padding(6);
             this.btnOpenRecordings.Name = "btnOpenRecordings";
             this.btnOpenRecordings.Size = new System.Drawing.Size(334, 42);
@@ -394,7 +398,7 @@
             // 
             // btnUpload
             // 
-            this.btnUpload.Location = new System.Drawing.Point(946, 177);
+            this.btnUpload.Location = new System.Drawing.Point(1375, 191);
             this.btnUpload.Margin = new System.Windows.Forms.Padding(6);
             this.btnUpload.Name = "btnUpload";
             this.btnUpload.Size = new System.Drawing.Size(290, 42);
@@ -442,7 +446,7 @@
             this.groupMatchDetails.Controls.Add(this.lblMatchNumber);
             this.groupMatchDetails.Controls.Add(this.groupBlueAlliance);
             this.groupMatchDetails.Controls.Add(this.groupRedAlliance);
-            this.groupMatchDetails.Location = new System.Drawing.Point(884, 279);
+            this.groupMatchDetails.Location = new System.Drawing.Point(1313, 293);
             this.groupMatchDetails.Margin = new System.Windows.Forms.Padding(4);
             this.groupMatchDetails.Name = "groupMatchDetails";
             this.groupMatchDetails.Padding = new System.Windows.Forms.Padding(4);
@@ -555,14 +559,13 @@
             // 
             // btnGetMatchDetails
             // 
-            this.btnGetMatchDetails.Location = new System.Drawing.Point(946, 229);
+            this.btnGetMatchDetails.Location = new System.Drawing.Point(1375, 243);
             this.btnGetMatchDetails.Margin = new System.Windows.Forms.Padding(4);
             this.btnGetMatchDetails.Name = "btnGetMatchDetails";
             this.btnGetMatchDetails.Size = new System.Drawing.Size(290, 42);
             this.btnGetMatchDetails.TabIndex = 26;
             this.btnGetMatchDetails.Text = "Get Match Details";
             this.btnGetMatchDetails.UseVisualStyleBackColor = true;
-            this.btnGetMatchDetails.Click += new System.EventHandler(this.btnGetMatchDetails_Click);
             // 
             // bgWorker_FTP_Program
             // 
@@ -577,7 +580,7 @@
             // progressBar1
             // 
             this.progressBar1.Location = new System.Drawing.Point(22, 701);
-            this.progressBar1.Maximum = 30;
+            this.progressBar1.Maximum = 31;
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(717, 48);
             this.progressBar1.TabIndex = 27;
@@ -634,7 +637,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
-            this.ClientSize = new System.Drawing.Size(771, 830);
+            this.ClientSize = new System.Drawing.Size(769, 830);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.lblWideReady);
             this.Controls.Add(this.ledWide);
