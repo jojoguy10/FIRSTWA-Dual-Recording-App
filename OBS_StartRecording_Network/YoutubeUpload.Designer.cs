@@ -170,17 +170,16 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox txtProgramTitle;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtDescription;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtTags;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnConfirm;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox txtWideTitle;
         private System.Windows.Forms.Button btnCancel;
+        public System.Windows.Forms.TextBox txtProgramTitle;
+        public System.Windows.Forms.TextBox txtDescription;
+        public System.Windows.Forms.TextBox txtTags;
+        public System.Windows.Forms.TextBox txtWideTitle;
     }
 }

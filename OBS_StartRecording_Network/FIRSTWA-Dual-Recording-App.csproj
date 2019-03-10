@@ -104,6 +104,12 @@
     <Compile Include="RecordingSettings.Designer.cs">
       <DependentUpon>RecordingSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="UploadManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UploadManager.Designer.cs">
+      <DependentUpon>UploadManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="YoutubeUpload.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -125,6 +131,9 @@
     </Compile>
     <EmbeddedResource Include="RecordingSettings.resx">
       <DependentUpon>RecordingSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UploadManager.resx">
+      <DependentUpon>UploadManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="YoutubeUpload.resx">
       <DependentUpon>YoutubeUpload.cs</DependentUpon>
