@@ -80,6 +80,7 @@ namespace FIRSTWA_Recorder
 
         string matchNameProgram = "";
         string matchNameWide = "";
+        string matchABV = "";
 
         private string fileNameProgram, fileNameWide;
         private string ytDescription, ytTags;
@@ -93,7 +94,8 @@ namespace FIRSTWA_Recorder
 
         private FileInfo credFile = new FileInfo(@"D:\__USER\Documents\GitHub\FIRSTWA_PC_RecordingApplication\FIRSTWA_StartRecording_Network\client_secret_613443767055-pvnp5ugap7kgj1i7rid6in7tnm3podmv.apps.googleusercontent.com.json");
         private Video videoYT;
-        private BufferBlock<YoutubeTask> YoutubeBuffer;
+
+        private UploadManager ManagingWindow;
 
         enum MatchType
         {
@@ -161,6 +163,8 @@ namespace FIRSTWA_Recorder
             {
                 Directory.CreateDirectory(@"C:\Temp");
             }
+
+            ManagingWindow = new UploadManager(@"https://www.youtube.com/playlist?list=PLwES-SbpsnxwE2oV4EpA-Cb9Szt8UG1vk");
 
             frmRecordingSetting = new RecordingSettings(strIPAddressPC, strIPAddressPROGRAM, strIPAddressWIDE);
             
@@ -238,15 +242,13 @@ namespace FIRSTWA_Recorder
                     break;
             }
 
-            string matchNumber;
-
             if (currentMatchType == MatchType.Qualification || currentMatchType == MatchType.Final)
             {
-                matchNumber = numMatchNumber.Value.ToString();
+                matchABV = string.Format("{0}_{1}{2}", currentEvent.event_code, matchAbrev, numMatchNumber.Value.ToString());
             }
             else
             {
-                matchNumber = string.Format("{0}-{1}", numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
+                matchABV = string.Format("{0}_{1}{2}m{3}", currentEvent.event_code, matchAbrev, numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
             }
 
             currentMatch = null;
@@ -275,18 +277,33 @@ namespace FIRSTWA_Recorder
 
             if (chkProgramRecord.Checked)
             {
-                matchNameProgram = string.Format("{0} {1} {2} {3}", currentEvent.year, currentEvent.name, matchType, matchNumber);
+                if (currentMatchType == MatchType.Qualification || currentMatchType == MatchType.Final)
+                {
+                    matchNameProgram = string.Format("{0} {1} {2} {3}", currentEvent.year, currentEvent.name, matchType, numMatchNumber.Value.ToString());
+                }
+                else
+                {
+                    matchNameProgram = string.Format("{0} {1} {2} {3} Match {4}", currentEvent.year, currentEvent.name, matchType, numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
+                }
+
                 fileNameProgram = matchNameProgram + ".mp4";
 
-                dlProgram.Write("record: name: " + matchNameProgram);
+                dlProgram.Write("record: name: " + matchABV +"_program");
             }
 
             if (chkRecordWide.Checked)
             {
-                matchNameWide = string.Format("{0} {1} WIDE {2} {3}", currentEvent.year, currentEvent.name, matchType, matchNumber);
+                if (currentMatchType == MatchType.Qualification || currentMatchType == MatchType.Final)
+                {
+                    matchNameWide = string.Format("{0} {1} WIDE {2} {3}", currentEvent.year, currentEvent.name, matchType, numMatchNumber.Value.ToString());
+                }
+                else
+                {
+                    matchNameWide = string.Format("{0} {1} WIDE {2} {3} Match {4}", currentEvent.year, currentEvent.name, matchType, numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
+                }
                 fileNameWide = matchNameWide + ".mp4";
 
-                dlWide.Write("record: name: " + matchNameWide);
+                dlWide.Write("record: name: " + matchABV + "_wide");
             }
 
             startTime = DateTime.Now;
@@ -538,6 +555,9 @@ namespace FIRSTWA_Recorder
             RadioButton btn = sender as RadioButton;
             if(btn.Checked == true)
             {
+                numMatchNumber.Value = 1;
+                numFinalNo.Value = 1;
+
                 switch (btn.Text)
                 {
                     case "Qualification":
@@ -545,31 +565,32 @@ namespace FIRSTWA_Recorder
                         lblFinalNo.Visible = false;
                         numFinalNo.Visible = false;
                         numMatchNumber.Maximum = 200;
+                        numFinalNo.Maximum = 1;
                         break;
                     case "Quarterfinal":
                         currentMatchType = MatchType.Quarterfinal;
                         lblFinalNo.Visible = true;
                         numFinalNo.Visible = true;
                         numMatchNumber.Maximum = 3;
+                        numFinalNo.Maximum = 4;
                         break;
                     case "Semifinal":
                         currentMatchType = MatchType.Semifinal;
                         lblFinalNo.Visible = true;
                         numFinalNo.Visible = true;
                         numMatchNumber.Maximum = 3;
+                        numFinalNo.Maximum = 2;
                         break;
                     case "Final":
                         currentMatchType = MatchType.Final;
                         lblFinalNo.Visible = false;
                         numFinalNo.Visible = false;
                         numMatchNumber.Maximum = 3;
+                        numFinalNo.Maximum = 1;
                         break;
                     default:
                         break;
                 }
-
-                numMatchNumber.Value = 1;
-                numFinalNo.Value = 1;
 
                 Console.WriteLine(currentMatchType);
             }
@@ -608,59 +629,6 @@ namespace FIRSTWA_Recorder
             string tbaContent = tbaResponse.Content;
             matches = JsonConvert.DeserializeObject<Match[]>(tbaContent);
             Console.WriteLine("Done");
-            //List<string> newMatchNames = new List<string>();
-            //List<Tuple<string, int>> qm = new List<Tuple<string, int>>(); // Qualification matches
-            //List<Tuple<string, int, int>> qf = new List<Tuple<string, int, int>>(); // Qualification matches
-            //List<Tuple<string, int, int>> sf = new List<Tuple<string, int, int>>(); // Qualification matches
-            //List<Tuple<string, int, int>> f = new List<Tuple<string, int, int>>(); // Qualification matches
-
-            //foreach (Match match in matches)
-            //{
-            //    string type = null;
-            //    int matchNo = 0;
-            //    int setNo = 0;
-
-            //    if (match.CompLevel.Equals("qm")) { type = "Qualification"; }
-            //    else if (match.CompLevel.Equals("qf")) { type = "Quarterfinal"; setNo = match.SetNumber; }
-            //    else if (match.CompLevel.Equals("sf")) { type = "Semifinal"; setNo = match.SetNumber; }
-            //    else if (match.CompLevel.Equals("f")) { type = "Final"; setNo = match.SetNumber; }
-
-            //    matchNo = match.MatchNumber;
-
-            //    if (type == "Qualification")
-            //    {
-            //        newMatch = string.Format("{0} {1}", type, matchNo);
-            //    }
-            //    else
-            //    {
-            //        newMatch = string.Format("{0} {1} {2} {3}", type, setNo, "Match", matchNo);
-            //    }
-
-            //    switch (type)
-            //    {
-            //        case "Qualification":
-            //            qm.Add(new Tuple<string, int>(newMatch, Convert.ToInt16(matchNo)));
-            //            break;
-            //        case "Quarterfinal":
-            //            qf.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(setNo), Convert.ToInt16(matchNo)));
-            //            break;
-            //        case "Semifinal":
-            //            sf.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(setNo), Convert.ToInt16(matchNo)));
-            //            break;
-            //        case "Final":
-            //            f.Add(new Tuple<string, int, int>(newMatch, Convert.ToInt16(setNo), Convert.ToInt16(matchNo)));
-            //            break;
-
-            //        default:
-            //            break;
-            //    }
-
-            //    newMatchNames.Add(newMatch);
-            //}
-            //qm = qm.OrderBy(t => t.Item2).ToList();
-            //qf = qf.OrderBy(t => t.Item3).ToList();
-            //sf = sf.OrderBy(t => t.Item3).ToList();
-            //f = f.OrderBy(t => t.Item3).ToList();
         }
         
         private void btnConnectProgram_Click(object sender, EventArgs e)
@@ -674,6 +642,24 @@ namespace FIRSTWA_Recorder
                 btnStartRecording.Enabled = true;
                 groupEvent.Enabled = true;
                 btnConnectProgram.BackColor = Color.Green;
+
+                //var result = MessageBox.Show("Clear SSD? This will erase any existing clips in the hyperdeck recorder. Not clearing the SD may result in corrupted clips or naming conflicts", "Error", MessageBoxButtons.YesNo);
+                //if (result == DialogResult.Yes)
+                //{
+                //    string programURI = string.Format("ftp://{0}/1", strIPAddressPROGRAM);
+
+                //    Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
+                //RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+
+                //    List<string> directories = GetFTPFiles(programURI);
+                //    List<string> fileNames = new List<string>();
+
+                //    foreach (string file in directories)
+                //    {
+                //        System.Text.RegularExpressions.Match match = regex.Match(file);
+                //        DeleteFTPFile(programURI, match.Groups[6].ToString());
+                //    }
+                //}
             }
             catch
             {
@@ -692,6 +678,24 @@ namespace FIRSTWA_Recorder
                 btnStartRecording.Enabled = true;
                 groupEvent.Enabled = true;
                 btnConnectWide.BackColor = Color.Green;
+
+                //var result = MessageBox.Show("Clear SSD? This will erase any existing clips in the hyperdeck recorder. Not clearing the SD may result in corrupted clips or naming conflicts", "Error", MessageBoxButtons.YesNo);
+                //if (result == DialogResult.Yes)
+                //{
+                //    string programURI = string.Format("ftp://{0}/1", strIPAddressWIDE);
+
+                //    Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
+                //RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+
+                //    List<string> directories = GetFTPFiles(programURI);
+                //    List<string> fileNames = new List<string>();
+
+                //    foreach (string file in directories)
+                //    {
+                //        System.Text.RegularExpressions.Match match = regex.Match(file);
+                //        DeleteFTPFile(programURI, match.Groups[6].ToString());
+                //    }
+                //}
             }
             catch
             {
@@ -762,19 +766,23 @@ namespace FIRSTWA_Recorder
             string tempFile = @"C:\Temp\" + fileNameWide;
 
             int matchIndex = 0;
-
+            int most_recent = -1;
             foreach (string file in fileNames)
             {
-                if (file.Contains(numMatchNumber.Value.ToString()))
+                if (file.Substring(0, file.Length - 10).Equals(matchABV + "_wide"))
                 {
-                    matchIndex = fileNames.IndexOf(file);
+                    int revision = Int32.Parse(file.Substring(file.Length - 9, 4));
+                    if (revision > most_recent)
+                    {
+                        matchIndex = fileNames.IndexOf(file);
+                        most_recent = revision;
+                    }
                 }
             }
 
             CopyFTPFile(wideURI, widePath, fileNames[matchIndex], fileNameWide, tempFile, false);
             progress++;
             SetProgress(progress);
-            File.Delete(tempFile);
             Console.WriteLine("Wide: Done!");
             Console.WriteLine("Wide: Progress = " + progress);
             ledWide.BackColor = Color.Green;
@@ -840,19 +848,23 @@ namespace FIRSTWA_Recorder
             string tempFile = @"C:\Temp\" + fileNameProgram;
 
             int matchIndex = 0;
-
+            int most_recent = -1;
             foreach (string file in fileNames)
             {
-                if (file.Contains(numMatchNumber.Value.ToString()))
+                if(file.Substring(0, file.Length - 10).Equals(matchABV + "_program"))
                 {
-                    matchIndex = fileNames.IndexOf(file);
+                    int revision = Int32.Parse(file.Substring(file.Length - 9, 4));
+                    if (revision > most_recent)
+                    {
+                        matchIndex = fileNames.IndexOf(file);
+                        most_recent = revision;
+                    }
                 }
             }
 
             CopyFTPFile(programURI, programPath, fileNames[matchIndex], fileNameProgram, tempFile, true);
             progress++;
             SetProgress(progress);
-            File.Delete(tempFile);
             Console.WriteLine("Program: Done!");
             Console.WriteLine("Prgram: Progress = " + progress);
             ledProgram.BackColor = Color.Green;
@@ -913,7 +925,7 @@ namespace FIRSTWA_Recorder
                                     fileNameProgram,
                                     fileNameWide,
                                     ytDescription,
-                                    ytTags);
+                                    ytTags, ManagingWindow);
             ytForm.ShowDialog();
         }
 
