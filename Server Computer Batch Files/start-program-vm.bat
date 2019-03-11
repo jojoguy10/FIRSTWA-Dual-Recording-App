@@ -1,0 +1,1 @@
+VBoxManage startvm "FIRSTWA_VM_Program" --type headless
