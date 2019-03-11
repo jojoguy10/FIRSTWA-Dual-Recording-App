@@ -7,7 +7,6 @@ using System.Linq;
 using System.IO;
 using System.Windows.Forms;
 using System.Net.Sockets;
-using OBSWebsocketDotNet;
 using System.Diagnostics;
 using RestSharp;
 using Google.Apis.Auth.OAuth2;
@@ -62,6 +61,7 @@ namespace FIRSTWA_Recorder
         List<Event> eventDetails = new List<Event>();
         Event currentEvent = new Event();
         Match currentMatch;
+        string matchType;
 
         Match[] matches;
 
@@ -221,7 +221,6 @@ namespace FIRSTWA_Recorder
             }
 
             string matchAbrev = "qm";
-            string matchType;
             switch (currentMatchType)
             {
                 case MatchType.Qualification:
@@ -616,8 +615,8 @@ namespace FIRSTWA_Recorder
                     programPlaylistTitle = currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
                     widePlaylistTitle = "(WIDE) " + currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
 
-                    programVideoTitle = currentEvent.year + " " + currentEvent.name + " " + matchType + " " + numMatchNumber.Value + replay;
-                    wideVideoTitle = currentEvent.year + " " + currentEvent.name + " WIDE " + matchType + " " + numMatchNumber.Value + replay;
+                    programVideoTitle = currentEvent.year + " " + currentEvent.name + " " + matchType + " " + numMatchNumber.Value;
+                    wideVideoTitle = currentEvent.year + " " + currentEvent.name + " WIDE " + matchType + " " + numMatchNumber.Value;
                     Console.WriteLine(currentEvent.name);
                     GetMatches();
                     groupMatch.Enabled = true;
