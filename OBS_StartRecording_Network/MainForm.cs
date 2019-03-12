@@ -26,11 +26,6 @@ using Microsoft.Win32;
 using System.Text;
 using System.Net;
 using System.Text.RegularExpressions;
-using FFMpegSharp;
-using System.Diagnostics;
-using FFMpegSharp.FFMPEG;
-using FFMpegSharp.FFMPEG.Enums;
-using System.Threading;
 
 /* TODO:
  * Parse CSV file from FMS for team information
@@ -77,7 +72,7 @@ namespace FIRSTWA_Recorder
 
         int progress = 0;
 
-        DeckLink dlProgram, dlWide;
+        HyperDeck hdProgram, hdWide;
 
         string matchNameProgram = "";
         string matchNameWide = "";
@@ -291,7 +286,7 @@ namespace FIRSTWA_Recorder
 
                 fileNameProgram = matchNameProgram + ".mp4";
 
-                dlProgram.Write("record: name: " + matchABV +"_program");
+                hdProgram.Write("record: name: " + matchABV +"_program");
             }
 
             if (chkRecordWide.Checked)
@@ -306,7 +301,7 @@ namespace FIRSTWA_Recorder
                 }
                 fileNameWide = matchNameWide + ".mp4";
 
-                dlWide.Write("record: name: " + matchABV + "_wide");
+                hdWide.Write("record: name: " + matchABV + "_wide");
             }
 
             startTime = DateTime.Now;
@@ -331,9 +326,9 @@ namespace FIRSTWA_Recorder
 
             timerElapsed.Stop();
 
-            dlProgram.Write("stop");
+            hdProgram.Write("stop");
 
-            dlWide.Write("stop");
+            hdWide.Write("stop");
 
             bgWorker_FTP_Program.RunWorkerAsync();
             bgWorker_FTP_Wide.RunWorkerAsync();
@@ -644,10 +639,10 @@ namespace FIRSTWA_Recorder
         {
             try
             {
-                dlProgram = new DeckLink(strIPAddressPROGRAM, Convert.ToInt32(strPortPROGRAM));
+                hdProgram = new HyperDeck(strIPAddressPROGRAM, Convert.ToInt32(strPortPROGRAM));
                 Console.WriteLine("Program Connected");
-                dlProgram.Write("ping");
-                Console.WriteLine(dlProgram.Read());
+                hdProgram.Write("ping");
+                Console.WriteLine(hdProgram.Read());
                 btnStartRecording.Enabled = true;
                 groupEvent.Enabled = true;
                 btnConnectProgram.BackColor = Color.Green;
@@ -680,10 +675,10 @@ namespace FIRSTWA_Recorder
         {
             try
             {
-                dlWide = new DeckLink(strIPAddressWIDE, Convert.ToInt32(strPortWIDE));
+                hdWide = new HyperDeck(strIPAddressWIDE, Convert.ToInt32(strPortWIDE));
                 Console.WriteLine("Wide Connected");
-                dlProgram.Write("ping");
-                Console.WriteLine(dlWide.Read());
+                hdProgram.Write("ping");
+                Console.WriteLine(hdWide.Read());
                 btnStartRecording.Enabled = true;
                 groupEvent.Enabled = true;
                 btnConnectWide.BackColor = Color.Green;

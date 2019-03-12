@@ -8,12 +8,12 @@ using System.Windows.Forms;
 
 namespace FIRSTWA_Recorder
 {
-    class DeckLink
+    class HyperDeck
     {
         TcpClient client;
         NetworkStream stream;
 
-        public DeckLink(string ipAddress, int port)
+        public HyperDeck(string ipAddress, int port)
         {
             client = new TcpClient(ipAddress, port);
             stream = client.GetStream();

@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FFMpegSharp, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FFMpegSharp.2.1.0\lib\net45\FFMpegSharp.dll</HintPath>
-    </Reference>
     <Reference Include="Google.Apis, Version=1.38.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.1.38.0\lib\net45\Google.Apis.dll</HintPath>
     </Reference>
@@ -88,7 +85,7 @@
   <ItemGroup>
     <Compile Include="Classes\District.cs" />
     <Compile Include="Classes\Event.cs" />
-    <Compile Include="Classes\DeckLink.cs" />
+    <Compile Include="Classes\HyperDeck.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

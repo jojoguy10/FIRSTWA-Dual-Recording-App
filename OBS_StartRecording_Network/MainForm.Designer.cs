@@ -417,7 +417,7 @@
             this.groupOBS.Size = new System.Drawing.Size(717, 100);
             this.groupOBS.TabIndex = 22;
             this.groupOBS.TabStop = false;
-            this.groupOBS.Text = "DeckLink Connections";
+            this.groupOBS.Text = "HyperDeck Connections";
             // 
             // btnConnectWide
             // 
@@ -426,7 +426,7 @@
             this.btnConnectWide.Name = "btnConnectWide";
             this.btnConnectWide.Size = new System.Drawing.Size(323, 42);
             this.btnConnectWide.TabIndex = 19;
-            this.btnConnectWide.Text = "Connect to Wide Decklink";
+            this.btnConnectWide.Text = "Connect to Wide HyperDeck";
             this.btnConnectWide.UseVisualStyleBackColor = true;
             this.btnConnectWide.Click += new System.EventHandler(this.btnConnectWide_Click);
             // 
@@ -437,7 +437,7 @@
             this.btnConnectProgram.Name = "btnConnectProgram";
             this.btnConnectProgram.Size = new System.Drawing.Size(323, 42);
             this.btnConnectProgram.TabIndex = 19;
-            this.btnConnectProgram.Text = "Connect to Program Decklink";
+            this.btnConnectProgram.Text = "Connect to Program HyperDeck";
             this.btnConnectProgram.UseVisualStyleBackColor = true;
             this.btnConnectProgram.Click += new System.EventHandler(this.btnConnectProgram_Click);
             // 
