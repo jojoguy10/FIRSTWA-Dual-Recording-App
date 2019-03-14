@@ -83,18 +83,9 @@ namespace FIRSTWA_Recorder
 
         private DateTime startTime;
 
-        private struct YoutubeTask
-        {
-            string targetRemoteFile;
-        }
-
         private FileInfo credFile = new FileInfo(@"D:\__USER\Documents\GitHub\FIRSTWA_PC_RecordingApplication\FIRSTWA_StartRecording_Network\client_secret_613443767055-pvnp5ugap7kgj1i7rid6in7tnm3podmv.apps.googleusercontent.com.json");
-        private Video videoYT;
 
         private UploadManager ManagingWindow;
-
-        private string programPlaylistTitle, programPlaylistId, widePlaylistTitle, widePlaylistId;
-        private string programVideoTitle, programVideoId, wideVideoTitle, wideVideoId;
 
         enum MatchType
         {
@@ -607,11 +598,6 @@ namespace FIRSTWA_Recorder
                 {
                     currentEvent = eventDetails[i];
 
-                    programPlaylistTitle = currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
-                    widePlaylistTitle = "(WIDE) " + currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
-
-                    programVideoTitle = currentEvent.year + " " + currentEvent.name + " " + matchType + " " + numMatchNumber.Value;
-                    wideVideoTitle = currentEvent.year + " " + currentEvent.name + " WIDE " + matchType + " " + numMatchNumber.Value;
                     Console.WriteLine(currentEvent.name);
                     GetMatches();
                     groupMatch.Enabled = true;
@@ -619,7 +605,7 @@ namespace FIRSTWA_Recorder
             }
         }
 
-        private async Task GetMatches()
+        private void GetMatches()
         {
             tbaRequest = new RestRequest(string.Format("event/{0}/matches/simple", currentEvent.key), Method.GET);
 

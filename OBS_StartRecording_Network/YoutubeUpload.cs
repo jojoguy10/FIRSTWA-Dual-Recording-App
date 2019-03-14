@@ -34,11 +34,11 @@ namespace FIRSTWA_Recorder
 
         private void btnConfirm_Click(object sender, EventArgs e)
         {
-            //ManagingWindow.addVideo(this);
-            // Hide();
+            YoutubeJob programJob = new YoutubeJob(programFileName, txtProgramTitle.Text, txtDescription.Text, txtTags.Text, @"");
+            YoutubeJob wideJob = new YoutubeJob(wideFileName, txtWideTitle.Text, txtDescription.Text, txtTags.Text, @"");
 
-            File.Delete(@"C:\Temp\" + programFileName);
-            File.Delete(@"C:\Temp\" + wideFileName);
+            ManagingWindow.addVideo(programJob);
+            ManagingWindow.addVideo(wideJob);
             Close();
         }
         private void btnCancel_Click(object sender, EventArgs e)

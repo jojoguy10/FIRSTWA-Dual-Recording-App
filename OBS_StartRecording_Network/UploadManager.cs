@@ -20,12 +20,29 @@ using Google.Apis.YouTube.v3.Data;
 
 namespace FIRSTWA_Recorder
 {
+
+    public struct YoutubeJob
+    {
+        public string filename;
+        public string title;
+        public string desc;
+        public string tags;
+        public string playlist;
+        public YoutubeJob(string f, string t, string d, string g, string p)
+        {
+            filename = f;
+            title = t;
+            desc = d;
+            tags = g;
+            playlist = p;
+        }
+    }
+
     public partial class UploadManager : Form
     {
-        private BufferBlock<YoutubeUpload> todo;
+        private BufferBlock<YoutubeJob> todo;
         private bool alive;
         Task worker;
-        string playlistId;
 
         public UploadManager(string pid)
         {
@@ -33,16 +50,12 @@ namespace FIRSTWA_Recorder
 
             alive = true;
 
-            todo = new BufferBlock<YoutubeUpload>();
-
-            playlistId = pid;
+            todo = new BufferBlock<YoutubeJob>();
 
             worker = Task.Run(() => Run());
-
-            
         }
 
-        public void addVideo(YoutubeUpload task)
+        public void addVideo(YoutubeJob task)
         {
             todo.Post(task);
         }
@@ -58,109 +71,67 @@ namespace FIRSTWA_Recorder
                     continue;
                 }
 
-                YoutubeUpload Job = todo.Receive();
+                YoutubeJob Job = todo.Receive();
 
-                //post that shit
+                //retrieve client secret, renewing if needed, and create oauth credentials
                 UserCredential credential;
-                using (var stream = new FileStream("C:\\secrets\\client_secrets.json", FileMode.Open, FileAccess.Read))
+                using (var stream = new FileStream("client_secrets.json", FileMode.Open, FileAccess.Read))
                 {
                     credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
                         GoogleClientSecrets.Load(stream).Secrets,
                         // This OAuth 2.0 access scope allows an application to upload files to the
                         // authenticated user's YouTube channel, but doesn't allow other types of access.
                         new[] { YouTubeService.Scope.YoutubeUpload },
-                        "recorder-test@firstwa-recorder-beta.iam.gserviceaccount.com",
+                        "user",
                         CancellationToken.None
                     );
                 }
 
+                //TODO: handle denied credentials gracefully
+
+                //create service from credentials
                 var youtubeService = new YouTubeService(new BaseClientService.Initializer()
                 {
                     HttpClientInitializer = credential,
                     ApplicationName = Assembly.GetExecutingAssembly().GetName().Name
                 });
 
+                var video = new Video();
+                video.Snippet = new VideoSnippet();
+                video.Snippet.Title = Job.title;
+                video.Snippet.Description = Job.desc;
+
+                video.Snippet.Tags = Job.tags.Split(',');
+                //program_video.Snippet.CategoryId = "22"; // See https://developers.google.com/youtube/v3/docs/videoCategories/list
+                video.Status = new VideoStatus();
+                video.Status.PrivacyStatus = "public"; // or "private" or "public"
+                var filePath = @"C:\Temp\" + Job.filename; // Replace with path to actual movie file.
+
+                IUploadProgress progress;
+                using (var fileStream = new FileStream(filePath, FileMode.Open))
                 {
-                    var program_video = new Video();
-                    program_video.Snippet = new VideoSnippet();
-                    program_video.Snippet.Title = Job.txtProgramTitle.Text;
-                    program_video.Snippet.Description = Job.txtDescription.Text;
+                    var videosInsertRequest = youtubeService.Videos.Insert(video, "snippet,status", fileStream, "video/*");
 
-                    program_video.Snippet.Tags = Job.txtTags.Text.Split(',');
-                    //program_video.Snippet.CategoryId = "22"; // See https://developers.google.com/youtube/v3/docs/videoCategories/list
-                    program_video.Status = new VideoStatus();
-                    program_video.Status.PrivacyStatus = "public"; // or "private" or "public"
-                    var filePath = @"C:\Temp\" + Job.programFileName; // Replace with path to actual movie file.
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Open))
-                    {
-                        var videosInsertRequest = youtubeService.Videos.Insert(program_video, "snippet,status", fileStream, "video/*");
-                        videosInsertRequest.ProgressChanged += videosInsertRequest_ProgressChanged;
-
-                        videosInsertRequest.Upload();
-                    }
-
-                    var newPlaylistItem = new PlaylistItem();
-                    newPlaylistItem.Snippet = new PlaylistItemSnippet();
-                    newPlaylistItem.Snippet.PlaylistId = playlistId; //REPLACE
-                    newPlaylistItem.Snippet.ResourceId = new ResourceId();
-                    newPlaylistItem.Snippet.ResourceId.Kind = "youtube#video";
-                    newPlaylistItem.Snippet.ResourceId.VideoId = program_video.Id;
-                    newPlaylistItem = youtubeService.PlaylistItems.Insert(newPlaylistItem, "snippet").Execute();
+                    progress = videosInsertRequest.Upload();
                 }
 
+                if (progress.Status == UploadStatus.Completed)
                 {
-                    var wide_video = new Video();
-                    wide_video.Snippet = new VideoSnippet();
-                    wide_video.Snippet.Title = Job.txtWideTitle.Text;
-                    wide_video.Snippet.Description = Job.txtDescription.Text;
-
-                    wide_video.Snippet.Tags = Job.txtTags.Text.Split(',');
-                    //program_video.Snippet.CategoryId = "22"; // See https://developers.google.com/youtube/v3/docs/videoCategories/list
-                    wide_video.Status = new VideoStatus();
-                    wide_video.Status.PrivacyStatus = "public"; // or "private" or "public"
-                    var filePath = @"C:\Temp\" + Job.programFileName; // Replace with path to actual movie file.
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Open))
-                    {
-                        var videosInsertRequest = youtubeService.Videos.Insert(wide_video, "snippet,status", fileStream, "video/*");
-                        videosInsertRequest.ProgressChanged += videosInsertRequest_ProgressChanged;
-
-                        videosInsertRequest.Upload();
-                    }
-
                     var newPlaylistItem = new PlaylistItem();
                     newPlaylistItem.Snippet = new PlaylistItemSnippet();
-                    newPlaylistItem.Snippet.PlaylistId = playlistId; //REPLACE
+                    newPlaylistItem.Snippet.PlaylistId = Job.playlist; //REPLACE
                     newPlaylistItem.Snippet.ResourceId = new ResourceId();
                     newPlaylistItem.Snippet.ResourceId.Kind = "youtube#video";
-                    newPlaylistItem.Snippet.ResourceId.VideoId = wide_video.Id;
+                    newPlaylistItem.Snippet.ResourceId.VideoId = video.Id;
                     newPlaylistItem = youtubeService.PlaylistItems.Insert(newPlaylistItem, "snippet").Execute();
+
+                    File.Delete(@"C:\Temp\" + Job.filename);
                 }
-
-                File.Delete(@"C:\Temp\" + Job.programFileName);
-                File.Delete(@"C:\Temp\" + Job.wideFileName);
-                Job.Close();
+                else
+                {
+                    MessageBox.Show("Failed to upload " + Job.filename);
+                }
             }
-        }
-
-        void videosInsertRequest_ProgressChanged(Google.Apis.Upload.IUploadProgress progress)
-        {
-            switch (progress.Status)
-            {
-                case UploadStatus.Uploading:
-                    Console.WriteLine("{0} bytes sent.", progress.BytesSent);
-                    break;
-
-                case UploadStatus.Failed:
-                    Console.WriteLine("An error prevented the upload from completing.\n{0}", progress.Exception);
-                    break;
-            }
-        }
-
-        public void kill()
-        {
-            alive = false;
         }
 
         ~UploadManager()

@@ -727,7 +727,6 @@
         private System.Windows.Forms.Button btnConnectProgram;
         private System.ComponentModel.BackgroundWorker bgWorker_FTP_Program;
         private System.ComponentModel.BackgroundWorker bgWorker_FTP_Wide;
-        private System.ComponentModel.BackgroundWorker bgWorker_Youtube;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Panel ledProgram;
         private System.Windows.Forms.Label lblProgramReady;
