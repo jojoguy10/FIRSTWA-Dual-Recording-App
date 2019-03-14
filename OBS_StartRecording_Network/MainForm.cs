@@ -38,8 +38,12 @@ using System.Text.RegularExpressions;
  * Layout/UI Design
  */
 
-//using FileName = string;
-//using FilePath = string;
+using FileName = System.String;
+using FilePath = System.String;
+using URI = System.String;
+using IPAddress = System.String;
+using TCPPort = System.String;
+using RegistryKeyName = System.String;
 
 namespace FIRSTWA_Recorder
 {
@@ -47,7 +51,7 @@ namespace FIRSTWA_Recorder
     public partial class MainForm : Form
     {
         RecordingSettings frmRecordingSetting;
-
+        
         RestClient tbaClient = new RestClient("http://www.thebluealliance.com/api/v3");
         RestRequest tbaRequest = new RestRequest($"district/2019pnw/events", Method.GET);
         private string TBAKEY;
@@ -60,15 +64,15 @@ namespace FIRSTWA_Recorder
 
         Match[] matches;
 
-        private string strIPAddressPC = @"192.168.100.70";
-        private string strIPAddressPROGRAM = @"192.168.100.35";
-        private string strIPAddressWIDE = @"192.168.100.34";
-        private string strPortPROGRAM = "9993";
-        private string strPortWIDE = "9993";
+        IPAddress strIPAddressPC = @"192.168.100.70";
+        IPAddress strIPAddressPROGRAM = @"192.168.100.35";
+        IPAddress strIPAddressWIDE = @"192.168.100.34";
+        TCPPort strPortPROGRAM = "9993";
+        TCPPort strPortWIDE = "9993";
 
-        string regPROGRAM = "PROGRAM_IPAddress";
-        string regWIDE = "WIDE_IPAddress";
-        string regPC = "PC_IPAddress";
+        RegistryKeyName regPROGRAM = "PROGRAM_IPAddress";
+        RegistryKeyName regWIDE = "WIDE_IPAddress";
+        RegistryKeyName regPC = "PC_IPAddress";
 
         int progress = 0;
 
@@ -78,7 +82,7 @@ namespace FIRSTWA_Recorder
         string matchNameWide = "";
         string matchABV = "";
 
-        private string fileNameProgram, fileNameWide;
+        FileName fileNameProgram, fileNameWide;
         private string ytDescription, ytTags;
 
         private DateTime startTime;
@@ -362,7 +366,7 @@ namespace FIRSTWA_Recorder
         }
 
         #region FTP Stuff
-        private void CreateEventDirectory(string uriPath)
+        private void CreateEventDirectory(URI uriPath)
         {
             try
             {
@@ -382,7 +386,7 @@ namespace FIRSTWA_Recorder
 
         //convert the mp4 from uncompressed audio to mp3 audio using ffmpeg
         //videoPath - filepath of mp4 to convert
-        private void ConvertVideo(string videoPath, bool mapMono = false)
+        private void ConvertVideo(FilePath videoPath, bool mapMono = false)
         {
             string videoName = videoPath.Substring(0,videoPath.Length - 4);
             string outVideo = videoName + "test.mp4";
@@ -437,7 +441,7 @@ namespace FIRSTWA_Recorder
         //toURI - server connection to upload to
         //fromFilePath - file path to downloaded file
         //toFilePath - file path to upload
-        private void CopyFTPFile(string fromURI, string toURI, string fromFilePath, string toFilePath, string localTempFileName, bool mapMono=false)
+        private void CopyFTPFile(URI fromURI, URI toURI, FilePath fromFilePath, FilePath toFilePath, FileName localTempFileName, bool mapMono=false)
         {
             progress++;
             SetProgress(progress);
@@ -456,7 +460,7 @@ namespace FIRSTWA_Recorder
         //uri - connection to download from
         //ftpFileName - file path at target remote server
         //localFilePath - file path at local
-        private void DownloadFileFTP(string remotePath, string localFilePath)
+        private void DownloadFileFTP(FilePath remotePath, FilePath localFilePath)
         {
             progress++;
             SetProgress(progress);
@@ -481,7 +485,7 @@ namespace FIRSTWA_Recorder
         //upload an mp4 to a remote server
         //uri - connection and file path at remote to upload to
         //filePath - file path at local to upload from
-        public void UploadFileFTP(string uri, string filePath)
+        public void UploadFileFTP(URI uri, FilePath filePath)
         {
             progress++;
             SetProgress(progress);
@@ -498,7 +502,7 @@ namespace FIRSTWA_Recorder
         //delete a file at a remote server
         //uri - remote server to delete at
         //filename - 
-        private void DeleteFTPFile(string uri, string filename)
+        private void DeleteFTPFile(URI uri, string filename)
         {
             string fullDir = uri + "/" + filename;
             FtpWebRequest ftpRequest = (FtpWebRequest)WebRequest.Create(fullDir);
@@ -509,7 +513,7 @@ namespace FIRSTWA_Recorder
             response.Close();
         }
 
-        private List<string> GetFTPFiles(string uri)
+        private List<string> GetFTPFiles(URI uri)
         {
             progress++;
             SetProgress(progress);
@@ -650,7 +654,7 @@ namespace FIRSTWA_Recorder
                 //var result = MessageBox.Show("Clear SSD? This will erase any existing clips in the hyperdeck recorder. Not clearing the SD may result in corrupted clips or naming conflicts", "Error", MessageBoxButtons.YesNo);
                 //if (result == DialogResult.Yes)
                 //{
-                //    string programURI = string.Format("ftp://{0}/1", strIPAddressPROGRAM);
+                //    URI programURI = string.Format("ftp://{0}/1", strIPAddressPROGRAM);
 
                 //    Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
                 //RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
@@ -686,7 +690,7 @@ namespace FIRSTWA_Recorder
                 //var result = MessageBox.Show("Clear SSD? This will erase any existing clips in the hyperdeck recorder. Not clearing the SD may result in corrupted clips or naming conflicts", "Error", MessageBoxButtons.YesNo);
                 //if (result == DialogResult.Yes)
                 //{
-                //    string programURI = string.Format("ftp://{0}/1", strIPAddressWIDE);
+                //    URI programURI = string.Format("ftp://{0}/1", strIPAddressWIDE);
 
                 //    Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
                 //RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
@@ -714,8 +718,8 @@ namespace FIRSTWA_Recorder
 
             progress++;
             SetProgress(progress);
-            string wideURI = string.Format("ftp://{0}/1", strIPAddressWIDE);
-            string widePath = string.Format("ftp://{0}/2019/{1}/WIDE", strIPAddressPC, currentEvent.short_name);
+            URI wideURI = string.Format("ftp://{0}/1", strIPAddressWIDE);
+            FilePath widePath = string.Format("ftp://{0}/2019/{1}/WIDE", strIPAddressPC, currentEvent.short_name);
 
             CreateEventDirectory(widePath);
             List<string> directories = GetFTPFiles(wideURI);
@@ -798,8 +802,8 @@ namespace FIRSTWA_Recorder
 
             progress++;
             SetProgress(progress);
-            string programURI = string.Format("ftp://{0}/1", strIPAddressPROGRAM);
-            string programPath = string.Format("ftp://{0}/2019/{1}/PROGRAM", strIPAddressPC, currentEvent.short_name);
+            URI programURI = string.Format("ftp://{0}/1", strIPAddressPROGRAM);
+            FilePath programPath = string.Format("ftp://{0}/2019/{1}/PROGRAM", strIPAddressPC, currentEvent.short_name);
 
             CreateEventDirectory(programPath);
             List<string> directories = GetFTPFiles(programURI);
