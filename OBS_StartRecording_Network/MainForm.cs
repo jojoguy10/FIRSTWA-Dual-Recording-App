@@ -397,7 +397,7 @@ namespace FIRSTWA_Recorder
             }
             else if(currentMatchType != MatchType.Ceremony)
             {
-                if(numFinalNo.Value < 4)
+                if(numFinalNo.Value < numFinalNo.Maximum)
                 {
                     numFinalNo.Value++;
                 }
