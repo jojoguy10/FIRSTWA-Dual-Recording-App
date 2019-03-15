@@ -928,7 +928,14 @@ namespace FIRSTWA_Recorder
 
         private void audioToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            DialogResult settingsResult = frmAudioSetting.ShowDialog();
+            if (settingsResult == DialogResult.OK)
+            {
+                wideChannels = frmAudioSetting.wide;
+                progChannels = frmAudioSetting.prog;
 
+                UpdateRegistryKeys();
+            }
         }
 
         private void bgWorker_FTP_Program_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
