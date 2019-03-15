@@ -93,9 +93,6 @@ namespace FIRSTWA_Recorder
         }
 
         private FileInfo credFile = new FileInfo(@"D:\__USER\Documents\GitHub\FIRSTWA_PC_RecordingApplication\FIRSTWA_StartRecording_Network\client_secret_613443767055-pvnp5ugap7kgj1i7rid6in7tnm3podmv.apps.googleusercontent.com.json");
-        private Video videoYT;
-
-        private UploadManager ManagingWindow;
 
         private string programPlaylistTitle, programPlaylistId, widePlaylistTitle, widePlaylistId;
         private string programVideoTitle, programVideoId, wideVideoTitle, wideVideoId;
@@ -166,9 +163,7 @@ namespace FIRSTWA_Recorder
             {
                 Directory.CreateDirectory(@"C:\Temp");
             }
-
-            ManagingWindow = new UploadManager(@"https://www.youtube.com/playlist?list=PLwES-SbpsnxwE2oV4EpA-Cb9Szt8UG1vk");
-
+            
             frmRecordingSetting = new RecordingSettings(strIPAddressPC, strIPAddressPROGRAM, strIPAddressWIDE);
             
             groupEvent.Enabled = false;
@@ -933,7 +928,7 @@ namespace FIRSTWA_Recorder
                                     fileNameProgram,
                                     fileNameWide,
                                     ytDescription,
-                                    ytTags, ManagingWindow);
+                                    ytTags);
             ytForm.ShowDialog();
         }
 

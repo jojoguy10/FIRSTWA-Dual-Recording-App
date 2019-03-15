@@ -9,9 +9,8 @@ namespace FIRSTWA_Recorder
 
         public string programFileName;
         public string wideFileName;
-        public UploadManager ManagingWindow;
 
-        public YoutubeUpload(string program, string wide, string description, string tags, UploadManager _ManagingWindow)
+        public YoutubeUpload(string program, string wide, string description, string tags)
         {
             InitializeComponent();
 
@@ -22,31 +21,35 @@ namespace FIRSTWA_Recorder
             txtWideTitle.Text = wide.Replace(".mp4", "");
             txtDescription.Text = description.Replace("\n", "\r\n");
             txtTags.Text = tags;
-
-            ManagingWindow = _ManagingWindow;
         }
 
-        //private void TextBox_Click(object sender, EventArgs e)
-        //{
-        //    (sender as TextBox).SelectAll();
-        //    Clipboard.SetText((sender as TextBox).Text);
-        //}
-
-        private void btnConfirm_Click(object sender, EventArgs e)
-        {
-            //ManagingWindow.addVideo(this);
-            // Hide();
-
-            File.Delete(@"C:\Temp\" + programFileName);
-            File.Delete(@"C:\Temp\" + wideFileName);
-            Close();
-        }
         private void btnCancel_Click(object sender, EventArgs e)
         {
             File.Delete(@"C:\Temp\" + programFileName);
             File.Delete(@"C:\Temp\" + wideFileName);
             Close();
         }
+        private void TextBox_Click(object sender, EventArgs e)
+        {
+            (sender as TextBox).SelectAll();
+            Clipboard.SetText((sender as TextBox).Text);
+        }
 
+        private void button1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                button1.DoDragDrop("Here's some text!",
+                    DragDropEffects.Copy);
+            }
+        }
+        private void button2_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                button1.DoDragDrop("Here's some text!",
+                    DragDropEffects.Copy);
+            }
+        }
     }
 }
