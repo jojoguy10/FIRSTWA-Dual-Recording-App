@@ -73,9 +73,14 @@ namespace FIRSTWA_Recorder
         TCPPort strPortPROGRAM = "9993";
         TCPPort strPortWIDE = "9993";
 
+        MapMono progChannels = MapMono.None;
+        MapMono wideChannels = MapMono.None;
+
         RegistryKeyName regPROGRAM = "PROGRAM_IPAddress";
         RegistryKeyName regWIDE = "WIDE_IPAddress";
         RegistryKeyName regPC = "PC_IPAddress";
+        RegistryKeyName regProgAudio = "PROGRAM_AudioChannel";
+        RegistryKeyName regWideAudio = "WIDE_AudioChannel";
 
         int progress = 0;
 
@@ -154,6 +159,10 @@ namespace FIRSTWA_Recorder
                     strIPAddressPC = ReadRegistryKey(regPC);
                     strIPAddressPROGRAM = ReadRegistryKey(regPROGRAM);
                     strIPAddressWIDE = ReadRegistryKey(regWIDE);
+                    //Enum.TryParse(ReadRegistryKey(regWideAudio), out MapMono wideChannels);
+                    //wideChannels = ReadRegistryKey(regWideAudio).as
+                    //progChannels = ReadRegistryKey(regProgAudio);
+                    //Enum.Parse()
                 }
             }
             catch
@@ -168,6 +177,7 @@ namespace FIRSTWA_Recorder
             }
             
             frmRecordingSetting = new RecordingSettings(strIPAddressPC, strIPAddressPROGRAM, strIPAddressWIDE);
+            frmAudioSetting = new AudioSettings(wideChannels,progChannels);
             
             groupEvent.Enabled = false;
             groupMatch.Enabled = false;
@@ -790,7 +800,7 @@ namespace FIRSTWA_Recorder
                 }
             }
 
-            CopyFTPFile(wideURI, widePath, fileNames[matchIndex], fileNameWide, tempFile, MapMono.None);
+            CopyFTPFile(wideURI, widePath, fileNames[matchIndex], fileNameWide, tempFile, frmAudioSetting.prog);
             progress++;
             SetProgress(progress);
             Console.WriteLine("Wide: Done!");
@@ -872,7 +882,7 @@ namespace FIRSTWA_Recorder
                 }
             }
 
-            CopyFTPFile(programURI, programPath, fileNames[matchIndex], fileNameProgram, tempFile, MapMono.Right);
+            CopyFTPFile(programURI, programPath, fileNames[matchIndex], fileNameProgram, tempFile, frmAudioSetting.wide);
             progress++;
             SetProgress(progress);
             Console.WriteLine("Program: Done!");
@@ -937,6 +947,18 @@ namespace FIRSTWA_Recorder
                                     ytDescription,
                                     ytTags);
             ytForm.Show();
+        }
+
+        private void audioToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult settingsResult = frmAudioSetting.ShowDialog();
+            if (settingsResult == DialogResult.OK)
+            {
+                wideChannels = frmAudioSetting.wide;
+                progChannels = frmAudioSetting.prog;
+
+                UpdateRegistryKeys();
+            }
         }
 
         private void bgWorker_FTP_Program_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

@@ -23,5 +23,40 @@ namespace FIRSTWA_Recorder
             prog = _prog;
         }
 
+        private void btnAccept_Click(object sender, EventArgs e)
+        {
+            if (rdoProgLeft.Checked)
+            {
+                prog = MapMono.Left;
+            }else if (rdoProgRight.Checked)
+            {
+                prog = MapMono.Right;
+            }
+            else
+            {
+                prog = MapMono.None;
+            }
+            if (rdoWideLeft.Checked)
+            {
+                wide = MapMono.Left;
+            }
+            else if (rdoWideRight.Checked)
+            {
+                wide = MapMono.Right;
+            }
+            else
+            {
+                wide = MapMono.None;
+            }
+
+            this.DialogResult = DialogResult.OK;
+            this.Hide();
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
+        }
     }
 }
