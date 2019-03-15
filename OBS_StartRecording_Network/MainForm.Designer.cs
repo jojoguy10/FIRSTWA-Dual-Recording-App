@@ -45,7 +45,6 @@
             this.recordingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uploadsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label3 = new System.Windows.Forms.Label();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.groupEvent = new System.Windows.Forms.GroupBox();
             this.comboEventName = new System.Windows.Forms.ComboBox();
@@ -82,6 +81,9 @@
             this.lblWideReady = new System.Windows.Forms.Label();
             this.ledWide = new System.Windows.Forms.Panel();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.lblReportA = new System.Windows.Forms.Label();
+            this.lblReportB = new System.Windows.Forms.Label();
+            this.version001ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupMatchTypes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -223,7 +225,8 @@
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(28, 28);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.settingsToolStripMenuItem});
+            this.settingsToolStripMenuItem,
+            this.version001ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(411, 24);
@@ -243,14 +246,14 @@
             // audioToolStripMenuItem
             // 
             this.audioToolStripMenuItem.Name = "audioToolStripMenuItem";
-            this.audioToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.audioToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.audioToolStripMenuItem.Text = "Audio";
             this.audioToolStripMenuItem.Click += new System.EventHandler(this.audioToolStripMenuItem_Click);
             // 
             // recordingToolStripMenuItem
             // 
             this.recordingToolStripMenuItem.Name = "recordingToolStripMenuItem";
-            this.recordingToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.recordingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.recordingToolStripMenuItem.Text = "Recording";
             this.recordingToolStripMenuItem.Click += new System.EventHandler(this.recordingToolStripMenuItem_Click);
             // 
@@ -258,7 +261,7 @@
             // 
             this.uploadsToolStripMenuItem.Enabled = false;
             this.uploadsToolStripMenuItem.Name = "uploadsToolStripMenuItem";
-            this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.uploadsToolStripMenuItem.Text = "Uploading";
             // 
             // label3
@@ -269,10 +272,6 @@
             this.label3.Size = new System.Drawing.Size(69, 13);
             this.label3.TabIndex = 9;
             this.label3.Text = "Event Name:";
-            // 
-            // backgroundWorker1
-            // 
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
             // folderBrowserDialog1
             // 
@@ -632,7 +631,7 @@
             // 
             this.btnCancel.BackColor = System.Drawing.Color.Red;
             this.btnCancel.Enabled = false;
-            this.btnCancel.Location = new System.Drawing.Point(145, 410);
+            this.btnCancel.Location = new System.Drawing.Point(145, 429);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(2);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(118, 34);
@@ -641,13 +640,39 @@
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
+            // lblReportA
+            // 
+            this.lblReportA.AutoSize = true;
+            this.lblReportA.Location = new System.Drawing.Point(12, 412);
+            this.lblReportA.Name = "lblReportA";
+            this.lblReportA.Size = new System.Drawing.Size(24, 13);
+            this.lblReportA.TabIndex = 33;
+            this.lblReportA.Text = "Idle";
+            // 
+            // lblReportB
+            // 
+            this.lblReportB.AutoSize = true;
+            this.lblReportB.Location = new System.Drawing.Point(206, 412);
+            this.lblReportB.Name = "lblReportB";
+            this.lblReportB.Size = new System.Drawing.Size(24, 13);
+            this.lblReportB.TabIndex = 34;
+            this.lblReportB.Text = "Idle";
+            // 
+            // version001ToolStripMenuItem
+            // 
+            this.version001ToolStripMenuItem.Name = "version001ToolStripMenuItem";
+            this.version001ToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
+            this.version001ToolStripMenuItem.Text = "Version 0.0.1";
+            // 
             // MainForm
             // 
             this.AcceptButton = this.btnStartRecording;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
-            this.ClientSize = new System.Drawing.Size(411, 447);
+            this.ClientSize = new System.Drawing.Size(411, 463);
+            this.Controls.Add(this.lblReportB);
+            this.Controls.Add(this.lblReportA);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.lblWideReady);
             this.Controls.Add(this.ledWide);
@@ -703,7 +728,6 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.Label label3;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.GroupBox groupEvent;
         private System.Windows.Forms.GroupBox groupMatch;
@@ -746,6 +770,9 @@
         private System.Windows.Forms.RadioButton radioBtnCeremony;
         private System.Windows.Forms.Label lblCeremonyTitle;
         private System.Windows.Forms.TextBox txtCeremonyTitle;
+        private System.Windows.Forms.Label lblReportA;
+        private System.Windows.Forms.Label lblReportB;
+        private System.Windows.Forms.ToolStripMenuItem version001ToolStripMenuItem;
     }
 }
 

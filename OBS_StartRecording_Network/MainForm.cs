@@ -750,7 +750,10 @@ namespace FIRSTWA_Recorder
         #region Background Workers
         private void bgWorker_FTP_Wide_DoWork(object sender, DoWorkEventArgs e)
         {
+            lblReportA.Invoke((Action)(() => { lblReportA.Text = "Waiting"; }));
             Thread.Sleep(1000);
+
+            lblReportA.Invoke((Action)(() => { lblReportA.Text = "Clearing SD"; }));
 
             progress++;
             SetProgress(progress);
@@ -785,12 +788,16 @@ namespace FIRSTWA_Recorder
                     directories.RemoveAt(minTimstampIndex);
                 }
             }
+
+
             progress++;
             SetProgress(progress);
 
+            lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Finding Video"; }));
+
             string tempFile = @"C:\Temp\" + fileNameWide;
 
-            int matchIndex = 0;
+            int matchIndex = -1;
             int most_recent = -1;
             foreach (string file in fileNames)
             {
@@ -804,10 +811,23 @@ namespace FIRSTWA_Recorder
                     }
                 }
             }
+            if(matchIndex < 0)
+            {
+                lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Failed to Find"; }));
+                return;
+            }
 
-            CopyFTPFile(wideURI, widePath, fileNames[matchIndex], fileNameWide, tempFile, frmAudioSetting.prog);
-            progress++;
-            SetProgress(progress);
+            lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Downloading Video"; }));
+            DownloadFileFTP(wideURI + "/" + fileNames[matchIndex], tempFile);
+
+            lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Converting Video"; }));
+            ConvertVideo(tempFile, wideChannels);
+
+            lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Uploading Video"; }));
+            UploadFileFTP(widePath + "/" + fileNameWide, tempFile);
+
+            lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Done"; }));
+
             Console.WriteLine("Wide: Done!");
             Console.WriteLine("Wide: Progress = " + progress);
             ledWide.BackColor = Color.Green;
@@ -815,7 +835,10 @@ namespace FIRSTWA_Recorder
 
         private void bgWorker_FTP_Program_DoWork(object sender, DoWorkEventArgs e)
         {
+            lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Waiting"; }));
             Thread.Sleep(1000);
+
+            lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Clearing SD"; }));
 
             progress++;
             SetProgress(progress);
@@ -850,8 +873,13 @@ namespace FIRSTWA_Recorder
                     directories.RemoveAt(minTimstampIndex);
                 }
             }
+
+
             progress++;
             SetProgress(progress);
+
+            lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Downloading Video"; }));
+
 
             string tempFile = @"C:\Temp\" + fileNameProgram;
 
@@ -870,9 +898,23 @@ namespace FIRSTWA_Recorder
                 }
             }
 
-            CopyFTPFile(programURI, programPath, fileNames[matchIndex], fileNameProgram, tempFile, frmAudioSetting.wide);
-            progress++;
-            SetProgress(progress);
+            if (matchIndex < 0)
+            {
+                lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Failed to Find"; }));
+                return;
+            }
+
+            lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Downloading Video"; }));
+            DownloadFileFTP(programURI + "/" + fileNames[matchIndex], tempFile);
+
+            lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Converting Video"; }));
+            ConvertVideo(tempFile, progChannels);
+
+            lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Uploading Video"; }));
+            UploadFileFTP(programPath + "/" + fileNameProgram, tempFile);
+
+            lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Done"; }));
+
             Console.WriteLine("Program: Done!");
             Console.WriteLine("Prgram: Progress = " + progress);
             ledProgram.BackColor = Color.Green;
@@ -1003,11 +1045,6 @@ namespace FIRSTWA_Recorder
 
         #region Callbacks
         delegate void SetTextCallback(string text);
-
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
-        {
-
-        }
 
         private void SetText(string text)
         {
