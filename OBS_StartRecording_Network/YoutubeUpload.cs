@@ -39,16 +39,20 @@ namespace FIRSTWA_Recorder
         {
             if (e.Button == MouseButtons.Left)
             {
-                button1.DoDragDrop("Here's some text!",
-                    DragDropEffects.Copy);
+                string[] init = new string[] { @"C:\Temp\" + programFileName };
+
+                DataObject dobj = new DataObject(DataFormats.FileDrop, init);
+                button1.DoDragDrop(dobj, DragDropEffects.All);
             }
         }
         private void button2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
-                button1.DoDragDrop("Here's some text!",
-                    DragDropEffects.Copy);
+                string[] init = new string[] { @"C:\Temp\" + wideFileName };
+
+                DataObject dobj = new DataObject(DataFormats.FileDrop, init);
+                button1.DoDragDrop(dobj, DragDropEffects.All);
             }
         }
     }
