@@ -79,6 +79,7 @@
             this.lblWideReady = new System.Windows.Forms.Label();
             this.ledWide = new System.Windows.Forms.Panel();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.audioToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupMatchTypes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -217,6 +218,7 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.audioToolStripMenuItem,
             this.recordingToolStripMenuItem,
             this.uploadsToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
@@ -226,7 +228,7 @@
             // recordingToolStripMenuItem
             // 
             this.recordingToolStripMenuItem.Name = "recordingToolStripMenuItem";
-            this.recordingToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.recordingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.recordingToolStripMenuItem.Text = "Recording";
             this.recordingToolStripMenuItem.Click += new System.EventHandler(this.recordingToolStripMenuItem_Click);
             // 
@@ -234,7 +236,7 @@
             // 
             this.uploadsToolStripMenuItem.Enabled = false;
             this.uploadsToolStripMenuItem.Name = "uploadsToolStripMenuItem";
-            this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.uploadsToolStripMenuItem.Text = "Uploading";
             // 
             // label3
@@ -419,9 +421,9 @@
             this.groupMatchDetails.Controls.Add(this.groupBlueAlliance);
             this.groupMatchDetails.Controls.Add(this.groupRedAlliance);
             this.groupMatchDetails.Location = new System.Drawing.Point(716, 159);
-            this.groupMatchDetails.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupMatchDetails.Margin = new System.Windows.Forms.Padding(2);
             this.groupMatchDetails.Name = "groupMatchDetails";
-            this.groupMatchDetails.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupMatchDetails.Padding = new System.Windows.Forms.Padding(2);
             this.groupMatchDetails.Size = new System.Drawing.Size(235, 129);
             this.groupMatchDetails.TabIndex = 25;
             this.groupMatchDetails.TabStop = false;
@@ -446,9 +448,9 @@
             this.groupBlueAlliance.Controls.Add(this.lblBlue2);
             this.groupBlueAlliance.ForeColor = System.Drawing.Color.Blue;
             this.groupBlueAlliance.Location = new System.Drawing.Point(117, 45);
-            this.groupBlueAlliance.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBlueAlliance.Margin = new System.Windows.Forms.Padding(2);
             this.groupBlueAlliance.Name = "groupBlueAlliance";
-            this.groupBlueAlliance.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBlueAlliance.Padding = new System.Windows.Forms.Padding(2);
             this.groupBlueAlliance.Size = new System.Drawing.Size(109, 74);
             this.groupBlueAlliance.TabIndex = 1;
             this.groupBlueAlliance.TabStop = false;
@@ -491,9 +493,9 @@
             this.groupRedAlliance.Controls.Add(this.lblRed1);
             this.groupRedAlliance.ForeColor = System.Drawing.Color.Red;
             this.groupRedAlliance.Location = new System.Drawing.Point(4, 45);
-            this.groupRedAlliance.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupRedAlliance.Margin = new System.Windows.Forms.Padding(2);
             this.groupRedAlliance.Name = "groupRedAlliance";
-            this.groupRedAlliance.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupRedAlliance.Padding = new System.Windows.Forms.Padding(2);
             this.groupRedAlliance.Size = new System.Drawing.Size(109, 74);
             this.groupRedAlliance.TabIndex = 0;
             this.groupRedAlliance.TabStop = false;
@@ -532,7 +534,7 @@
             // btnGetMatchDetails
             // 
             this.btnGetMatchDetails.Location = new System.Drawing.Point(750, 132);
-            this.btnGetMatchDetails.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnGetMatchDetails.Margin = new System.Windows.Forms.Padding(2);
             this.btnGetMatchDetails.Name = "btnGetMatchDetails";
             this.btnGetMatchDetails.Size = new System.Drawing.Size(158, 23);
             this.btnGetMatchDetails.TabIndex = 26;
@@ -552,7 +554,7 @@
             // progressBar1
             // 
             this.progressBar1.Location = new System.Drawing.Point(12, 380);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
             this.progressBar1.Maximum = 31;
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(391, 26);
@@ -562,7 +564,7 @@
             // 
             this.ledProgram.BackColor = System.Drawing.Color.Red;
             this.ledProgram.Location = new System.Drawing.Point(69, 350);
-            this.ledProgram.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ledProgram.Margin = new System.Windows.Forms.Padding(2);
             this.ledProgram.Name = "ledProgram";
             this.ledProgram.Size = new System.Drawing.Size(34, 16);
             this.ledProgram.TabIndex = 28;
@@ -591,7 +593,7 @@
             // 
             this.ledWide.BackColor = System.Drawing.Color.Red;
             this.ledWide.Location = new System.Drawing.Point(369, 350);
-            this.ledWide.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ledWide.Margin = new System.Windows.Forms.Padding(2);
             this.ledWide.Name = "ledWide";
             this.ledWide.Size = new System.Drawing.Size(34, 16);
             this.ledWide.TabIndex = 30;
@@ -601,13 +603,19 @@
             this.btnCancel.BackColor = System.Drawing.Color.Red;
             this.btnCancel.Enabled = false;
             this.btnCancel.Location = new System.Drawing.Point(145, 410);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(2);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(118, 34);
             this.btnCancel.TabIndex = 32;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // audioToolStripMenuItem
+            // 
+            this.audioToolStripMenuItem.Name = "audioToolStripMenuItem";
+            this.audioToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.audioToolStripMenuItem.Text = "Audio";
             // 
             // MainForm
             // 
@@ -711,6 +719,7 @@
         private System.Windows.Forms.Label lblWideReady;
         private System.Windows.Forms.Panel ledWide;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.ToolStripMenuItem audioToolStripMenuItem;
     }
 }
 

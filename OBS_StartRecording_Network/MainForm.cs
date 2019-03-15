@@ -48,9 +48,12 @@ using RegistryKeyName = System.String;
 namespace FIRSTWA_Recorder
 {
 
+    public enum MapMono { None, Left, Right };
+
     public partial class MainForm : Form
     {
         RecordingSettings frmRecordingSetting;
+        AudioSettings frmAudioSetting;
         
         RestClient tbaClient = new RestClient("http://www.thebluealliance.com/api/v3");
         RestRequest tbaRequest = new RestRequest($"district/2019pnw/events", Method.GET);
@@ -381,17 +384,21 @@ namespace FIRSTWA_Recorder
 
         //convert the mp4 from uncompressed audio to mp3 audio using ffmpeg
         //videoPath - filepath of mp4 to convert
-        private void ConvertVideo(FilePath videoPath, bool mapMono = false)
+        private void ConvertVideo(FilePath videoPath, MapMono style)
         {
             string videoName = videoPath.Substring(0,videoPath.Length - 4);
             string outVideo = videoName + "test.mp4";
 
             StringBuilder args_proto = new StringBuilder();
 
-            if (mapMono)
+            if (style == MapMono.Left)
             {
                 args_proto.AppendFormat("-y -acodec pcm_s24le -i \"{0}\" -acodec mp3 -vcodec copy -af \"pan=mono|c0=c0\" \"{1}\"", videoPath, outVideo);
-                Console.WriteLine("Mono");
+                Console.WriteLine("Mono Left");
+            }else if (style == MapMono.Right)
+            {
+                args_proto.AppendFormat("-y -acodec pcm_s24le -i \"{0}\" -acodec mp3 -vcodec copy -af \"pan=mono|c0=c1\" \"{1}\"", videoPath, outVideo);
+                Console.WriteLine("Mono Left");
             }
             else
             {
@@ -400,7 +407,7 @@ namespace FIRSTWA_Recorder
             }
 
             string args = args_proto.ToString();
-            Console.WriteLine(mapMono.ToString() + "::" + args);
+            Console.WriteLine(style.ToString() + "::" + args);
 
             var process = new Process
             {
@@ -436,7 +443,7 @@ namespace FIRSTWA_Recorder
         //toURI - server connection to upload to
         //fromFilePath - file path to downloaded file
         //toFilePath - file path to upload
-        private void CopyFTPFile(URI fromURI, URI toURI, FilePath fromFilePath, FilePath toFilePath, FileName localTempFileName, bool mapMono=false)
+        private void CopyFTPFile(URI fromURI, URI toURI, FilePath fromFilePath, FilePath toFilePath, FileName localTempFileName, MapMono style)
         {
             progress++;
             SetProgress(progress);
@@ -445,7 +452,7 @@ namespace FIRSTWA_Recorder
 
             DownloadFileFTP(fromURI +"/" + fromFilePath, localTempFileName);
 
-            ConvertVideo(localTempFileName, mapMono);
+            ConvertVideo(localTempFileName, style);
             UploadFileFTP(toURI + "/" + toFilePath, localTempFileName);
             progress++;
             SetProgress(progress);
@@ -783,7 +790,7 @@ namespace FIRSTWA_Recorder
                 }
             }
 
-            CopyFTPFile(wideURI, widePath, fileNames[matchIndex], fileNameWide, tempFile, false);
+            CopyFTPFile(wideURI, widePath, fileNames[matchIndex], fileNameWide, tempFile, MapMono.None);
             progress++;
             SetProgress(progress);
             Console.WriteLine("Wide: Done!");
@@ -865,7 +872,7 @@ namespace FIRSTWA_Recorder
                 }
             }
 
-            CopyFTPFile(programURI, programPath, fileNames[matchIndex], fileNameProgram, tempFile, true);
+            CopyFTPFile(programURI, programPath, fileNames[matchIndex], fileNameProgram, tempFile, MapMono.Right);
             progress++;
             SetProgress(progress);
             Console.WriteLine("Program: Done!");
@@ -929,7 +936,7 @@ namespace FIRSTWA_Recorder
                                     fileNameWide,
                                     ytDescription,
                                     ytTags);
-            ytForm.ShowDialog();
+            ytForm.Show();
         }
 
         private void bgWorker_FTP_Program_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

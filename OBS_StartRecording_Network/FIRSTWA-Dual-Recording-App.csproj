@@ -83,6 +83,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AudioSettings.Designer.cs">
+      <DependentUpon>AudioSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Classes\District.cs" />
     <Compile Include="Classes\Event.cs" />
     <Compile Include="Classes\HyperDeck.cs" />
@@ -107,6 +113,9 @@
     <Compile Include="YoutubeUpload.Designer.cs">
       <DependentUpon>YoutubeUpload.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AudioSettings.resx">
+      <DependentUpon>AudioSettings.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
