@@ -297,6 +297,11 @@ namespace FIRSTWA_Recorder
             groupEvent.Enabled = false;
             groupMatch.Enabled = false;
 
+            btnStartRecording.Enabled = false;
+
+            Regex sanatize = new Regex("[^a-zA-Z0-9_ ]");
+            txtCeremonyTitle.Text = sanatize.Replace(txtCeremonyTitle.Text.ToString(), "");
+
             if (chkProgramRecord.Checked)
             {
                 if (currentMatchType == MatchType.Qualification || currentMatchType == MatchType.Final)
@@ -335,7 +340,6 @@ namespace FIRSTWA_Recorder
             startTime = DateTime.Now;
             timerElapsed.Start();
 
-            btnStartRecording.Enabled = false;
             btnStopRecording.Enabled = true;
 
             SetProgress(0);
@@ -347,9 +351,7 @@ namespace FIRSTWA_Recorder
 
         private void btnStopRecording_Click(object sender, EventArgs e)
         {
-            btnCancel.Enabled = true;
-            groupEvent.Enabled = true;
-            groupMatch.Enabled = true;
+            
             btnStopRecording.Enabled = false;
 
             timerElapsed.Stop();
@@ -361,9 +363,6 @@ namespace FIRSTWA_Recorder
             bgWorker_FTP_Program.RunWorkerAsync();
             if (currentMatchType != MatchType.Ceremony)
                 bgWorker_FTP_Wide.RunWorkerAsync();
-
-            btnStartRecording.Enabled = true;
-
 
             //
             //  Clear Old files from TEMP folder
@@ -413,6 +412,11 @@ namespace FIRSTWA_Recorder
             }
 
             GetMatches();
+
+            btnCancel.Enabled = true;
+            groupEvent.Enabled = true;
+            groupMatch.Enabled = true;
+            btnStartRecording.Enabled = true;
         }
 
         #region FTP Stuff
@@ -943,6 +947,12 @@ namespace FIRSTWA_Recorder
 
                 UpdateRegistryKeys();
             }
+        }
+
+        private void txtCeremonyTitle_Leave(object sender, EventArgs e)
+        {
+            Regex sanatize = new Regex("[^a-zA-Z0-9_ ]");
+            txtCeremonyTitle.Text = sanatize.Replace(txtCeremonyTitle.Text.ToString(), "");
         }
 
         private void bgWorker_FTP_Program_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

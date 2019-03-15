@@ -358,6 +358,7 @@
             this.txtCeremonyTitle.Size = new System.Drawing.Size(78, 20);
             this.txtCeremonyTitle.TabIndex = 8;
             this.txtCeremonyTitle.Visible = false;
+            this.txtCeremonyTitle.Leave += new System.EventHandler(this.txtCeremonyTitle_Leave);
             // 
             // numFinalNo
             // 
@@ -646,7 +647,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
-            this.ClientSize = new System.Drawing.Size(411, 404);
+            this.ClientSize = new System.Drawing.Size(411, 447);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.lblWideReady);
             this.Controls.Add(this.ledWide);
