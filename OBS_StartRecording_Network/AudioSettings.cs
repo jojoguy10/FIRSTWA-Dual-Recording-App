@@ -21,6 +21,31 @@ namespace FIRSTWA_Recorder
 
             wide = _wide;
             prog = _prog;
+
+            if(prog == MapMono.Left)
+            {
+                rdoProgLeft.Checked = true;
+            }
+            else if (prog == MapMono.Right)
+            {
+                rdoProgRight.Checked = true;
+            }
+            else
+            {
+                rdoProgramStereo.Checked = true;
+            }
+            if(wide == MapMono.Left)
+            {
+                rdoWideLeft.Checked = true;
+            }
+            else if(wide == MapMono.Right)
+            {
+                rdoWideRight.Checked = true;
+            }
+            else
+            {
+                rdoWideStereo.Checked = true;
+            }
         }
 
         private void btnAccept_Click(object sender, EventArgs e)
@@ -28,7 +53,8 @@ namespace FIRSTWA_Recorder
             if (rdoProgLeft.Checked)
             {
                 prog = MapMono.Left;
-            }else if (rdoProgRight.Checked)
+            }
+            else if (rdoProgRight.Checked)
             {
                 prog = MapMono.Right;
             }

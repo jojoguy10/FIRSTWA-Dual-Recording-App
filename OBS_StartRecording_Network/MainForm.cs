@@ -160,7 +160,12 @@ namespace FIRSTWA_Recorder
                     strIPAddressPC = ReadRegistryKey(regPC);
                     strIPAddressPROGRAM = ReadRegistryKey(regPROGRAM);
                     strIPAddressWIDE = ReadRegistryKey(regWIDE);
-                    //Enum.TryParse(ReadRegistryKey(regWideAudio), out MapMono wideChannels);
+
+                    Enum.TryParse(ReadRegistryKey(regWideAudio), out MapMono _wideChannels);
+                    Enum.TryParse(ReadRegistryKey(regProgAudio), out MapMono _progChannels);
+
+                    wideChannels = _wideChannels;
+                    progChannels = _progChannels;
                     //wideChannels = ReadRegistryKey(regWideAudio).as
                     //progChannels = ReadRegistryKey(regProgAudio);
                     //Enum.Parse()
@@ -206,6 +211,8 @@ namespace FIRSTWA_Recorder
             WriteRegistryKey(regPC, strIPAddressPC);
             WriteRegistryKey(regPROGRAM, strIPAddressPROGRAM);
             WriteRegistryKey(regWIDE, strIPAddressWIDE);
+            WriteRegistryKey(regWideAudio, wideChannels.ToString());
+            WriteRegistryKey(regProgAudio, progChannels.ToString());
         }
 
         private void WriteRegistryKey(string key, string value)
