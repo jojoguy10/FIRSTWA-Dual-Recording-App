@@ -110,7 +110,8 @@ namespace FIRSTWA_Recorder
             Qualification,
             Quarterfinal,
             Semifinal,
-            Final
+            Final,
+            Ceremony
         }
         MatchType currentMatchType = MatchType.Qualification;
 
@@ -256,9 +257,13 @@ namespace FIRSTWA_Recorder
             {
                 matchABV = string.Format("{0}_{1}{2}", currentEvent.event_code, matchAbrev, numMatchNumber.Value.ToString());
             }
-            else
+            else if (currentMatchType != MatchType.Ceremony)
             {
                 matchABV = string.Format("{0}_{1}{2}m{3}", currentEvent.event_code, matchAbrev, numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
+            }
+            else
+            {
+                matchABV = string.Format("{0}c{3}", currentEvent.event_code, txtCeremonyTitle.Text.ToString());
             }
 
             currentMatch = null;
@@ -291,9 +296,13 @@ namespace FIRSTWA_Recorder
                 {
                     matchNameProgram = string.Format("{0} {1} {2} {3}", currentEvent.year, currentEvent.name, matchType, numMatchNumber.Value.ToString());
                 }
-                else
+                else if (currentMatchType != MatchType.Ceremony)
                 {
                     matchNameProgram = string.Format("{0} {1} {2} {3} Match {4}", currentEvent.year, currentEvent.name, matchType, numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
+                }
+                else
+                {
+                    matchNameProgram = string.Format("{0} {1} Ceremony {3}", currentEvent.year, currentEvent.name, txtCeremonyTitle.Text.ToString());
                 }
 
                 fileNameProgram = matchNameProgram + ".mp4";
@@ -307,7 +316,7 @@ namespace FIRSTWA_Recorder
                 {
                     matchNameWide = string.Format("{0} {1} WIDE {2} {3}", currentEvent.year, currentEvent.name, matchType, numMatchNumber.Value.ToString());
                 }
-                else
+                else if (currentMatchType != MatchType.Ceremony)
                 {
                     matchNameWide = string.Format("{0} {1} WIDE {2} {3} Match {4}", currentEvent.year, currentEvent.name, matchType, numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
                 }
@@ -343,18 +352,44 @@ namespace FIRSTWA_Recorder
             hdWide.Write("stop");
 
             bgWorker_FTP_Program.RunWorkerAsync();
-            bgWorker_FTP_Wide.RunWorkerAsync();
+            if (currentMatchType != MatchType.Ceremony)
+                bgWorker_FTP_Wide.RunWorkerAsync();
 
             btnStartRecording.Enabled = true;
 
-            if(currentMatchType == MatchType.Qualification || currentMatchType == MatchType.Final)
+
+            //
+            //  Clear Old files from TEMP folder
+            //
+
+            List<string> directories = Directory.GetFiles(@"C:\Temp").ToList();
+            List<DateTime> timestamps = new List<DateTime>();
+
+            foreach (string file in directories)
+            {
+                timestamps.Add(File.GetCreationTime(file));
+            }
+
+            if (directories.Count > 10)
+            {
+                while (directories.Count > 10)
+                {
+                    int minTimstampIndex = timestamps.IndexOf(timestamps.Min());
+                    File.Delete(directories[minTimstampIndex]);
+
+                    timestamps.RemoveAt(minTimstampIndex);
+                    directories.RemoveAt(minTimstampIndex);
+                }
+            }
+
+            if (currentMatchType == MatchType.Qualification || currentMatchType == MatchType.Final)
             {
                 if (numMatchNumber.Value < numMatchNumber.Maximum)
                 {
                     numMatchNumber.Value++;
                 }
             }
-            else
+            else if(currentMatchType != MatchType.Ceremony)
             {
                 if(numFinalNo.Value < 4)
                 {
@@ -388,7 +423,7 @@ namespace FIRSTWA_Recorder
             }
             catch
             {
-                Console.WriteLine("Path a;ready exists: " + uriPath);
+                Console.WriteLine("Path already exists: " + uriPath);
             }
         }
 
@@ -572,6 +607,13 @@ namespace FIRSTWA_Recorder
                 numMatchNumber.Value = 1;
                 numFinalNo.Value = 1;
 
+                lblFinalNo.Visible = true;
+                numFinalNo.Visible = true;
+                lblMatchNumber.Visible = true;
+                numMatchNumber.Visible = true;
+                lblCeremonyTitle.Visible = false;
+                txtCeremonyTitle.Visible = false;
+
                 switch (btn.Text)
                 {
                     case "Qualification":
@@ -583,15 +625,11 @@ namespace FIRSTWA_Recorder
                         break;
                     case "Quarterfinal":
                         currentMatchType = MatchType.Quarterfinal;
-                        lblFinalNo.Visible = true;
-                        numFinalNo.Visible = true;
                         numMatchNumber.Maximum = 3;
                         numFinalNo.Maximum = 4;
                         break;
                     case "Semifinal":
                         currentMatchType = MatchType.Semifinal;
-                        lblFinalNo.Visible = true;
-                        numFinalNo.Visible = true;
                         numMatchNumber.Maximum = 3;
                         numFinalNo.Maximum = 2;
                         break;
@@ -600,6 +638,17 @@ namespace FIRSTWA_Recorder
                         lblFinalNo.Visible = false;
                         numFinalNo.Visible = false;
                         numMatchNumber.Maximum = 3;
+                        numFinalNo.Maximum = 1;
+                        break;
+                    case "Ceremony":
+                        currentMatchType = MatchType.Ceremony;
+                        lblMatchNumber.Visible = false;
+                        numMatchNumber.Visible = false;
+                        lblFinalNo.Visible = false;
+                        numFinalNo.Visible = false;
+                        lblCeremonyTitle.Visible = true;
+                        txtCeremonyTitle.Visible = true;
+                        numMatchNumber.Maximum = 1;
                         numFinalNo.Maximum = 1;
                         break;
                     default:
@@ -662,24 +711,6 @@ namespace FIRSTWA_Recorder
                 btnStartRecording.Enabled = true;
                 groupEvent.Enabled = true;
                 btnConnectProgram.BackColor = Color.Green;
-
-                //var result = MessageBox.Show("Clear SSD? This will erase any existing clips in the hyperdeck recorder. Not clearing the SD may result in corrupted clips or naming conflicts", "Error", MessageBoxButtons.YesNo);
-                //if (result == DialogResult.Yes)
-                //{
-                //    URI programURI = string.Format("ftp://{0}/1", strIPAddressPROGRAM);
-
-                //    Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
-                //RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
-
-                //    List<string> directories = GetFTPFiles(programURI);
-                //    List<string> fileNames = new List<string>();
-
-                //    foreach (string file in directories)
-                //    {
-                //        System.Text.RegularExpressions.Match match = regex.Match(file);
-                //        DeleteFTPFile(programURI, match.Groups[6].ToString());
-                //    }
-                //}
             }
             catch
             {
@@ -698,24 +729,6 @@ namespace FIRSTWA_Recorder
                 btnStartRecording.Enabled = true;
                 groupEvent.Enabled = true;
                 btnConnectWide.BackColor = Color.Green;
-
-                //var result = MessageBox.Show("Clear SSD? This will erase any existing clips in the hyperdeck recorder. Not clearing the SD may result in corrupted clips or naming conflicts", "Error", MessageBoxButtons.YesNo);
-                //if (result == DialogResult.Yes)
-                //{
-                //    URI programURI = string.Format("ftp://{0}/1", strIPAddressWIDE);
-
-                //    Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
-                //RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
-
-                //    List<string> directories = GetFTPFiles(programURI);
-                //    List<string> fileNames = new List<string>();
-
-                //    foreach (string file in directories)
-                //    {
-                //        System.Text.RegularExpressions.Match match = regex.Match(file);
-                //        DeleteFTPFile(programURI, match.Groups[6].ToString());
-                //    }
-                //}
             }
             catch
             {
@@ -759,25 +772,6 @@ namespace FIRSTWA_Recorder
                     fileNames.RemoveAt(minTimstampIndex);
                     timestamps.RemoveAt(minTimstampIndex);
                     directories.RemoveAt(minTimstampIndex);
-
-                    //directories = GetFTPFiles(wideURI);
-                    //timestamps.Clear();
-                    //fileNames.Clear();
-
-                    //foreach (string file in directories)
-                    //{
-                    //    System.Text.RegularExpressions.Match match = regex.Match(file);
-                    //    Console.WriteLine(match.Groups[5].ToString());
-                    //    timestamps.Add(DateTime.Parse(match.Groups[5].ToString()));
-                    //    fileNames.Add(match.Groups[6].ToString());
-                    //}
-                }
-
-                directories = GetFTPFiles(wideURI);
-
-                foreach (string file in directories)
-                {
-                    Console.WriteLine(file);
                 }
             }
             progress++;
@@ -843,23 +837,6 @@ namespace FIRSTWA_Recorder
                     fileNames.RemoveAt(minTimstampIndex);
                     timestamps.RemoveAt(minTimstampIndex);
                     directories.RemoveAt(minTimstampIndex);
-                    //directories = GetFTPFiles(programURI);
-                    //timestamps.Clear();
-                    //fileNames.Clear();
-                    //foreach (string file in directories)
-                    //{
-                    //    System.Text.RegularExpressions.Match match = regex.Match(file);
-                    //    Console.WriteLine(match.Groups[5].ToString());
-                    //    timestamps.Add(DateTime.Parse(match.Groups[5].ToString()));
-                    //    fileNames.Add(match.Groups[6].ToString());
-                    //}
-                }
-
-                directories = GetFTPFiles(programURI);
-
-                foreach (string file in directories)
-                {
-                    Console.WriteLine(file);
                 }
             }
             progress++;
@@ -951,14 +928,7 @@ namespace FIRSTWA_Recorder
 
         private void audioToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DialogResult settingsResult = frmAudioSetting.ShowDialog();
-            if (settingsResult == DialogResult.OK)
-            {
-                wideChannels = frmAudioSetting.wide;
-                progChannels = frmAudioSetting.prog;
 
-                UpdateRegistryKeys();
-            }
         }
 
         private void bgWorker_FTP_Program_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

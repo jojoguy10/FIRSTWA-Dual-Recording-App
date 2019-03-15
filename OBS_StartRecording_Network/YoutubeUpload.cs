@@ -25,8 +25,6 @@ namespace FIRSTWA_Recorder
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            File.Delete(@"C:\Temp\" + programFileName);
-            File.Delete(@"C:\Temp\" + wideFileName);
             Close();
         }
         private void TextBox_Click(object sender, EventArgs e)

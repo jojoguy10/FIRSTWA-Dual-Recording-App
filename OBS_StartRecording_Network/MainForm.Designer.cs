@@ -36,10 +36,12 @@
             this.radioBtnSemi = new System.Windows.Forms.RadioButton();
             this.radioBtnFinal = new System.Windows.Forms.RadioButton();
             this.groupMatchTypes = new System.Windows.Forms.GroupBox();
+            this.radioBtnCeremony = new System.Windows.Forms.RadioButton();
             this.numMatchNumber = new System.Windows.Forms.NumericUpDown();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lblMatchNumber = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.audioToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.recordingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uploadsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label3 = new System.Windows.Forms.Label();
@@ -50,6 +52,8 @@
             this.chkRecordWide = new System.Windows.Forms.CheckBox();
             this.chkProgramRecord = new System.Windows.Forms.CheckBox();
             this.groupMatch = new System.Windows.Forms.GroupBox();
+            this.lblCeremonyTitle = new System.Windows.Forms.Label();
+            this.txtCeremonyTitle = new System.Windows.Forms.TextBox();
             this.numFinalNo = new System.Windows.Forms.NumericUpDown();
             this.lblFinalNo = new System.Windows.Forms.Label();
             this.timerElapsed = new System.Windows.Forms.Timer(this.components);
@@ -61,7 +65,6 @@
             this.btnConnectProgram = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.groupMatchDetails = new System.Windows.Forms.GroupBox();
-            this.lblMatchNumber = new System.Windows.Forms.Label();
             this.groupBlueAlliance = new System.Windows.Forms.GroupBox();
             this.lblBlue3 = new System.Windows.Forms.Label();
             this.lblBlue1 = new System.Windows.Forms.Label();
@@ -79,7 +82,6 @@
             this.lblWideReady = new System.Windows.Forms.Label();
             this.ledWide = new System.Windows.Forms.Panel();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.audioToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupMatchTypes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -162,6 +164,7 @@
             // 
             // groupMatchTypes
             // 
+            this.groupMatchTypes.Controls.Add(this.radioBtnCeremony);
             this.groupMatchTypes.Controls.Add(this.radioBtnQual);
             this.groupMatchTypes.Controls.Add(this.radioBtnFinal);
             this.groupMatchTypes.Controls.Add(this.radioBtnSemi);
@@ -172,6 +175,18 @@
             this.groupMatchTypes.TabIndex = 3;
             this.groupMatchTypes.TabStop = false;
             this.groupMatchTypes.Text = "Match Type";
+            // 
+            // radioBtnCeremony
+            // 
+            this.radioBtnCeremony.AutoSize = true;
+            this.radioBtnCeremony.Enabled = false;
+            this.radioBtnCeremony.Location = new System.Drawing.Point(300, 18);
+            this.radioBtnCeremony.Name = "radioBtnCeremony";
+            this.radioBtnCeremony.Size = new System.Drawing.Size(72, 17);
+            this.radioBtnCeremony.TabIndex = 3;
+            this.radioBtnCeremony.Text = "Ceremony";
+            this.radioBtnCeremony.UseVisualStyleBackColor = true;
+            this.radioBtnCeremony.CheckedChanged += new System.EventHandler(this.radioBtnMatchType_CheckedChanged);
             // 
             // numMatchNumber
             // 
@@ -195,14 +210,14 @@
             0,
             0});
             // 
-            // label2
+            // lblMatchNumber
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(135, 70);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(57, 13);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Match No:";
+            this.lblMatchNumber.AutoSize = true;
+            this.lblMatchNumber.Location = new System.Drawing.Point(135, 70);
+            this.lblMatchNumber.Name = "lblMatchNumber";
+            this.lblMatchNumber.Size = new System.Drawing.Size(57, 13);
+            this.lblMatchNumber.TabIndex = 7;
+            this.lblMatchNumber.Text = "Match No:";
             // 
             // menuStrip1
             // 
@@ -211,7 +226,7 @@
             this.settingsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(419, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(411, 24);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "Menu Strip";
             // 
@@ -225,10 +240,17 @@
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
             // 
+            // audioToolStripMenuItem
+            // 
+            this.audioToolStripMenuItem.Name = "audioToolStripMenuItem";
+            this.audioToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.audioToolStripMenuItem.Text = "Audio";
+            this.audioToolStripMenuItem.Click += new System.EventHandler(this.audioToolStripMenuItem_Click);
+            // 
             // recordingToolStripMenuItem
             // 
             this.recordingToolStripMenuItem.Name = "recordingToolStripMenuItem";
-            this.recordingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.recordingToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.recordingToolStripMenuItem.Text = "Recording";
             this.recordingToolStripMenuItem.Click += new System.EventHandler(this.recordingToolStripMenuItem_Click);
             // 
@@ -236,7 +258,7 @@
             // 
             this.uploadsToolStripMenuItem.Enabled = false;
             this.uploadsToolStripMenuItem.Name = "uploadsToolStripMenuItem";
-            this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.uploadsToolStripMenuItem.Text = "Uploading";
             // 
             // label3
@@ -305,17 +327,37 @@
             // 
             // groupMatch
             // 
+            this.groupMatch.Controls.Add(this.lblCeremonyTitle);
+            this.groupMatch.Controls.Add(this.txtCeremonyTitle);
             this.groupMatch.Controls.Add(this.groupMatchTypes);
             this.groupMatch.Controls.Add(this.numFinalNo);
             this.groupMatch.Controls.Add(this.numMatchNumber);
             this.groupMatch.Controls.Add(this.lblFinalNo);
-            this.groupMatch.Controls.Add(this.label2);
+            this.groupMatch.Controls.Add(this.lblMatchNumber);
             this.groupMatch.Location = new System.Drawing.Point(12, 183);
             this.groupMatch.Name = "groupMatch";
             this.groupMatch.Size = new System.Drawing.Size(391, 96);
             this.groupMatch.TabIndex = 13;
             this.groupMatch.TabStop = false;
             this.groupMatch.Text = "Match Specific";
+            // 
+            // lblCeremonyTitle
+            // 
+            this.lblCeremonyTitle.AutoSize = true;
+            this.lblCeremonyTitle.Location = new System.Drawing.Point(264, 71);
+            this.lblCeremonyTitle.Name = "lblCeremonyTitle";
+            this.lblCeremonyTitle.Size = new System.Drawing.Size(30, 13);
+            this.lblCeremonyTitle.TabIndex = 10;
+            this.lblCeremonyTitle.Text = "Title:";
+            this.lblCeremonyTitle.Visible = false;
+            // 
+            // txtCeremonyTitle
+            // 
+            this.txtCeremonyTitle.Location = new System.Drawing.Point(300, 67);
+            this.txtCeremonyTitle.Name = "txtCeremonyTitle";
+            this.txtCeremonyTitle.Size = new System.Drawing.Size(78, 20);
+            this.txtCeremonyTitle.TabIndex = 8;
+            this.txtCeremonyTitle.Visible = false;
             // 
             // numFinalNo
             // 
@@ -417,7 +459,6 @@
             // 
             // groupMatchDetails
             // 
-            this.groupMatchDetails.Controls.Add(this.lblMatchNumber);
             this.groupMatchDetails.Controls.Add(this.groupBlueAlliance);
             this.groupMatchDetails.Controls.Add(this.groupRedAlliance);
             this.groupMatchDetails.Location = new System.Drawing.Point(716, 159);
@@ -428,18 +469,6 @@
             this.groupMatchDetails.TabIndex = 25;
             this.groupMatchDetails.TabStop = false;
             this.groupMatchDetails.Text = "Match Details";
-            // 
-            // lblMatchNumber
-            // 
-            this.lblMatchNumber.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.lblMatchNumber.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.14286F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMatchNumber.Location = new System.Drawing.Point(52, 15);
-            this.lblMatchNumber.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblMatchNumber.Name = "lblMatchNumber";
-            this.lblMatchNumber.Size = new System.Drawing.Size(125, 28);
-            this.lblMatchNumber.TabIndex = 2;
-            this.lblMatchNumber.Text = "MATCH ##";
-            this.lblMatchNumber.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // groupBlueAlliance
             // 
@@ -611,20 +640,13 @@
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
-            // audioToolStripMenuItem
-            // 
-            this.audioToolStripMenuItem.Name = "audioToolStripMenuItem";
-            this.audioToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.audioToolStripMenuItem.Text = "Audio";
-            this.audioToolStripMenuItem.Click += new System.EventHandler(this.audioToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AcceptButton = this.btnStartRecording;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
-            this.ClientSize = new System.Drawing.Size(419, 404);
+            this.ClientSize = new System.Drawing.Size(411, 404);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.lblWideReady);
             this.Controls.Add(this.ledWide);
@@ -677,7 +699,6 @@
         private System.Windows.Forms.RadioButton radioBtnFinal;
         private System.Windows.Forms.GroupBox groupMatchTypes;
         private System.Windows.Forms.NumericUpDown numMatchNumber;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.Label label3;
@@ -721,6 +742,9 @@
         private System.Windows.Forms.Panel ledWide;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.ToolStripMenuItem audioToolStripMenuItem;
+        private System.Windows.Forms.RadioButton radioBtnCeremony;
+        private System.Windows.Forms.Label lblCeremonyTitle;
+        private System.Windows.Forms.TextBox txtCeremonyTitle;
     }
 }
 
