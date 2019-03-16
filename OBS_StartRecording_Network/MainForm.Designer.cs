@@ -72,6 +72,7 @@
             this.lblReportB = new System.Windows.Forms.Label();
             this.version001ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bgWorker_WD = new System.ComponentModel.BackgroundWorker();
+            this.btnShowYT = new System.Windows.Forms.Button();
             this.groupMatchTypes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -517,6 +518,17 @@
             // 
             this.bgWorker_WD.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgWorker_WD_DoWork);
             // 
+            // btnShowYT
+            // 
+            this.btnShowYT.Enabled = false;
+            this.btnShowYT.Location = new System.Drawing.Point(312, 429);
+            this.btnShowYT.Name = "btnShowYT";
+            this.btnShowYT.Size = new System.Drawing.Size(92, 34);
+            this.btnShowYT.TabIndex = 35;
+            this.btnShowYT.Text = "Youtube Data";
+            this.btnShowYT.UseVisualStyleBackColor = true;
+            this.btnShowYT.Click += new System.EventHandler(this.btnShowYT_Click);
+            // 
             // MainForm
             // 
             this.AcceptButton = this.btnStartRecording;
@@ -524,6 +536,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
             this.ClientSize = new System.Drawing.Size(416, 463);
+            this.Controls.Add(this.btnShowYT);
             this.Controls.Add(this.lblReportB);
             this.Controls.Add(this.lblReportA);
             this.Controls.Add(this.btnCancel);
@@ -607,6 +620,7 @@
         private System.Windows.Forms.Label lblReportB;
         private System.Windows.Forms.ToolStripMenuItem version001ToolStripMenuItem;
         private System.ComponentModel.BackgroundWorker bgWorker_WD;
+        private System.Windows.Forms.Button btnShowYT;
     }
 }
 
