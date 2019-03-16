@@ -338,6 +338,8 @@ namespace FIRSTWA_Recorder
                 hdProgram.Write("record: name: " + matchABV +"_program");
 
                 string status = hdProgram.Read();
+                Console.WriteLine("Program Record Status:");
+                Console.WriteLine(status);
                 if (!status.Contains("200"))
                 {
                     btnConnectWide.BackColor = Color.Yellow;
@@ -359,6 +361,8 @@ namespace FIRSTWA_Recorder
                 hdWide.Write("record: name: " + matchABV + "_wide");
 
                 string status = hdWide.Read();
+                Console.WriteLine("Wide Record Status:");
+                Console.WriteLine(status);
                 if (!status.Contains("200"))
                 {
                     btnConnectWide.BackColor = Color.Yellow;
@@ -391,6 +395,8 @@ namespace FIRSTWA_Recorder
             {
                 hdProgram.Write("stop");
                 string status = hdProgram.Read();
+                Console.WriteLine("Program Stop Status:");
+                Console.WriteLine(status);
                 if (!status.Contains("200"))
                 {
                     btnConnectWide.BackColor = Color.Yellow;
@@ -403,6 +409,8 @@ namespace FIRSTWA_Recorder
             if (currentMatchType != MatchType.Ceremony && chkRecordWide.Checked) {
                 hdWide.Write("stop");
                 string status = hdWide.Read();
+                Console.WriteLine("Wide Stop Status:");
+                Console.WriteLine(status);
                 if (!status.Contains("200"))
                 {
                     btnConnectWide.BackColor = Color.Yellow;
@@ -765,7 +773,8 @@ namespace FIRSTWA_Recorder
                 hdProgram = new HyperDeck(strIPAddressPROGRAM, Convert.ToInt32(strPortPROGRAM));
                 Console.WriteLine("Program Connected");
 
-                hdProgram.Write("ping");
+                //hdProgram.Write("ping");
+                Console.WriteLine("Program Ping Status:");
                 Console.WriteLine(hdProgram.Read());
 
                 btnStartRecording.Enabled = true;
@@ -785,7 +794,8 @@ namespace FIRSTWA_Recorder
                 hdWide = new HyperDeck(strIPAddressWIDE, Convert.ToInt32(strPortWIDE));
                 Console.WriteLine("Wide Connected");
 
-                hdWide.Write("ping");
+                //hdWide.Write("ping");
+                Console.WriteLine("Wide Ping Status:");
                 Console.WriteLine(hdWide.Read());
 
                 btnStartRecording.Enabled = true;
@@ -981,7 +991,7 @@ namespace FIRSTWA_Recorder
                 string wideStatus = hdWide.Read();
                 string progStatus = hdProgram.Read();
 
-                Console.WriteLine("Status:");
+                Console.WriteLine("Live Record Status:");
                 Console.WriteLine(wideStatus);
                 Console.WriteLine(progStatus);
 
