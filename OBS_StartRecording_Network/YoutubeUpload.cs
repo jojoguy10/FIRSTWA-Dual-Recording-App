@@ -53,5 +53,10 @@ namespace FIRSTWA_Recorder
                 button1.DoDragDrop(dobj, DragDropEffects.All);
             }
         }
+
+        private void YoutubeUpload_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

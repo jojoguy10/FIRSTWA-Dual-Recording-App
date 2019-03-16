@@ -44,7 +44,6 @@
             this.audioToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.recordingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uploadsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.version001ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label3 = new System.Windows.Forms.Label();
             this.groupEvent = new System.Windows.Forms.GroupBox();
             this.comboEventName = new System.Windows.Forms.ComboBox();
@@ -71,7 +70,9 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.lblReportA = new System.Windows.Forms.Label();
             this.lblReportB = new System.Windows.Forms.Label();
+            this.version001ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bgWorker_WD = new System.ComponentModel.BackgroundWorker();
+            this.btnShowYT = new System.Windows.Forms.Button();
             this.groupMatchTypes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -83,10 +84,9 @@
             // 
             // btnStartRecording
             // 
-            this.btnStartRecording.Location = new System.Drawing.Point(22, 526);
-            this.btnStartRecording.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnStartRecording.Location = new System.Drawing.Point(12, 285);
             this.btnStartRecording.Name = "btnStartRecording";
-            this.btnStartRecording.Size = new System.Drawing.Size(334, 96);
+            this.btnStartRecording.Size = new System.Drawing.Size(182, 52);
             this.btnStartRecording.TabIndex = 0;
             this.btnStartRecording.Text = "Start Recording";
             this.btnStartRecording.UseVisualStyleBackColor = true;
@@ -96,10 +96,9 @@
             // 
             this.btnStopRecording.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnStopRecording.Enabled = false;
-            this.btnStopRecording.Location = new System.Drawing.Point(405, 526);
-            this.btnStopRecording.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnStopRecording.Location = new System.Drawing.Point(221, 285);
             this.btnStopRecording.Name = "btnStopRecording";
-            this.btnStopRecording.Size = new System.Drawing.Size(334, 96);
+            this.btnStopRecording.Size = new System.Drawing.Size(182, 52);
             this.btnStopRecording.TabIndex = 0;
             this.btnStopRecording.Text = "Stop Recording";
             this.btnStopRecording.UseVisualStyleBackColor = true;
@@ -109,10 +108,9 @@
             // 
             this.radioBtnQual.AutoSize = true;
             this.radioBtnQual.Checked = true;
-            this.radioBtnQual.Location = new System.Drawing.Point(13, 35);
-            this.radioBtnQual.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.radioBtnQual.Location = new System.Drawing.Point(7, 19);
             this.radioBtnQual.Name = "radioBtnQual";
-            this.radioBtnQual.Size = new System.Drawing.Size(144, 29);
+            this.radioBtnQual.Size = new System.Drawing.Size(83, 17);
             this.radioBtnQual.TabIndex = 2;
             this.radioBtnQual.TabStop = true;
             this.radioBtnQual.Text = "Qualification";
@@ -122,10 +120,9 @@
             // radioBtnQuarter
             // 
             this.radioBtnQuarter.AutoSize = true;
-            this.radioBtnQuarter.Location = new System.Drawing.Point(171, 35);
-            this.radioBtnQuarter.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.radioBtnQuarter.Location = new System.Drawing.Point(93, 19);
             this.radioBtnQuarter.Name = "radioBtnQuarter";
-            this.radioBtnQuarter.Size = new System.Drawing.Size(138, 29);
+            this.radioBtnQuarter.Size = new System.Drawing.Size(79, 17);
             this.radioBtnQuarter.TabIndex = 2;
             this.radioBtnQuarter.Text = "Quarterfinal";
             this.radioBtnQuarter.UseVisualStyleBackColor = true;
@@ -134,10 +131,9 @@
             // radioBtnSemi
             // 
             this.radioBtnSemi.AutoSize = true;
-            this.radioBtnSemi.Location = new System.Drawing.Point(332, 35);
-            this.radioBtnSemi.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.radioBtnSemi.Location = new System.Drawing.Point(181, 19);
             this.radioBtnSemi.Name = "radioBtnSemi";
-            this.radioBtnSemi.Size = new System.Drawing.Size(117, 29);
+            this.radioBtnSemi.Size = new System.Drawing.Size(67, 17);
             this.radioBtnSemi.TabIndex = 2;
             this.radioBtnSemi.Text = "Semifinal";
             this.radioBtnSemi.UseVisualStyleBackColor = true;
@@ -146,10 +142,9 @@
             // radioBtnFinal
             // 
             this.radioBtnFinal.AutoSize = true;
-            this.radioBtnFinal.Location = new System.Drawing.Point(460, 33);
-            this.radioBtnFinal.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.radioBtnFinal.Location = new System.Drawing.Point(251, 18);
             this.radioBtnFinal.Name = "radioBtnFinal";
-            this.radioBtnFinal.Size = new System.Drawing.Size(79, 29);
+            this.radioBtnFinal.Size = new System.Drawing.Size(47, 17);
             this.radioBtnFinal.TabIndex = 2;
             this.radioBtnFinal.Text = "Final";
             this.radioBtnFinal.UseVisualStyleBackColor = true;
@@ -162,11 +157,9 @@
             this.groupMatchTypes.Controls.Add(this.radioBtnFinal);
             this.groupMatchTypes.Controls.Add(this.radioBtnSemi);
             this.groupMatchTypes.Controls.Add(this.radioBtnQuarter);
-            this.groupMatchTypes.Location = new System.Drawing.Point(11, 35);
-            this.groupMatchTypes.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupMatchTypes.Location = new System.Drawing.Point(6, 19);
             this.groupMatchTypes.Name = "groupMatchTypes";
-            this.groupMatchTypes.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
-            this.groupMatchTypes.Size = new System.Drawing.Size(693, 83);
+            this.groupMatchTypes.Size = new System.Drawing.Size(378, 45);
             this.groupMatchTypes.TabIndex = 3;
             this.groupMatchTypes.TabStop = false;
             this.groupMatchTypes.Text = "Match Type";
@@ -175,10 +168,9 @@
             // 
             this.radioBtnCeremony.AutoSize = true;
             this.radioBtnCeremony.Enabled = false;
-            this.radioBtnCeremony.Location = new System.Drawing.Point(550, 33);
-            this.radioBtnCeremony.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.radioBtnCeremony.Location = new System.Drawing.Point(300, 18);
             this.radioBtnCeremony.Name = "radioBtnCeremony";
-            this.radioBtnCeremony.Size = new System.Drawing.Size(128, 29);
+            this.radioBtnCeremony.Size = new System.Drawing.Size(72, 17);
             this.radioBtnCeremony.TabIndex = 3;
             this.radioBtnCeremony.Text = "Ceremony";
             this.radioBtnCeremony.UseVisualStyleBackColor = true;
@@ -186,8 +178,7 @@
             // 
             // numMatchNumber
             // 
-            this.numMatchNumber.Location = new System.Drawing.Point(361, 126);
-            this.numMatchNumber.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.numMatchNumber.Location = new System.Drawing.Point(197, 68);
             this.numMatchNumber.Maximum = new decimal(new int[] {
             200,
             0,
@@ -199,7 +190,7 @@
             0,
             0});
             this.numMatchNumber.Name = "numMatchNumber";
-            this.numMatchNumber.Size = new System.Drawing.Size(95, 29);
+            this.numMatchNumber.Size = new System.Drawing.Size(52, 20);
             this.numMatchNumber.TabIndex = 6;
             this.numMatchNumber.Value = new decimal(new int[] {
             1,
@@ -210,10 +201,9 @@
             // lblMatchNumber
             // 
             this.lblMatchNumber.AutoSize = true;
-            this.lblMatchNumber.Location = new System.Drawing.Point(248, 129);
-            this.lblMatchNumber.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblMatchNumber.Location = new System.Drawing.Point(135, 70);
             this.lblMatchNumber.Name = "lblMatchNumber";
-            this.lblMatchNumber.Size = new System.Drawing.Size(102, 25);
+            this.lblMatchNumber.Size = new System.Drawing.Size(57, 13);
             this.lblMatchNumber.TabIndex = 7;
             this.lblMatchNumber.Text = "Match No:";
             // 
@@ -225,8 +215,7 @@
             this.version001ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(11, 4, 0, 4);
-            this.menuStrip1.Size = new System.Drawing.Size(763, 42);
+            this.menuStrip1.Size = new System.Drawing.Size(416, 24);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "Menu Strip";
             // 
@@ -237,20 +226,20 @@
             this.recordingToolStripMenuItem,
             this.uploadsToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(99, 34);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
             // 
             // audioToolStripMenuItem
             // 
             this.audioToolStripMenuItem.Name = "audioToolStripMenuItem";
-            this.audioToolStripMenuItem.Size = new System.Drawing.Size(199, 34);
+            this.audioToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.audioToolStripMenuItem.Text = "Audio";
             this.audioToolStripMenuItem.Click += new System.EventHandler(this.audioToolStripMenuItem_Click);
             // 
             // recordingToolStripMenuItem
             // 
             this.recordingToolStripMenuItem.Name = "recordingToolStripMenuItem";
-            this.recordingToolStripMenuItem.Size = new System.Drawing.Size(199, 34);
+            this.recordingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.recordingToolStripMenuItem.Text = "Recording";
             this.recordingToolStripMenuItem.Click += new System.EventHandler(this.recordingToolStripMenuItem_Click);
             // 
@@ -258,22 +247,15 @@
             // 
             this.uploadsToolStripMenuItem.Enabled = false;
             this.uploadsToolStripMenuItem.Name = "uploadsToolStripMenuItem";
-            this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(199, 34);
+            this.uploadsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.uploadsToolStripMenuItem.Text = "Uploading";
-            // 
-            // version001ToolStripMenuItem
-            // 
-            this.version001ToolStripMenuItem.Name = "version001ToolStripMenuItem";
-            this.version001ToolStripMenuItem.Size = new System.Drawing.Size(142, 34);
-            this.version001ToolStripMenuItem.Text = "Version 0.0.2";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(17, 52);
-            this.label3.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.label3.Location = new System.Drawing.Point(9, 28);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(125, 25);
+            this.label3.Size = new System.Drawing.Size(69, 13);
             this.label3.TabIndex = 9;
             this.label3.Text = "Event Name:";
             // 
@@ -283,11 +265,9 @@
             this.groupEvent.Controls.Add(this.chkRecordWide);
             this.groupEvent.Controls.Add(this.chkProgramRecord);
             this.groupEvent.Controls.Add(this.label3);
-            this.groupEvent.Location = new System.Drawing.Point(22, 185);
-            this.groupEvent.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupEvent.Location = new System.Drawing.Point(12, 100);
             this.groupEvent.Name = "groupEvent";
-            this.groupEvent.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
-            this.groupEvent.Size = new System.Drawing.Size(717, 142);
+            this.groupEvent.Size = new System.Drawing.Size(391, 77);
             this.groupEvent.TabIndex = 12;
             this.groupEvent.TabStop = false;
             this.groupEvent.Text = "Event Specific";
@@ -296,10 +276,9 @@
             // 
             this.comboEventName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboEventName.FormattingEnabled = true;
-            this.comboEventName.Location = new System.Drawing.Point(156, 46);
-            this.comboEventName.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.comboEventName.Location = new System.Drawing.Point(85, 25);
             this.comboEventName.Name = "comboEventName";
-            this.comboEventName.Size = new System.Drawing.Size(549, 32);
+            this.comboEventName.Size = new System.Drawing.Size(301, 21);
             this.comboEventName.TabIndex = 12;
             this.comboEventName.SelectedIndexChanged += new System.EventHandler(this.comboEventName_SelectedIndexChanged);
             // 
@@ -308,10 +287,9 @@
             this.chkRecordWide.AutoSize = true;
             this.chkRecordWide.Checked = true;
             this.chkRecordWide.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkRecordWide.Location = new System.Drawing.Point(216, 100);
-            this.chkRecordWide.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.chkRecordWide.Location = new System.Drawing.Point(118, 54);
             this.chkRecordWide.Name = "chkRecordWide";
-            this.chkRecordWide.Size = new System.Drawing.Size(151, 29);
+            this.chkRecordWide.Size = new System.Drawing.Size(89, 17);
             this.chkRecordWide.TabIndex = 11;
             this.chkRecordWide.Text = "Record Wide";
             this.chkRecordWide.UseVisualStyleBackColor = true;
@@ -321,10 +299,9 @@
             this.chkProgramRecord.AutoSize = true;
             this.chkProgramRecord.Checked = true;
             this.chkProgramRecord.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkProgramRecord.Location = new System.Drawing.Point(17, 100);
-            this.chkProgramRecord.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.chkProgramRecord.Location = new System.Drawing.Point(9, 54);
             this.chkProgramRecord.Name = "chkProgramRecord";
-            this.chkProgramRecord.Size = new System.Drawing.Size(179, 29);
+            this.chkProgramRecord.Size = new System.Drawing.Size(103, 17);
             this.chkProgramRecord.TabIndex = 11;
             this.chkProgramRecord.Text = "Record Program";
             this.chkProgramRecord.UseVisualStyleBackColor = true;
@@ -338,11 +315,9 @@
             this.groupMatch.Controls.Add(this.numMatchNumber);
             this.groupMatch.Controls.Add(this.lblFinalNo);
             this.groupMatch.Controls.Add(this.lblMatchNumber);
-            this.groupMatch.Location = new System.Drawing.Point(22, 338);
-            this.groupMatch.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupMatch.Location = new System.Drawing.Point(12, 183);
             this.groupMatch.Name = "groupMatch";
-            this.groupMatch.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
-            this.groupMatch.Size = new System.Drawing.Size(717, 177);
+            this.groupMatch.Size = new System.Drawing.Size(391, 96);
             this.groupMatch.TabIndex = 13;
             this.groupMatch.TabStop = false;
             this.groupMatch.Text = "Match Specific";
@@ -350,28 +325,25 @@
             // lblCeremonyTitle
             // 
             this.lblCeremonyTitle.AutoSize = true;
-            this.lblCeremonyTitle.Location = new System.Drawing.Point(484, 131);
-            this.lblCeremonyTitle.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblCeremonyTitle.Location = new System.Drawing.Point(264, 71);
             this.lblCeremonyTitle.Name = "lblCeremonyTitle";
-            this.lblCeremonyTitle.Size = new System.Drawing.Size(55, 25);
+            this.lblCeremonyTitle.Size = new System.Drawing.Size(30, 13);
             this.lblCeremonyTitle.TabIndex = 10;
             this.lblCeremonyTitle.Text = "Title:";
             this.lblCeremonyTitle.Visible = false;
             // 
             // txtCeremonyTitle
             // 
-            this.txtCeremonyTitle.Location = new System.Drawing.Point(550, 124);
-            this.txtCeremonyTitle.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.txtCeremonyTitle.Location = new System.Drawing.Point(300, 67);
             this.txtCeremonyTitle.Name = "txtCeremonyTitle";
-            this.txtCeremonyTitle.Size = new System.Drawing.Size(140, 29);
+            this.txtCeremonyTitle.Size = new System.Drawing.Size(78, 20);
             this.txtCeremonyTitle.TabIndex = 8;
             this.txtCeremonyTitle.Visible = false;
             this.txtCeremonyTitle.Leave += new System.EventHandler(this.txtCeremonyTitle_Leave);
             // 
             // numFinalNo
             // 
-            this.numFinalNo.Location = new System.Drawing.Point(117, 126);
-            this.numFinalNo.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.numFinalNo.Location = new System.Drawing.Point(64, 68);
             this.numFinalNo.Maximum = new decimal(new int[] {
             4,
             0,
@@ -383,7 +355,7 @@
             0,
             0});
             this.numFinalNo.Name = "numFinalNo";
-            this.numFinalNo.Size = new System.Drawing.Size(95, 29);
+            this.numFinalNo.Size = new System.Drawing.Size(52, 20);
             this.numFinalNo.TabIndex = 6;
             this.numFinalNo.Value = new decimal(new int[] {
             1,
@@ -395,10 +367,9 @@
             // lblFinalNo
             // 
             this.lblFinalNo.AutoSize = true;
-            this.lblFinalNo.Location = new System.Drawing.Point(17, 129);
-            this.lblFinalNo.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblFinalNo.Location = new System.Drawing.Point(9, 70);
             this.lblFinalNo.Name = "lblFinalNo";
-            this.lblFinalNo.Size = new System.Drawing.Size(78, 25);
+            this.lblFinalNo.Size = new System.Drawing.Size(43, 13);
             this.lblFinalNo.TabIndex = 7;
             this.lblFinalNo.Text = "Set No:";
             this.lblFinalNo.Visible = false;
@@ -412,10 +383,9 @@
             // 
             this.lblElapsedTime.AutoSize = true;
             this.lblElapsedTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElapsedTime.Location = new System.Drawing.Point(257, 637);
-            this.lblElapsedTime.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblElapsedTime.Location = new System.Drawing.Point(140, 345);
             this.lblElapsedTime.Name = "lblElapsedTime";
-            this.lblElapsedTime.Size = new System.Drawing.Size(240, 48);
+            this.lblElapsedTime.Size = new System.Drawing.Size(135, 29);
             this.lblElapsedTime.TabIndex = 14;
             this.lblElapsedTime.Text = "00:00:00.00";
             // 
@@ -423,21 +393,18 @@
             // 
             this.groupOBS.Controls.Add(this.btnConnectWide);
             this.groupOBS.Controls.Add(this.btnConnectProgram);
-            this.groupOBS.Location = new System.Drawing.Point(22, 74);
-            this.groupOBS.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupOBS.Location = new System.Drawing.Point(12, 40);
             this.groupOBS.Name = "groupOBS";
-            this.groupOBS.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
-            this.groupOBS.Size = new System.Drawing.Size(717, 100);
+            this.groupOBS.Size = new System.Drawing.Size(391, 54);
             this.groupOBS.TabIndex = 22;
             this.groupOBS.TabStop = false;
             this.groupOBS.Text = "HyperDeck Connections";
             // 
             // btnConnectWide
             // 
-            this.btnConnectWide.Location = new System.Drawing.Point(383, 35);
-            this.btnConnectWide.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnConnectWide.Location = new System.Drawing.Point(209, 19);
             this.btnConnectWide.Name = "btnConnectWide";
-            this.btnConnectWide.Size = new System.Drawing.Size(323, 42);
+            this.btnConnectWide.Size = new System.Drawing.Size(176, 23);
             this.btnConnectWide.TabIndex = 19;
             this.btnConnectWide.Text = "Connect to Wide HyperDeck";
             this.btnConnectWide.UseVisualStyleBackColor = true;
@@ -445,10 +412,9 @@
             // 
             // btnConnectProgram
             // 
-            this.btnConnectProgram.Location = new System.Drawing.Point(11, 35);
-            this.btnConnectProgram.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnConnectProgram.Location = new System.Drawing.Point(6, 19);
             this.btnConnectProgram.Name = "btnConnectProgram";
-            this.btnConnectProgram.Size = new System.Drawing.Size(323, 42);
+            this.btnConnectProgram.Size = new System.Drawing.Size(176, 23);
             this.btnConnectProgram.TabIndex = 19;
             this.btnConnectProgram.Text = "Connect to Program HyperDeck";
             this.btnConnectProgram.UseVisualStyleBackColor = true;
@@ -466,59 +432,59 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(22, 702);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.progressBar1.Location = new System.Drawing.Point(12, 380);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
             this.progressBar1.Maximum = 31;
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(717, 48);
+            this.progressBar1.Size = new System.Drawing.Size(391, 26);
             this.progressBar1.TabIndex = 27;
             // 
             // ledProgram
             // 
             this.ledProgram.BackColor = System.Drawing.Color.Red;
-            this.ledProgram.Location = new System.Drawing.Point(127, 646);
-            this.ledProgram.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ledProgram.Location = new System.Drawing.Point(69, 350);
+            this.ledProgram.Margin = new System.Windows.Forms.Padding(2);
             this.ledProgram.Name = "ledProgram";
-            this.ledProgram.Size = new System.Drawing.Size(62, 30);
+            this.ledProgram.Size = new System.Drawing.Size(34, 16);
             this.ledProgram.TabIndex = 28;
             // 
             // lblProgramReady
             // 
             this.lblProgramReady.AutoSize = true;
-            this.lblProgramReady.Location = new System.Drawing.Point(28, 652);
-            this.lblProgramReady.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblProgramReady.Location = new System.Drawing.Point(15, 353);
+            this.lblProgramReady.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblProgramReady.Name = "lblProgramReady";
-            this.lblProgramReady.Size = new System.Drawing.Size(92, 25);
+            this.lblProgramReady.Size = new System.Drawing.Size(49, 13);
             this.lblProgramReady.TabIndex = 29;
             this.lblProgramReady.Text = "Program:";
             // 
             // lblWideReady
             // 
             this.lblWideReady.AutoSize = true;
-            this.lblWideReady.Location = new System.Drawing.Point(607, 652);
-            this.lblWideReady.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblWideReady.Location = new System.Drawing.Point(331, 353);
+            this.lblWideReady.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblWideReady.Name = "lblWideReady";
-            this.lblWideReady.Size = new System.Drawing.Size(64, 25);
+            this.lblWideReady.Size = new System.Drawing.Size(35, 13);
             this.lblWideReady.TabIndex = 31;
             this.lblWideReady.Text = "Wide:";
             // 
             // ledWide
             // 
             this.ledWide.BackColor = System.Drawing.Color.Red;
-            this.ledWide.Location = new System.Drawing.Point(677, 646);
-            this.ledWide.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ledWide.Location = new System.Drawing.Point(369, 350);
+            this.ledWide.Margin = new System.Windows.Forms.Padding(2);
             this.ledWide.Name = "ledWide";
-            this.ledWide.Size = new System.Drawing.Size(62, 30);
+            this.ledWide.Size = new System.Drawing.Size(34, 16);
             this.ledWide.TabIndex = 30;
             // 
             // btnCancel
             // 
             this.btnCancel.BackColor = System.Drawing.Color.Red;
             this.btnCancel.Enabled = false;
-            this.btnCancel.Location = new System.Drawing.Point(266, 792);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCancel.Location = new System.Drawing.Point(145, 429);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(2);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(216, 63);
+            this.btnCancel.Size = new System.Drawing.Size(118, 34);
             this.btnCancel.TabIndex = 32;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
@@ -527,34 +493,50 @@
             // lblReportA
             // 
             this.lblReportA.AutoSize = true;
-            this.lblReportA.Location = new System.Drawing.Point(488, 761);
-            this.lblReportA.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblReportA.Location = new System.Drawing.Point(12, 412);
             this.lblReportA.Name = "lblReportA";
-            this.lblReportA.Size = new System.Drawing.Size(43, 25);
+            this.lblReportA.Size = new System.Drawing.Size(24, 13);
             this.lblReportA.TabIndex = 33;
             this.lblReportA.Text = "Idle";
             // 
             // lblReportB
             // 
             this.lblReportB.AutoSize = true;
-            this.lblReportB.Location = new System.Drawing.Point(28, 761);
-            this.lblReportB.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblReportB.Location = new System.Drawing.Point(206, 412);
             this.lblReportB.Name = "lblReportB";
-            this.lblReportB.Size = new System.Drawing.Size(43, 25);
+            this.lblReportB.Size = new System.Drawing.Size(24, 13);
             this.lblReportB.TabIndex = 34;
             this.lblReportB.Text = "Idle";
+            // 
+            // version001ToolStripMenuItem
+            // 
+            this.version001ToolStripMenuItem.Name = "version001ToolStripMenuItem";
+            this.version001ToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
+            this.version001ToolStripMenuItem.Text = "Version 0.0.2";
             // 
             // bgWorker_WD
             // 
             this.bgWorker_WD.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgWorker_WD_DoWork);
             // 
+            // btnShowYT
+            // 
+            this.btnShowYT.Enabled = false;
+            this.btnShowYT.Location = new System.Drawing.Point(312, 429);
+            this.btnShowYT.Name = "btnShowYT";
+            this.btnShowYT.Size = new System.Drawing.Size(92, 34);
+            this.btnShowYT.TabIndex = 35;
+            this.btnShowYT.Text = "Youtube Data";
+            this.btnShowYT.UseVisualStyleBackColor = true;
+            this.btnShowYT.Click += new System.EventHandler(this.btnShowYT_Click);
+            // 
             // MainForm
             // 
             this.AcceptButton = this.btnStartRecording;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
-            this.ClientSize = new System.Drawing.Size(763, 855);
+            this.ClientSize = new System.Drawing.Size(416, 463);
+            this.Controls.Add(this.btnShowYT);
             this.Controls.Add(this.lblReportB);
             this.Controls.Add(this.lblReportA);
             this.Controls.Add(this.btnCancel);
@@ -572,7 +554,6 @@
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -639,6 +620,7 @@
         private System.Windows.Forms.Label lblReportB;
         private System.Windows.Forms.ToolStripMenuItem version001ToolStripMenuItem;
         private System.ComponentModel.BackgroundWorker bgWorker_WD;
+        private System.Windows.Forms.Button btnShowYT;
     }
 }
 

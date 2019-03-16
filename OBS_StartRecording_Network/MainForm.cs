@@ -109,11 +109,6 @@ namespace FIRSTWA_Recorder
 
         private DateTime startTime;
 
-        private struct YoutubeTask
-        {
-            string targetRemoteFile;
-        }
-
         private FileInfo credFile = new FileInfo(@"D:\__USER\Documents\GitHub\FIRSTWA_PC_RecordingApplication\FIRSTWA_StartRecording_Network\client_secret_613443767055-pvnp5ugap7kgj1i7rid6in7tnm3podmv.apps.googleusercontent.com.json");
 
         private string programPlaylistTitle, programPlaylistId, widePlaylistTitle, widePlaylistId;
@@ -134,6 +129,7 @@ namespace FIRSTWA_Recorder
             InitializeComponent();
 
             state = FormState.Idle;
+
 
             try
             {
@@ -837,9 +833,9 @@ namespace FIRSTWA_Recorder
                 fileNames.Add(match.Groups[6].ToString());
             }
 
-            if (directories.Count > 5)
+            if (directories.Count > 2)
             {
-                while (directories.Count > 5)
+                while (directories.Count > 2)
                 {
                     int minTimstampIndex = timestamps.IndexOf(timestamps.Min());
 
@@ -922,9 +918,9 @@ namespace FIRSTWA_Recorder
                 fileNames.Add(match.Groups[6].ToString());
             }
 
-            if (directories.Count > 5)
+            if (directories.Count > 2)
             {
-                while (directories.Count > 5)
+                while (directories.Count > 2)
                 {
                     int minTimstampIndex = timestamps.IndexOf(timestamps.Min());
                     DeleteFTPFile(programURI, fileNames[minTimstampIndex]);
@@ -1007,6 +1003,16 @@ namespace FIRSTWA_Recorder
             }
         }
 
+        private void btnShowYT_Click(object sender, EventArgs e)
+        {
+            YoutubeUpload YTForm = new YoutubeUpload(
+                                    fileNameProgram,
+                                    fileNameWide,
+                                    ytDescription,
+                                    ytTags);
+            YTForm.Show();
+        }
+
         private void launch_youtube()
         {
             if (currentMatch != null)
@@ -1058,12 +1064,14 @@ namespace FIRSTWA_Recorder
 
             ytTags = "first,robotics,frc," + currentEvent.year.ToString() + "," + currentEvent.event_code;
 
-            YoutubeUpload ytForm = new YoutubeUpload(
+
+            YoutubeUpload YTForm = new YoutubeUpload(
                                     fileNameProgram,
                                     fileNameWide,
                                     ytDescription,
                                     ytTags);
-            ytForm.Show();
+            YTForm.Show();
+            btnShowYT.Enabled = true;
         }
 
         private void audioToolStripMenuItem_Click(object sender, EventArgs e)
