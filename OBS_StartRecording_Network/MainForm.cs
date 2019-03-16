@@ -48,7 +48,19 @@ using RegistryKeyName = System.String;
 namespace FIRSTWA_Recorder
 {
 
-    public enum MapMono { None, Left, Right };
+    public enum MapMono
+    {
+        None,
+        Left,
+        Right
+    };
+
+    public enum FormState
+    {
+        Idle,
+        Recording,
+        Processing
+    };
 
     public partial class MainForm : Form
     {
@@ -75,6 +87,8 @@ namespace FIRSTWA_Recorder
 
         MapMono progChannels = MapMono.None;
         MapMono wideChannels = MapMono.None;
+
+        FormState state;
 
         RegistryKeyName regPROGRAM = "PROGRAM_IPAddress";
         RegistryKeyName regWIDE = "WIDE_IPAddress";
@@ -118,6 +132,8 @@ namespace FIRSTWA_Recorder
         public MainForm()
         {
             InitializeComponent();
+
+            state = FormState.Idle;
 
             try
             {
@@ -320,6 +336,12 @@ namespace FIRSTWA_Recorder
                 fileNameProgram = matchNameProgram + ".mp4";
 
                 hdProgram.Write("record: name: " + matchABV +"_program");
+
+                string status = hdProgram.Read();
+                if (!status.Contains("200"))
+                {
+                    btnConnectWide.BackColor = Color.Yellow;
+                }
             }
 
             if (chkRecordWide.Checked)
@@ -335,12 +357,20 @@ namespace FIRSTWA_Recorder
                 fileNameWide = matchNameWide + ".mp4";
 
                 hdWide.Write("record: name: " + matchABV + "_wide");
+
+                string status = hdWide.Read();
+                if (!status.Contains("200"))
+                {
+                    btnConnectWide.BackColor = Color.Yellow;
+                }
             }
 
             startTime = DateTime.Now;
             timerElapsed.Start();
 
             btnStopRecording.Enabled = true;
+            state = FormState.Recording;
+            bgWorker_WD.RunWorkerAsync();
 
             SetProgress(0);
             progress = 0;
@@ -351,18 +381,35 @@ namespace FIRSTWA_Recorder
 
         private void btnStopRecording_Click(object sender, EventArgs e)
         {
-            
+
             btnStopRecording.Enabled = false;
+            state = FormState.Processing;
 
             timerElapsed.Stop();
 
-            hdProgram.Write("stop");
+            if (chkProgramRecord.Checked)
+            {
+                hdProgram.Write("stop");
+                string status = hdProgram.Read();
+                if (!status.Contains("200"))
+                {
+                    btnConnectWide.BackColor = Color.Yellow;
+                }
 
-            hdWide.Write("stop");
+                bgWorker_FTP_Program.RunWorkerAsync();
+            }
 
-            bgWorker_FTP_Program.RunWorkerAsync();
-            if (currentMatchType != MatchType.Ceremony)
+
+            if (currentMatchType != MatchType.Ceremony && chkRecordWide.Checked) {
+                hdWide.Write("stop");
+                string status = hdWide.Read();
+                if (!status.Contains("200"))
+                {
+                    btnConnectWide.BackColor = Color.Yellow;
+                }
+
                 bgWorker_FTP_Wide.RunWorkerAsync();
+            }
 
             //
             //  Clear Old files from TEMP folder
@@ -717,8 +764,10 @@ namespace FIRSTWA_Recorder
             {
                 hdProgram = new HyperDeck(strIPAddressPROGRAM, Convert.ToInt32(strPortPROGRAM));
                 Console.WriteLine("Program Connected");
+
                 hdProgram.Write("ping");
                 Console.WriteLine(hdProgram.Read());
+
                 btnStartRecording.Enabled = true;
                 groupEvent.Enabled = true;
                 btnConnectProgram.BackColor = Color.Green;
@@ -735,8 +784,10 @@ namespace FIRSTWA_Recorder
             {
                 hdWide = new HyperDeck(strIPAddressWIDE, Convert.ToInt32(strPortWIDE));
                 Console.WriteLine("Wide Connected");
-                hdProgram.Write("ping");
+
+                hdWide.Write("ping");
                 Console.WriteLine(hdWide.Read());
+
                 btnStartRecording.Enabled = true;
                 groupEvent.Enabled = true;
                 btnConnectWide.BackColor = Color.Green;
@@ -920,6 +971,32 @@ namespace FIRSTWA_Recorder
             ledProgram.BackColor = Color.Green;
         }
 
+        private void bgWorker_WD_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Thread.Sleep(1000);
+            while(state == FormState.Recording)
+            {
+                hdProgram.Write("transport info");
+                hdWide.Write("transport info");
+                string wideStatus = hdWide.Read();
+                string progStatus = hdProgram.Read();
+
+                Console.WriteLine("Status:");
+                Console.WriteLine(wideStatus);
+                Console.WriteLine(progStatus);
+
+                if (!wideStatus.Contains("record"))
+                {
+                    btnConnectWide.BackColor = Color.Yellow;
+                }
+                if (!progStatus.Contains("record"))
+                {
+                    btnConnectProgram.BackColor = Color.Yellow;
+                }
+                Thread.Sleep(1000);
+            }
+        }
+
         private void launch_youtube()
         {
             if (currentMatch != null)
@@ -1002,6 +1079,7 @@ namespace FIRSTWA_Recorder
             if (!bgWorker_FTP_Wide.IsBusy)
             {
                 SetProgress(progressBar1.Maximum);
+                state = FormState.Idle;
                 launch_youtube();
             }
         }
@@ -1011,6 +1089,7 @@ namespace FIRSTWA_Recorder
             if (!bgWorker_FTP_Program.IsBusy)
             {
                 SetProgress(progressBar1.Maximum);
+                state = FormState.Idle;
                 launch_youtube();
             }
 
@@ -1033,6 +1112,7 @@ namespace FIRSTWA_Recorder
                 }
             }
             btnCancel.Enabled = false;
+            state = FormState.Idle;
         }
         #endregion
 
@@ -1044,24 +1124,6 @@ namespace FIRSTWA_Recorder
         //
 
         #region Callbacks
-        delegate void SetTextCallback(string text);
-
-        private void SetText(string text)
-        {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (this.btnUpload.InvokeRequired)
-            {
-                SetTextCallback d = new SetTextCallback(SetText);
-                this.Invoke(d, new object[] { text });
-            }
-            else
-            {
-                this.btnUpload.Text = text;
-            }
-        }
-
         delegate void SetProgressCallback(int progress);
         private void SetProgress(int progress)
         {

@@ -45,7 +45,6 @@
             this.recordingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uploadsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label3 = new System.Windows.Forms.Label();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.groupEvent = new System.Windows.Forms.GroupBox();
             this.comboEventName = new System.Windows.Forms.ComboBox();
             this.chkRecordWide = new System.Windows.Forms.CheckBox();
@@ -57,22 +56,10 @@
             this.lblFinalNo = new System.Windows.Forms.Label();
             this.timerElapsed = new System.Windows.Forms.Timer(this.components);
             this.lblElapsedTime = new System.Windows.Forms.Label();
-            this.btnOpenRecordings = new System.Windows.Forms.Button();
-            this.btnUpload = new System.Windows.Forms.Button();
             this.groupOBS = new System.Windows.Forms.GroupBox();
             this.btnConnectWide = new System.Windows.Forms.Button();
             this.btnConnectProgram = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.groupMatchDetails = new System.Windows.Forms.GroupBox();
-            this.groupBlueAlliance = new System.Windows.Forms.GroupBox();
-            this.lblBlue3 = new System.Windows.Forms.Label();
-            this.lblBlue1 = new System.Windows.Forms.Label();
-            this.lblBlue2 = new System.Windows.Forms.Label();
-            this.groupRedAlliance = new System.Windows.Forms.GroupBox();
-            this.lblRed3 = new System.Windows.Forms.Label();
-            this.lblRed2 = new System.Windows.Forms.Label();
-            this.lblRed1 = new System.Windows.Forms.Label();
-            this.btnGetMatchDetails = new System.Windows.Forms.Button();
             this.bgWorker_FTP_Program = new System.ComponentModel.BackgroundWorker();
             this.bgWorker_FTP_Wide = new System.ComponentModel.BackgroundWorker();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
@@ -84,6 +71,7 @@
             this.lblReportA = new System.Windows.Forms.Label();
             this.lblReportB = new System.Windows.Forms.Label();
             this.version001ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bgWorker_WD = new System.ComponentModel.BackgroundWorker();
             this.groupMatchTypes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -91,9 +79,6 @@
             this.groupMatch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFinalNo)).BeginInit();
             this.groupOBS.SuspendLayout();
-            this.groupMatchDetails.SuspendLayout();
-            this.groupBlueAlliance.SuspendLayout();
-            this.groupRedAlliance.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnStartRecording
@@ -229,7 +214,7 @@
             this.version001ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(411, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(416, 24);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "Menu Strip";
             // 
@@ -272,10 +257,6 @@
             this.label3.Size = new System.Drawing.Size(69, 13);
             this.label3.TabIndex = 9;
             this.label3.Text = "Event Name:";
-            // 
-            // folderBrowserDialog1
-            // 
-            this.folderBrowserDialog1.Description = "Storage location for recordings";
             // 
             // groupEvent
             // 
@@ -407,25 +388,6 @@
             this.lblElapsedTime.TabIndex = 14;
             this.lblElapsedTime.Text = "00:00:00.00";
             // 
-            // btnOpenRecordings
-            // 
-            this.btnOpenRecordings.Location = new System.Drawing.Point(739, 308);
-            this.btnOpenRecordings.Name = "btnOpenRecordings";
-            this.btnOpenRecordings.Size = new System.Drawing.Size(182, 23);
-            this.btnOpenRecordings.TabIndex = 18;
-            this.btnOpenRecordings.Text = "Open Recordings Folder";
-            this.btnOpenRecordings.UseVisualStyleBackColor = true;
-            this.btnOpenRecordings.Click += new System.EventHandler(this.btnOpenRecordings_Click);
-            // 
-            // btnUpload
-            // 
-            this.btnUpload.Location = new System.Drawing.Point(750, 103);
-            this.btnUpload.Name = "btnUpload";
-            this.btnUpload.Size = new System.Drawing.Size(158, 23);
-            this.btnUpload.TabIndex = 19;
-            this.btnUpload.Text = "Upload to Youtube";
-            this.btnUpload.UseVisualStyleBackColor = true;
-            // 
             // groupOBS
             // 
             this.groupOBS.Controls.Add(this.btnConnectWide);
@@ -456,119 +418,6 @@
             this.btnConnectProgram.Text = "Connect to Program HyperDeck";
             this.btnConnectProgram.UseVisualStyleBackColor = true;
             this.btnConnectProgram.Click += new System.EventHandler(this.btnConnectProgram_Click);
-            // 
-            // groupMatchDetails
-            // 
-            this.groupMatchDetails.Controls.Add(this.groupBlueAlliance);
-            this.groupMatchDetails.Controls.Add(this.groupRedAlliance);
-            this.groupMatchDetails.Location = new System.Drawing.Point(716, 159);
-            this.groupMatchDetails.Margin = new System.Windows.Forms.Padding(2);
-            this.groupMatchDetails.Name = "groupMatchDetails";
-            this.groupMatchDetails.Padding = new System.Windows.Forms.Padding(2);
-            this.groupMatchDetails.Size = new System.Drawing.Size(235, 129);
-            this.groupMatchDetails.TabIndex = 25;
-            this.groupMatchDetails.TabStop = false;
-            this.groupMatchDetails.Text = "Match Details";
-            // 
-            // groupBlueAlliance
-            // 
-            this.groupBlueAlliance.Controls.Add(this.lblBlue3);
-            this.groupBlueAlliance.Controls.Add(this.lblBlue1);
-            this.groupBlueAlliance.Controls.Add(this.lblBlue2);
-            this.groupBlueAlliance.ForeColor = System.Drawing.Color.Blue;
-            this.groupBlueAlliance.Location = new System.Drawing.Point(117, 45);
-            this.groupBlueAlliance.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBlueAlliance.Name = "groupBlueAlliance";
-            this.groupBlueAlliance.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBlueAlliance.Size = new System.Drawing.Size(109, 74);
-            this.groupBlueAlliance.TabIndex = 1;
-            this.groupBlueAlliance.TabStop = false;
-            this.groupBlueAlliance.Text = "BLUE ALLIANCE";
-            // 
-            // lblBlue3
-            // 
-            this.lblBlue3.Location = new System.Drawing.Point(4, 51);
-            this.lblBlue3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblBlue3.Name = "lblBlue3";
-            this.lblBlue3.Size = new System.Drawing.Size(101, 11);
-            this.lblBlue3.TabIndex = 2;
-            this.lblBlue3.Text = "BLUE3";
-            this.lblBlue3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lblBlue1
-            // 
-            this.lblBlue1.Location = new System.Drawing.Point(4, 15);
-            this.lblBlue1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblBlue1.Name = "lblBlue1";
-            this.lblBlue1.Size = new System.Drawing.Size(101, 11);
-            this.lblBlue1.TabIndex = 0;
-            this.lblBlue1.Text = "BLUE1";
-            this.lblBlue1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lblBlue2
-            // 
-            this.lblBlue2.Location = new System.Drawing.Point(4, 33);
-            this.lblBlue2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblBlue2.Name = "lblBlue2";
-            this.lblBlue2.Size = new System.Drawing.Size(101, 11);
-            this.lblBlue2.TabIndex = 1;
-            this.lblBlue2.Text = "BLUE2";
-            this.lblBlue2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // groupRedAlliance
-            // 
-            this.groupRedAlliance.Controls.Add(this.lblRed3);
-            this.groupRedAlliance.Controls.Add(this.lblRed2);
-            this.groupRedAlliance.Controls.Add(this.lblRed1);
-            this.groupRedAlliance.ForeColor = System.Drawing.Color.Red;
-            this.groupRedAlliance.Location = new System.Drawing.Point(4, 45);
-            this.groupRedAlliance.Margin = new System.Windows.Forms.Padding(2);
-            this.groupRedAlliance.Name = "groupRedAlliance";
-            this.groupRedAlliance.Padding = new System.Windows.Forms.Padding(2);
-            this.groupRedAlliance.Size = new System.Drawing.Size(109, 74);
-            this.groupRedAlliance.TabIndex = 0;
-            this.groupRedAlliance.TabStop = false;
-            this.groupRedAlliance.Text = "RED ALLIANCE";
-            // 
-            // lblRed3
-            // 
-            this.lblRed3.Location = new System.Drawing.Point(4, 51);
-            this.lblRed3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblRed3.Name = "lblRed3";
-            this.lblRed3.Size = new System.Drawing.Size(101, 11);
-            this.lblRed3.TabIndex = 2;
-            this.lblRed3.Text = "RED3";
-            this.lblRed3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lblRed2
-            // 
-            this.lblRed2.Location = new System.Drawing.Point(4, 33);
-            this.lblRed2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblRed2.Name = "lblRed2";
-            this.lblRed2.Size = new System.Drawing.Size(101, 11);
-            this.lblRed2.TabIndex = 1;
-            this.lblRed2.Text = "RED2";
-            this.lblRed2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lblRed1
-            // 
-            this.lblRed1.Location = new System.Drawing.Point(4, 15);
-            this.lblRed1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblRed1.Name = "lblRed1";
-            this.lblRed1.Size = new System.Drawing.Size(101, 11);
-            this.lblRed1.TabIndex = 0;
-            this.lblRed1.Text = "RED1";
-            this.lblRed1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // btnGetMatchDetails
-            // 
-            this.btnGetMatchDetails.Location = new System.Drawing.Point(750, 132);
-            this.btnGetMatchDetails.Margin = new System.Windows.Forms.Padding(2);
-            this.btnGetMatchDetails.Name = "btnGetMatchDetails";
-            this.btnGetMatchDetails.Size = new System.Drawing.Size(158, 23);
-            this.btnGetMatchDetails.TabIndex = 26;
-            this.btnGetMatchDetails.Text = "Get Match Details";
-            this.btnGetMatchDetails.UseVisualStyleBackColor = true;
             // 
             // bgWorker_FTP_Program
             // 
@@ -662,7 +511,11 @@
             // 
             this.version001ToolStripMenuItem.Name = "version001ToolStripMenuItem";
             this.version001ToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
-            this.version001ToolStripMenuItem.Text = "Version 0.0.1";
+            this.version001ToolStripMenuItem.Text = "Version 0.0.2";
+            // 
+            // bgWorker_WD
+            // 
+            this.bgWorker_WD.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgWorker_WD_DoWork);
             // 
             // MainForm
             // 
@@ -670,7 +523,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
-            this.ClientSize = new System.Drawing.Size(411, 463);
+            this.ClientSize = new System.Drawing.Size(416, 463);
             this.Controls.Add(this.lblReportB);
             this.Controls.Add(this.lblReportA);
             this.Controls.Add(this.btnCancel);
@@ -679,11 +532,7 @@
             this.Controls.Add(this.lblProgramReady);
             this.Controls.Add(this.ledProgram);
             this.Controls.Add(this.progressBar1);
-            this.Controls.Add(this.btnGetMatchDetails);
-            this.Controls.Add(this.groupMatchDetails);
             this.Controls.Add(this.groupOBS);
-            this.Controls.Add(this.btnUpload);
-            this.Controls.Add(this.btnOpenRecordings);
             this.Controls.Add(this.lblElapsedTime);
             this.Controls.Add(this.groupMatch);
             this.Controls.Add(this.groupEvent);
@@ -707,9 +556,6 @@
             this.groupMatch.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFinalNo)).EndInit();
             this.groupOBS.ResumeLayout(false);
-            this.groupMatchDetails.ResumeLayout(false);
-            this.groupBlueAlliance.ResumeLayout(false);
-            this.groupRedAlliance.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -728,31 +574,18 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.GroupBox groupEvent;
         private System.Windows.Forms.GroupBox groupMatch;
         private System.Windows.Forms.Timer timerElapsed;
         private System.Windows.Forms.Label lblElapsedTime;
         private System.Windows.Forms.CheckBox chkRecordWide;
         private System.Windows.Forms.CheckBox chkProgramRecord;
-        private System.Windows.Forms.Button btnOpenRecordings;
         private System.Windows.Forms.ToolStripMenuItem recordingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem uploadsToolStripMenuItem;
-        private System.Windows.Forms.Button btnUpload;
         private System.Windows.Forms.ComboBox comboEventName;
         private System.Windows.Forms.GroupBox groupOBS;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.GroupBox groupMatchDetails;
         private System.Windows.Forms.Label lblMatchNumber;
-        private System.Windows.Forms.GroupBox groupBlueAlliance;
-        private System.Windows.Forms.GroupBox groupRedAlliance;
-        private System.Windows.Forms.Button btnGetMatchDetails;
-        private System.Windows.Forms.Label lblBlue3;
-        private System.Windows.Forms.Label lblBlue1;
-        private System.Windows.Forms.Label lblBlue2;
-        private System.Windows.Forms.Label lblRed3;
-        private System.Windows.Forms.Label lblRed2;
-        private System.Windows.Forms.Label lblRed1;
         private System.Windows.Forms.NumericUpDown numFinalNo;
         private System.Windows.Forms.Label lblFinalNo;
         private System.Windows.Forms.Button btnConnectWide;
@@ -773,6 +606,7 @@
         private System.Windows.Forms.Label lblReportA;
         private System.Windows.Forms.Label lblReportB;
         private System.Windows.Forms.ToolStripMenuItem version001ToolStripMenuItem;
+        private System.ComponentModel.BackgroundWorker bgWorker_WD;
     }
 }
 
