@@ -85,7 +85,7 @@
             // btnStartRecording
             // 
             this.btnStartRecording.Location = new System.Drawing.Point(22, 526);
-            this.btnStartRecording.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnStartRecording.Margin = new System.Windows.Forms.Padding(6);
             this.btnStartRecording.Name = "btnStartRecording";
             this.btnStartRecording.Size = new System.Drawing.Size(334, 96);
             this.btnStartRecording.TabIndex = 0;
@@ -98,7 +98,7 @@
             this.btnStopRecording.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnStopRecording.Enabled = false;
             this.btnStopRecording.Location = new System.Drawing.Point(405, 526);
-            this.btnStopRecording.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnStopRecording.Margin = new System.Windows.Forms.Padding(6);
             this.btnStopRecording.Name = "btnStopRecording";
             this.btnStopRecording.Size = new System.Drawing.Size(334, 96);
             this.btnStopRecording.TabIndex = 0;
@@ -111,7 +111,7 @@
             this.radioBtnQual.AutoSize = true;
             this.radioBtnQual.Checked = true;
             this.radioBtnQual.Location = new System.Drawing.Point(13, 35);
-            this.radioBtnQual.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.radioBtnQual.Margin = new System.Windows.Forms.Padding(6);
             this.radioBtnQual.Name = "radioBtnQual";
             this.radioBtnQual.Size = new System.Drawing.Size(144, 29);
             this.radioBtnQual.TabIndex = 2;
@@ -124,7 +124,7 @@
             // 
             this.radioBtnQuarter.AutoSize = true;
             this.radioBtnQuarter.Location = new System.Drawing.Point(171, 35);
-            this.radioBtnQuarter.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.radioBtnQuarter.Margin = new System.Windows.Forms.Padding(6);
             this.radioBtnQuarter.Name = "radioBtnQuarter";
             this.radioBtnQuarter.Size = new System.Drawing.Size(138, 29);
             this.radioBtnQuarter.TabIndex = 2;
@@ -136,7 +136,7 @@
             // 
             this.radioBtnSemi.AutoSize = true;
             this.radioBtnSemi.Location = new System.Drawing.Point(332, 35);
-            this.radioBtnSemi.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.radioBtnSemi.Margin = new System.Windows.Forms.Padding(6);
             this.radioBtnSemi.Name = "radioBtnSemi";
             this.radioBtnSemi.Size = new System.Drawing.Size(117, 29);
             this.radioBtnSemi.TabIndex = 2;
@@ -148,7 +148,7 @@
             // 
             this.radioBtnFinal.AutoSize = true;
             this.radioBtnFinal.Location = new System.Drawing.Point(460, 33);
-            this.radioBtnFinal.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.radioBtnFinal.Margin = new System.Windows.Forms.Padding(6);
             this.radioBtnFinal.Name = "radioBtnFinal";
             this.radioBtnFinal.Size = new System.Drawing.Size(79, 29);
             this.radioBtnFinal.TabIndex = 2;
@@ -164,9 +164,9 @@
             this.groupMatchTypes.Controls.Add(this.radioBtnSemi);
             this.groupMatchTypes.Controls.Add(this.radioBtnQuarter);
             this.groupMatchTypes.Location = new System.Drawing.Point(11, 35);
-            this.groupMatchTypes.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupMatchTypes.Margin = new System.Windows.Forms.Padding(6);
             this.groupMatchTypes.Name = "groupMatchTypes";
-            this.groupMatchTypes.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupMatchTypes.Padding = new System.Windows.Forms.Padding(6);
             this.groupMatchTypes.Size = new System.Drawing.Size(693, 83);
             this.groupMatchTypes.TabIndex = 3;
             this.groupMatchTypes.TabStop = false;
@@ -177,7 +177,7 @@
             this.radioBtnCeremony.AutoSize = true;
             this.radioBtnCeremony.Enabled = false;
             this.radioBtnCeremony.Location = new System.Drawing.Point(550, 33);
-            this.radioBtnCeremony.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.radioBtnCeremony.Margin = new System.Windows.Forms.Padding(6);
             this.radioBtnCeremony.Name = "radioBtnCeremony";
             this.radioBtnCeremony.Size = new System.Drawing.Size(128, 29);
             this.radioBtnCeremony.TabIndex = 3;
@@ -188,7 +188,7 @@
             // numMatchNumber
             // 
             this.numMatchNumber.Location = new System.Drawing.Point(361, 126);
-            this.numMatchNumber.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.numMatchNumber.Margin = new System.Windows.Forms.Padding(6);
             this.numMatchNumber.Maximum = new decimal(new int[] {
             200,
             0,
@@ -285,9 +285,9 @@
             this.groupEvent.Controls.Add(this.chkProgramRecord);
             this.groupEvent.Controls.Add(this.label3);
             this.groupEvent.Location = new System.Drawing.Point(22, 185);
-            this.groupEvent.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupEvent.Margin = new System.Windows.Forms.Padding(6);
             this.groupEvent.Name = "groupEvent";
-            this.groupEvent.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupEvent.Padding = new System.Windows.Forms.Padding(6);
             this.groupEvent.Size = new System.Drawing.Size(717, 142);
             this.groupEvent.TabIndex = 12;
             this.groupEvent.TabStop = false;
@@ -298,7 +298,7 @@
             this.comboEventName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboEventName.FormattingEnabled = true;
             this.comboEventName.Location = new System.Drawing.Point(156, 46);
-            this.comboEventName.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.comboEventName.Margin = new System.Windows.Forms.Padding(6);
             this.comboEventName.Name = "comboEventName";
             this.comboEventName.Size = new System.Drawing.Size(549, 32);
             this.comboEventName.TabIndex = 12;
@@ -310,7 +310,7 @@
             this.chkRecordWide.Checked = true;
             this.chkRecordWide.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRecordWide.Location = new System.Drawing.Point(216, 100);
-            this.chkRecordWide.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.chkRecordWide.Margin = new System.Windows.Forms.Padding(6);
             this.chkRecordWide.Name = "chkRecordWide";
             this.chkRecordWide.Size = new System.Drawing.Size(151, 29);
             this.chkRecordWide.TabIndex = 11;
@@ -323,7 +323,7 @@
             this.chkProgramRecord.Checked = true;
             this.chkProgramRecord.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkProgramRecord.Location = new System.Drawing.Point(17, 100);
-            this.chkProgramRecord.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.chkProgramRecord.Margin = new System.Windows.Forms.Padding(6);
             this.chkProgramRecord.Name = "chkProgramRecord";
             this.chkProgramRecord.Size = new System.Drawing.Size(179, 29);
             this.chkProgramRecord.TabIndex = 11;
@@ -340,9 +340,9 @@
             this.groupMatch.Controls.Add(this.lblFinalNo);
             this.groupMatch.Controls.Add(this.lblMatchNumber);
             this.groupMatch.Location = new System.Drawing.Point(22, 338);
-            this.groupMatch.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupMatch.Margin = new System.Windows.Forms.Padding(6);
             this.groupMatch.Name = "groupMatch";
-            this.groupMatch.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupMatch.Padding = new System.Windows.Forms.Padding(6);
             this.groupMatch.Size = new System.Drawing.Size(717, 177);
             this.groupMatch.TabIndex = 13;
             this.groupMatch.TabStop = false;
@@ -362,7 +362,7 @@
             // txtCeremonyTitle
             // 
             this.txtCeremonyTitle.Location = new System.Drawing.Point(550, 124);
-            this.txtCeremonyTitle.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.txtCeremonyTitle.Margin = new System.Windows.Forms.Padding(6);
             this.txtCeremonyTitle.Name = "txtCeremonyTitle";
             this.txtCeremonyTitle.Size = new System.Drawing.Size(140, 29);
             this.txtCeremonyTitle.TabIndex = 8;
@@ -372,7 +372,7 @@
             // numFinalNo
             // 
             this.numFinalNo.Location = new System.Drawing.Point(117, 126);
-            this.numFinalNo.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.numFinalNo.Margin = new System.Windows.Forms.Padding(6);
             this.numFinalNo.Maximum = new decimal(new int[] {
             4,
             0,
@@ -425,9 +425,9 @@
             this.groupOBS.Controls.Add(this.btnConnectWide);
             this.groupOBS.Controls.Add(this.btnConnectProgram);
             this.groupOBS.Location = new System.Drawing.Point(22, 74);
-            this.groupOBS.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupOBS.Margin = new System.Windows.Forms.Padding(6);
             this.groupOBS.Name = "groupOBS";
-            this.groupOBS.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupOBS.Padding = new System.Windows.Forms.Padding(6);
             this.groupOBS.Size = new System.Drawing.Size(717, 100);
             this.groupOBS.TabIndex = 22;
             this.groupOBS.TabStop = false;
@@ -436,7 +436,7 @@
             // btnConnectWide
             // 
             this.btnConnectWide.Location = new System.Drawing.Point(383, 35);
-            this.btnConnectWide.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnConnectWide.Margin = new System.Windows.Forms.Padding(6);
             this.btnConnectWide.Name = "btnConnectWide";
             this.btnConnectWide.Size = new System.Drawing.Size(323, 42);
             this.btnConnectWide.TabIndex = 19;
@@ -447,7 +447,7 @@
             // btnConnectProgram
             // 
             this.btnConnectProgram.Location = new System.Drawing.Point(11, 35);
-            this.btnConnectProgram.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnConnectProgram.Margin = new System.Windows.Forms.Padding(6);
             this.btnConnectProgram.Name = "btnConnectProgram";
             this.btnConnectProgram.Size = new System.Drawing.Size(323, 42);
             this.btnConnectProgram.TabIndex = 19;
@@ -468,7 +468,7 @@
             // progressBar1
             // 
             this.progressBar1.Location = new System.Drawing.Point(22, 702);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(4);
             this.progressBar1.Maximum = 31;
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(717, 48);
@@ -478,7 +478,7 @@
             // 
             this.ledProgram.BackColor = System.Drawing.Color.Red;
             this.ledProgram.Location = new System.Drawing.Point(127, 646);
-            this.ledProgram.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ledProgram.Margin = new System.Windows.Forms.Padding(4);
             this.ledProgram.Name = "ledProgram";
             this.ledProgram.Size = new System.Drawing.Size(62, 30);
             this.ledProgram.TabIndex = 28;
@@ -507,7 +507,7 @@
             // 
             this.ledWide.BackColor = System.Drawing.Color.Red;
             this.ledWide.Location = new System.Drawing.Point(677, 646);
-            this.ledWide.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ledWide.Margin = new System.Windows.Forms.Padding(4);
             this.ledWide.Name = "ledWide";
             this.ledWide.Size = new System.Drawing.Size(62, 30);
             this.ledWide.TabIndex = 30;
@@ -517,7 +517,7 @@
             this.btnCancel.BackColor = System.Drawing.Color.Red;
             this.btnCancel.Enabled = false;
             this.btnCancel.Location = new System.Drawing.Point(266, 792);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(216, 63);
             this.btnCancel.TabIndex = 32;
@@ -553,7 +553,7 @@
             // 
             this.btnShowYT.Enabled = false;
             this.btnShowYT.Location = new System.Drawing.Point(572, 792);
-            this.btnShowYT.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnShowYT.Margin = new System.Windows.Forms.Padding(6);
             this.btnShowYT.Name = "btnShowYT";
             this.btnShowYT.Size = new System.Drawing.Size(169, 63);
             this.btnShowYT.TabIndex = 35;
@@ -567,7 +567,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
-            this.ClientSize = new System.Drawing.Size(763, 855);
+            this.ClientSize = new System.Drawing.Size(763, 877);
             this.Controls.Add(this.btnShowYT);
             this.Controls.Add(this.lblReportB);
             this.Controls.Add(this.lblReportA);
@@ -586,7 +586,7 @@
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

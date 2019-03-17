@@ -28,11 +28,15 @@ using System.Net;
 using System.Text.RegularExpressions;
 
 /* TODO:
- * Parse CSV file from FMS for team information
+ * Error handling for videos that failed to record, transfer, or convert
+ * Figure out a good versioning scheme
+ * Figure out how to record long-run ceremonies (i.e. Opening/Closing ceremonies and awards).  
+ *      I want to be able to record up to 1.5 hours to be safe.
+ * If the match isn't found when the "start recording" button is pressed, don't halt the recording.
+ *      The user might have forgotton to switch off of quarterfinals and needs to start recording.
+ *      Give the user the option to change the match type and number is it can't be found in TBA.
+ * 
  * Upload to YouTube to playlist
- * Settings for streaming
- * Settings for uploading (if any)
- * Send YouTube video to TBA
  * Error handling
  * Commenting
  * Layout/UI Design
@@ -716,7 +720,7 @@ namespace FIRSTWA_Recorder
                     default:
                         break;
                 }
-
+                GetMatches();
                 Console.WriteLine(currentMatchType);
             }
         }
