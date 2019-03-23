@@ -83,6 +83,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutPage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutPage.Designer.cs">
+      <DependentUpon>AboutPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="AudioSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -113,6 +119,9 @@
     <Compile Include="YoutubeUpload.Designer.cs">
       <DependentUpon>YoutubeUpload.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AboutPage.resx">
+      <DependentUpon>AboutPage.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AudioSettings.resx">
       <DependentUpon>AudioSettings.cs</DependentUpon>
     </EmbeddedResource>

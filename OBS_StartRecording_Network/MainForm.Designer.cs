@@ -58,6 +58,7 @@
             this.timerElapsed = new System.Windows.Forms.Timer(this.components);
             this.lblElapsedTime = new System.Windows.Forms.Label();
             this.groupOBS = new System.Windows.Forms.GroupBox();
+            this.btnConnectPC = new System.Windows.Forms.Button();
             this.btnConnectWide = new System.Windows.Forms.Button();
             this.btnConnectProgram = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -183,6 +184,7 @@
             this.radioBtnCeremony.TabIndex = 3;
             this.radioBtnCeremony.Text = "Ceremony";
             this.radioBtnCeremony.UseVisualStyleBackColor = true;
+            this.radioBtnCeremony.Visible = false;
             this.radioBtnCeremony.CheckedChanged += new System.EventHandler(this.radioBtnMatchType_CheckedChanged);
             // 
             // numMatchNumber
@@ -266,7 +268,8 @@
             // 
             this.version001ToolStripMenuItem.Name = "version001ToolStripMenuItem";
             this.version001ToolStripMenuItem.Size = new System.Drawing.Size(142, 34);
-            this.version001ToolStripMenuItem.Text = "Version 0.0.2";
+            this.version001ToolStripMenuItem.Text = "Version 0.0.3";
+            this.version001ToolStripMenuItem.Click += new System.EventHandler(this.version001ToolStripMenuItem_Click);
             // 
             // label3
             // 
@@ -316,6 +319,7 @@
             this.chkRecordWide.TabIndex = 11;
             this.chkRecordWide.Text = "Record Wide";
             this.chkRecordWide.UseVisualStyleBackColor = true;
+            this.chkRecordWide.Visible = false;
             // 
             // chkProgramRecord
             // 
@@ -329,6 +333,7 @@
             this.chkProgramRecord.TabIndex = 11;
             this.chkProgramRecord.Text = "Record Program";
             this.chkProgramRecord.UseVisualStyleBackColor = true;
+            this.chkProgramRecord.Visible = false;
             // 
             // groupMatch
             // 
@@ -422,6 +427,7 @@
             // 
             // groupOBS
             // 
+            this.groupOBS.Controls.Add(this.btnConnectPC);
             this.groupOBS.Controls.Add(this.btnConnectWide);
             this.groupOBS.Controls.Add(this.btnConnectProgram);
             this.groupOBS.Location = new System.Drawing.Point(22, 74);
@@ -431,16 +437,27 @@
             this.groupOBS.Size = new System.Drawing.Size(717, 100);
             this.groupOBS.TabIndex = 22;
             this.groupOBS.TabStop = false;
-            this.groupOBS.Text = "HyperDeck Connections";
+            this.groupOBS.Text = "Network Connections";
+            // 
+            // btnConnectPC
+            // 
+            this.btnConnectPC.Location = new System.Drawing.Point(493, 34);
+            this.btnConnectPC.Margin = new System.Windows.Forms.Padding(6);
+            this.btnConnectPC.Name = "btnConnectPC";
+            this.btnConnectPC.Size = new System.Drawing.Size(212, 42);
+            this.btnConnectPC.TabIndex = 20;
+            this.btnConnectPC.Text = "Server PC";
+            this.btnConnectPC.UseVisualStyleBackColor = true;
+            this.btnConnectPC.Click += new System.EventHandler(this.btnConnectPC_Click);
             // 
             // btnConnectWide
             // 
-            this.btnConnectWide.Location = new System.Drawing.Point(383, 35);
+            this.btnConnectWide.Location = new System.Drawing.Point(252, 35);
             this.btnConnectWide.Margin = new System.Windows.Forms.Padding(6);
             this.btnConnectWide.Name = "btnConnectWide";
-            this.btnConnectWide.Size = new System.Drawing.Size(323, 42);
+            this.btnConnectWide.Size = new System.Drawing.Size(212, 42);
             this.btnConnectWide.TabIndex = 19;
-            this.btnConnectWide.Text = "Connect to Wide HyperDeck";
+            this.btnConnectWide.Text = "Wide HyperDeck";
             this.btnConnectWide.UseVisualStyleBackColor = true;
             this.btnConnectWide.Click += new System.EventHandler(this.btnConnectWide_Click);
             // 
@@ -449,19 +466,21 @@
             this.btnConnectProgram.Location = new System.Drawing.Point(11, 35);
             this.btnConnectProgram.Margin = new System.Windows.Forms.Padding(6);
             this.btnConnectProgram.Name = "btnConnectProgram";
-            this.btnConnectProgram.Size = new System.Drawing.Size(323, 42);
+            this.btnConnectProgram.Size = new System.Drawing.Size(212, 42);
             this.btnConnectProgram.TabIndex = 19;
-            this.btnConnectProgram.Text = "Connect to Program HyperDeck";
+            this.btnConnectProgram.Text = "Program HyperDeck";
             this.btnConnectProgram.UseVisualStyleBackColor = true;
             this.btnConnectProgram.Click += new System.EventHandler(this.btnConnectProgram_Click);
             // 
             // bgWorker_FTP_Program
             // 
+            this.bgWorker_FTP_Program.WorkerSupportsCancellation = true;
             this.bgWorker_FTP_Program.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgWorker_FTP_Program_DoWork);
             this.bgWorker_FTP_Program.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bgWorker_FTP_Program_RunWorkerCompleted);
             // 
             // bgWorker_FTP_Wide
             // 
+            this.bgWorker_FTP_Wide.WorkerSupportsCancellation = true;
             this.bgWorker_FTP_Wide.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgWorker_FTP_Wide_DoWork);
             this.bgWorker_FTP_Wide.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bgWorker_FTP_Wide_RunWorkerCompleted);
             // 
@@ -516,7 +535,7 @@
             // 
             this.btnCancel.BackColor = System.Drawing.Color.Red;
             this.btnCancel.Enabled = false;
-            this.btnCancel.Location = new System.Drawing.Point(266, 792);
+            this.btnCancel.Location = new System.Drawing.Point(265, 807);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(216, 63);
@@ -547,12 +566,13 @@
             // 
             // bgWorker_WD
             // 
+            this.bgWorker_WD.WorkerSupportsCancellation = true;
             this.bgWorker_WD.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgWorker_WD_DoWork);
             // 
             // btnShowYT
             // 
             this.btnShowYT.Enabled = false;
-            this.btnShowYT.Location = new System.Drawing.Point(572, 792);
+            this.btnShowYT.Location = new System.Drawing.Point(572, 807);
             this.btnShowYT.Margin = new System.Windows.Forms.Padding(6);
             this.btnShowYT.Name = "btnShowYT";
             this.btnShowYT.Size = new System.Drawing.Size(169, 63);
@@ -567,7 +587,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
-            this.ClientSize = new System.Drawing.Size(763, 877);
+            this.ClientSize = new System.Drawing.Size(763, 898);
             this.Controls.Add(this.btnShowYT);
             this.Controls.Add(this.lblReportB);
             this.Controls.Add(this.lblReportA);
@@ -654,6 +674,7 @@
         private System.Windows.Forms.ToolStripMenuItem version001ToolStripMenuItem;
         private System.ComponentModel.BackgroundWorker bgWorker_WD;
         private System.Windows.Forms.Button btnShowYT;
+        private System.Windows.Forms.Button btnConnectPC;
     }
 }
 

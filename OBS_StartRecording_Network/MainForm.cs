@@ -118,6 +118,12 @@ namespace FIRSTWA_Recorder
         private string programPlaylistTitle, programPlaylistId, widePlaylistTitle, widePlaylistId;
         private string programVideoTitle, programVideoId, wideVideoTitle, wideVideoId;
 
+        private bool wideFTPUploadFail = false;
+        private bool programFTPUploadFail = false;
+
+        private bool PCPingable = false;
+        private Ping pinger = null;
+
         enum MatchType
         {
             Qualification,
@@ -243,14 +249,8 @@ namespace FIRSTWA_Recorder
         }
         #endregion
 
-        private void btnStartRecording_Click(object sender, EventArgs e)
+        private bool SearchValidMatch()
         {
-            if(comboEventName.SelectedItem == null)
-            {
-                MessageBox.Show("Please choose an event before recording");
-                return;
-            }
-
             string matchAbrev = "qm";
             switch (currentMatchType)
             {
@@ -301,12 +301,41 @@ namespace FIRSTWA_Recorder
                     }
                 }
             }
+
             if (currentMatch == null)
             {
-                var result = MessageBox.Show("Match does not exist!\n\nDo you want to continue recording?", "Error", MessageBoxButtons.YesNo);
-                if (result != DialogResult.Yes)
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        private void btnStartRecording_Click(object sender, EventArgs e)
+        {
+            if(comboEventName.SelectedItem == null)
+            {
+                MessageBox.Show("Please choose an event before recording");
+                return;
+            }
+
+            programFTPUploadFail = false;
+            wideFTPUploadFail = false;
+            
+            if (!SearchValidMatch())
+            {
+                GetMatches();
+                Thread.Sleep(1000);
+
+                SearchValidMatch();
+                if (!SearchValidMatch())
                 {
-                    return;
+                    var result = MessageBox.Show("Match does not exist!\n\nDo you want to continue recording?", "Error", MessageBoxButtons.YesNo);
+                    if (result != DialogResult.Yes)
+                    {
+                        return;
+                    }
                 }
             }
 
@@ -480,12 +509,21 @@ namespace FIRSTWA_Recorder
             try
             {
                 WebRequest request = WebRequest.Create(uriPath);
+                request.Timeout = 2000;
                 request.Method = WebRequestMethods.Ftp.MakeDirectory;
                 request.Credentials = new NetworkCredential("FTP_User", "");
+                
                 using (var resp = (FtpWebResponse)request.GetResponse())
                 {
                     Console.WriteLine(resp.StatusCode);
                 }
+            }
+            catch (WebException)
+            {
+                Console.WriteLine("There was a problem connecting to the Server PC.  Please verify the IP address and try again.");
+                bgWorker_FTP_Program.CancelAsync();
+                bgWorker_FTP_Wide.CancelAsync();
+                return;
             }
             catch
             {
@@ -604,8 +642,22 @@ namespace FIRSTWA_Recorder
             SetProgress(progress);
             using (WebClient client = new WebClient())
             {
-                client.Credentials = new NetworkCredential("FTP_User", "");
-                client.UploadFile(uri, WebRequestMethods.Ftp.UploadFile, filePath);
+                try
+                {
+                    client.Credentials = new NetworkCredential("FTP_User", "");
+                    client.UploadFile(uri, WebRequestMethods.Ftp.UploadFile, filePath);
+                }
+                catch
+                {
+                    if (filePath.Contains(fileNameWide))
+                    {
+                        wideFTPUploadFail = true;
+                    }
+                    else
+                    {
+                        programFTPUploadFail = true;
+                    }
+                }
             }
             progress++;
             SetProgress(progress);
@@ -776,9 +828,7 @@ namespace FIRSTWA_Recorder
                 //hdProgram.Write("ping");
                 Console.WriteLine("Program Ping Status:");
                 Console.WriteLine(hdProgram.Read());
-
-                btnStartRecording.Enabled = true;
-                groupEvent.Enabled = true;
+                
                 btnConnectProgram.BackColor = Color.Green;
             }
             catch
@@ -798,13 +848,48 @@ namespace FIRSTWA_Recorder
                 Console.WriteLine("Wide Ping Status:");
                 Console.WriteLine(hdWide.Read());
 
-                btnStartRecording.Enabled = true;
-                groupEvent.Enabled = true;
                 btnConnectWide.BackColor = Color.Green;
             }
             catch
             {
                 MessageBox.Show(string.Format("Could not connect to the Wide recorder\nat the IP address: {0}", strIPAddressPROGRAM));
+            }
+        }
+
+        private void btnConnectPC_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                pinger = new Ping();
+                PingReply reply = pinger.Send(strIPAddressPC);
+                PCPingable = reply.Status == IPStatus.Success;
+            }
+            catch (PingException)
+            {
+                btnConnectPC.BackColor = Color.Green;
+                groupEvent.Enabled = true;
+                btnStartRecording.Enabled = true;
+            }
+            finally
+            {
+                if (pinger != null)
+                {
+                    pinger.Dispose();
+                }
+            }
+
+            if (PCPingable)
+            {
+                btnConnectPC.BackColor = Color.Green;
+                groupEvent.Enabled = true;
+                btnStartRecording.Enabled = true;
+            }
+            else
+            {
+                btnConnectPC.BackColor = Color.Red;
+                groupEvent.Enabled = false;
+                btnStartRecording.Enabled = false;
+                MessageBox.Show("Could not connect to the PC.  Please check the IP address is correct.");
             }
         }
 
@@ -849,8 +934,7 @@ namespace FIRSTWA_Recorder
                     directories.RemoveAt(minTimstampIndex);
                 }
             }
-
-
+            
             progress++;
             SetProgress(progress);
 
@@ -888,6 +972,11 @@ namespace FIRSTWA_Recorder
             UploadFileFTP(widePath + "/" + fileNameWide, tempFile);
 
             lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Done"; }));
+
+            if ((wideFTPUploadFail || programFTPUploadFail) && !bgWorker_FTP_Wide.IsBusy)
+            {
+                MessageBox.Show("WARNING: The last match did not copy to the FTP folder!");
+            }
 
             Console.WriteLine("Wide: Done!");
             Console.WriteLine("Wide: Progress = " + progress);
@@ -976,6 +1065,11 @@ namespace FIRSTWA_Recorder
 
             lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Done"; }));
 
+            if ((wideFTPUploadFail || programFTPUploadFail) && !bgWorker_FTP_Program.IsBusy)
+            {
+                MessageBox.Show("WARNING: The last match did not copy to the FTP folder!");
+            }
+
             Console.WriteLine("Program: Done!");
             Console.WriteLine("Prgram: Progress = " + progress);
             ledProgram.BackColor = Color.Green;
@@ -1015,6 +1109,12 @@ namespace FIRSTWA_Recorder
                                     ytDescription,
                                     ytTags);
             YTForm.Show();
+        }
+
+        private void version001ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutPage about = new AboutPage();
+            about.Show();
         }
 
         private void launch_youtube()
