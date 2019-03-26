@@ -99,6 +99,7 @@ namespace FIRSTWA_Recorder
         RegistryKeyName regPC = "PC_IPAddress";
         RegistryKeyName regProgAudio = "PROGRAM_AudioChannel";
         RegistryKeyName regWideAudio = "WIDE_AudioChannel";
+        List<RegistryKeyName> registryKeyNames = new List<FileName>();
 
         int progress = 0;
 
@@ -140,6 +141,11 @@ namespace FIRSTWA_Recorder
 
             state = FormState.Idle;
 
+            registryKeyNames.Add(regPROGRAM);
+            registryKeyNames.Add(regWIDE);
+            registryKeyNames.Add(regPC);
+            registryKeyNames.Add(regProgAudio);
+            registryKeyNames.Add(regWideAudio);
 
             try
             {
@@ -173,30 +179,28 @@ namespace FIRSTWA_Recorder
 
             try
             {
-                if (ReadRegistryKey(regPC) == "")
+                foreach (RegistryKeyName keyName in registryKeyNames)
                 {
-                    UpdateRegistryKeys();
+                    if (ReadRegistryKey(keyName) == "")
+                    {
+                        UpdateRegistryKeys();
+                    }
                 }
-                else
-                {
-                    strIPAddressPC = ReadRegistryKey(regPC);
-                    strIPAddressPROGRAM = ReadRegistryKey(regPROGRAM);
-                    strIPAddressWIDE = ReadRegistryKey(regWIDE);
 
-                    Enum.TryParse(ReadRegistryKey(regWideAudio), out MapMono _wideChannels);
-                    Enum.TryParse(ReadRegistryKey(regProgAudio), out MapMono _progChannels);
+                strIPAddressPC = ReadRegistryKey(regPC);
+                strIPAddressPROGRAM = ReadRegistryKey(regPROGRAM);
+                strIPAddressWIDE = ReadRegistryKey(regWIDE);
 
-                    wideChannels = _wideChannels;
-                    progChannels = _progChannels;
-                    //wideChannels = ReadRegistryKey(regWideAudio).as
-                    //progChannels = ReadRegistryKey(regProgAudio);
-                    //Enum.Parse()
-                }
+                Enum.TryParse(ReadRegistryKey(regWideAudio), out MapMono _wideChannels);
+                Enum.TryParse(ReadRegistryKey(regProgAudio), out MapMono _progChannels);
+
+                wideChannels = _wideChannels;
+                progChannels = _progChannels;
             }
             catch
             {
-                MessageBox.Show("There was a problem reading the registry" + regPC + ".  Have you created the registry keys?");
-                Application.Exit();
+                UpdateRegistryKeys();
+                MessageBox.Show("Initialized the registry keys.  Please check that the registry keys are correct.");
             }
 
             if (!Directory.Exists(@"C:\Temp"))
