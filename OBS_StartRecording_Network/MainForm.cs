@@ -1117,6 +1117,12 @@ namespace FIRSTWA_Recorder
             about.Show();
         }
 
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HelpPage help = new HelpPage();
+            help.Show();
+        }
+
         private void launch_youtube()
         {
             if (currentMatch != null)
