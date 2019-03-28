@@ -26,6 +26,7 @@ using Microsoft.Win32;
 using System.Text;
 using System.Net;
 using System.Text.RegularExpressions;
+using NLog;
 
 /* TODO:
  * Error handling for videos that failed to record, transfer, or convert
@@ -110,20 +111,23 @@ namespace FIRSTWA_Recorder
         string matchABV = "";
 
         FileName fileNameProgram, fileNameWide;
+        private FilePath tempFolder;
         private string ytDescription, ytTags;
 
         private DateTime startTime;
 
         private FileInfo credFile = new FileInfo(@"D:\__USER\Documents\GitHub\FIRSTWA_PC_RecordingApplication\FIRSTWA_StartRecording_Network\client_secret_613443767055-pvnp5ugap7kgj1i7rid6in7tnm3podmv.apps.googleusercontent.com.json");
 
-        private string programPlaylistTitle, programPlaylistId, widePlaylistTitle, widePlaylistId;
-        private string programVideoTitle, programVideoId, wideVideoTitle, wideVideoId;
+        private string programPlaylistTitle, widePlaylistTitle;
+        private string programVideoTitle, wideVideoTitle;
 
         private bool wideFTPUploadFail = false;
         private bool programFTPUploadFail = false;
 
         private bool PCPingable = false;
         private Ping pinger = null;
+
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         enum MatchType
         {
@@ -139,6 +143,8 @@ namespace FIRSTWA_Recorder
         {
             InitializeComponent();
 
+            logger.Info("Initializing Main Form");
+
             state = FormState.Idle;
 
             registryKeyNames.Add(regPROGRAM);
@@ -147,12 +153,14 @@ namespace FIRSTWA_Recorder
             registryKeyNames.Add(regProgAudio);
             registryKeyNames.Add(regWideAudio);
 
+            logger.Info("... Reading TBA API key from registry");
             try
             {
                 TBAKEY = ReadRegistryKey("apikey");
             }
             catch
             {
+                logger.Fatal("- Failed: Could not find TBA API key");
                 DialogResult dr = MessageBox.Show("Could not find a TBA API key in the registry.  Closing...");
 
                 if (dr == DialogResult.OK)
@@ -161,6 +169,7 @@ namespace FIRSTWA_Recorder
                 }
             }
 
+            logger.Info("... Getting event list from TBA");
             tbaRequest.AddHeader
             (
                 "X-TBA-Auth-Key",
@@ -177,6 +186,7 @@ namespace FIRSTWA_Recorder
             eventDetails.ForEach(x => comboEventName.Items.Add((x.week + 1) + " - " + x.first_event_code + " - " + x.location_name));
             comboEventName.Sorted = true;
 
+            logger.Info("... Reading form variables from registry");
             try
             {
                 foreach (RegistryKeyName keyName in registryKeyNames)
@@ -199,22 +209,27 @@ namespace FIRSTWA_Recorder
             }
             catch
             {
+                logger.Error("... Could not find form registry keys, creating defaults");
                 UpdateRegistryKeys();
                 MessageBox.Show("Initialized the registry keys.  Please check that the registry keys are correct.");
             }
 
-            if (!Directory.Exists(@"C:\Temp"))
+            logger.Info("... Creating Temp directory");
+            tempFolder = Path.GetTempPath() + "local\\FIRSTWA-Recorder\\";
+            if (!Directory.Exists(tempFolder))
             {
-                Directory.CreateDirectory(@"C:\Temp");
+                Directory.CreateDirectory(tempFolder);
             }
-            
+
+            logger.Info("... Initializing Settings Forms");
             frmRecordingSetting = new RecordingSettings(strIPAddressPC, strIPAddressPROGRAM, strIPAddressWIDE);
             frmAudioSetting = new AudioSettings(wideChannels,progChannels);
-            
+
             groupEvent.Enabled = false;
             groupMatch.Enabled = false;
             btnStartRecording.Enabled = false;
             btnStopRecording.Enabled = false;
+            logger.Info("- Done");
         }
 
         #region Registry
@@ -318,8 +333,10 @@ namespace FIRSTWA_Recorder
 
         private void btnStartRecording_Click(object sender, EventArgs e)
         {
-            if(comboEventName.SelectedItem == null)
+            logger.Info("Attempting to start recording");
+            if (comboEventName.SelectedItem == null)
             {
+                logger.Error("- Failed: no event selected");
                 MessageBox.Show("Please choose an event before recording");
                 return;
             }
@@ -330,18 +347,21 @@ namespace FIRSTWA_Recorder
             if (!SearchValidMatch())
             {
                 GetMatches();
-                Thread.Sleep(1000);
 
                 SearchValidMatch();
                 if (!SearchValidMatch())
                 {
+                    logger.Info("... match not found");
                     var result = MessageBox.Show("Match does not exist!\n\nDo you want to continue recording?", "Error", MessageBoxButtons.YesNo);
                     if (result != DialogResult.Yes)
                     {
+                        logger.Error("- Failed: User canceled since match was not found");
                         return;
                     }
                 }
             }
+
+            logger.Info("... Match abreviation: {0}", matchABV);
 
             groupEvent.Enabled = false;
             groupMatch.Enabled = false;
@@ -353,6 +373,7 @@ namespace FIRSTWA_Recorder
 
             if (chkProgramRecord.Checked)
             {
+                logger.Info("... Beginning program recording");
                 if (currentMatchType == MatchType.Qualification || currentMatchType == MatchType.Final)
                 {
                     matchNameProgram = string.Format("{0} {1} {2} {3}", currentEvent.year, currentEvent.name, matchType, numMatchNumber.Value.ToString());
@@ -369,23 +390,28 @@ namespace FIRSTWA_Recorder
                 fileNameProgram = matchNameProgram + ".mp4";
 
                 hdProgram.Write("record: name: " + matchABV +"_program");
+                
+                logger.Info("... Program file name: {0}", fileNameProgram);
 
                 string status = hdProgram.Read();
                 Console.WriteLine("Program Record Status:");
                 Console.WriteLine(status);
                 if (!status.Contains("200"))
                 {
+                    logger.Error("... Program recording failed to start:");
+                    logger.Info(status);
                     btnConnectWide.BackColor = Color.Yellow;
                 }
             }
 
-            if (chkRecordWide.Checked)
+            if (chkRecordWide.Checked && currentMatchType != MatchType.Ceremony)
             {
+                logger.Info("... Beginning wide recording");
                 if (currentMatchType == MatchType.Qualification || currentMatchType == MatchType.Final)
                 {
                     matchNameWide = string.Format("{0} {1} WIDE {2} {3}", currentEvent.year, currentEvent.name, matchType, numMatchNumber.Value.ToString());
                 }
-                else if (currentMatchType != MatchType.Ceremony)
+                else
                 {
                     matchNameWide = string.Format("{0} {1} WIDE {2} {3} Match {4}", currentEvent.year, currentEvent.name, matchType, numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
                 }
@@ -393,11 +419,16 @@ namespace FIRSTWA_Recorder
 
                 hdWide.Write("record: name: " + matchABV + "_wide");
 
+                
+                logger.Info("... Wide file name: {0}", fileNameWide);
+
                 string status = hdWide.Read();
                 Console.WriteLine("Wide Record Status:");
                 Console.WriteLine(status);
                 if (!status.Contains("200"))
                 {
+                    logger.Error("... Wide recording failed to start:");
+                    logger.Info(status);
                     btnConnectWide.BackColor = Color.Yellow;
                 }
             }
@@ -414,11 +445,12 @@ namespace FIRSTWA_Recorder
 
             ledProgram.BackColor = Color.Red;
             ledWide.BackColor = Color.Red;
+            logger.Info("- Done");
         }
 
         private void btnStopRecording_Click(object sender, EventArgs e)
         {
-
+            logger.Info("Stopping recording");
             btnStopRecording.Enabled = false;
             state = FormState.Processing;
 
@@ -426,6 +458,7 @@ namespace FIRSTWA_Recorder
 
             if (chkProgramRecord.Checked)
             {
+                logger.Info("... Stopping Program Recording");
                 hdProgram.Write("stop");
                 string status = hdProgram.Read();
                 Console.WriteLine("Program Stop Status:");
@@ -433,6 +466,8 @@ namespace FIRSTWA_Recorder
                 if (!status.Contains("200"))
                 {
                     btnConnectWide.BackColor = Color.Yellow;
+                    logger.Error("... Program recording failed to stop:");
+                    logger.Info(status);
                 }
 
                 bgWorker_FTP_Program.RunWorkerAsync();
@@ -440,6 +475,7 @@ namespace FIRSTWA_Recorder
 
 
             if (currentMatchType != MatchType.Ceremony && chkRecordWide.Checked) {
+                logger.Info("... Stopping Wide Recording");
                 hdWide.Write("stop");
                 string status = hdWide.Read();
                 Console.WriteLine("Wide Stop Status:");
@@ -447,6 +483,8 @@ namespace FIRSTWA_Recorder
                 if (!status.Contains("200"))
                 {
                     btnConnectWide.BackColor = Color.Yellow;
+                    logger.Error("... Wide recording failed to stop:");
+                    logger.Info(status);
                 }
 
                 bgWorker_FTP_Wide.RunWorkerAsync();
@@ -456,7 +494,8 @@ namespace FIRSTWA_Recorder
             //  Clear Old files from TEMP folder
             //
 
-            List<string> directories = Directory.GetFiles(@"C:\Temp").ToList();
+            logger.Info("... Clearing old temp files");
+            List<string> directories = Directory.GetFiles(tempFolder).ToList();
             List<DateTime> timestamps = new List<DateTime>();
 
             foreach (string file in directories)
@@ -476,6 +515,7 @@ namespace FIRSTWA_Recorder
                 }
             }
 
+            logger.Info("... incrementing match numbers");
             if (currentMatchType == MatchType.Qualification || currentMatchType == MatchType.Final)
             {
                 if (numMatchNumber.Value < numMatchNumber.Maximum)
@@ -505,11 +545,13 @@ namespace FIRSTWA_Recorder
             groupEvent.Enabled = true;
             groupMatch.Enabled = true;
             btnStartRecording.Enabled = true;
+            logger.Info("- Done");
         }
 
         #region FTP Stuff
         private void CreateEventDirectory(URI uriPath)
         {
+            logger.Info("Connecting to PC and creating remote directory");
             try
             {
                 WebRequest request = WebRequest.Create(uriPath);
@@ -522,17 +564,23 @@ namespace FIRSTWA_Recorder
                     Console.WriteLine(resp.StatusCode);
                 }
             }
-            catch (WebException)
+            catch (WebException e)
             {
+                logger.Error("... Failed to connect to PC");
+                logger.Info(e.Status);
+                logger.Info(e.Message);
                 Console.WriteLine("There was a problem connecting to the Server PC.  Please verify the IP address and try again.");
                 bgWorker_FTP_Program.CancelAsync();
                 bgWorker_FTP_Wide.CancelAsync();
                 return;
             }
-            catch
+            catch (Exception e)
             {
                 Console.WriteLine("Path already exists: " + uriPath);
+                logger.Error("... unhandled error");
+                logger.Info(e.Message);
             }
+
         }
 
         //convert the mp4 from uncompressed audio to mp3 audio using ffmpeg
@@ -601,7 +649,7 @@ namespace FIRSTWA_Recorder
             progress++;
             SetProgress(progress);
 
-            //string localTempFilePath = @"C:\Temp" + localTempFileName;
+            //string localTempFilePath = tempFolder + localTempFileName;
 
             DownloadFileFTP(fromURI +"/" + fromFilePath, localTempFileName);
 
@@ -806,8 +854,9 @@ namespace FIRSTWA_Recorder
             }
         }
 
-        private async Task GetMatches()
+        private void GetMatches()
         {
+            logger.Info("Getting Match List from TBA");
             tbaRequest = new RestRequest(string.Format("event/{0}/matches/simple", currentEvent.key), Method.GET);
 
             tbaRequest.AddHeader
@@ -824,6 +873,7 @@ namespace FIRSTWA_Recorder
         
         private void btnConnectProgram_Click(object sender, EventArgs e)
         {
+            logger.Info("Connecting to Wide");
             try
             {
                 hdProgram = new HyperDeck(strIPAddressPROGRAM, Convert.ToInt32(strPortPROGRAM));
@@ -834,15 +884,19 @@ namespace FIRSTWA_Recorder
                 Console.WriteLine(hdProgram.Read());
                 
                 btnConnectProgram.BackColor = Color.Green;
+                logger.Info("- Done");
             }
-            catch
+            catch (Exception ue)
             {
+                logger.Info(ue.Message);
+                logger.Error("- Failed");
                 MessageBox.Show(string.Format("Could not connect to the Program recorder\nat the IP address: {0}", strIPAddressPROGRAM));
             }
         }
 
         private void btnConnectWide_Click(object sender, EventArgs e)
         {
+            logger.Info("Connecting to Wide");
             try
             {
                 hdWide = new HyperDeck(strIPAddressWIDE, Convert.ToInt32(strPortWIDE));
@@ -853,23 +907,29 @@ namespace FIRSTWA_Recorder
                 Console.WriteLine(hdWide.Read());
 
                 btnConnectWide.BackColor = Color.Green;
+                logger.Info("- Done");
             }
-            catch
+            catch (Exception ue)
             {
+                logger.Info(ue.Message);
+                logger.Error("- Failed");
                 MessageBox.Show(string.Format("Could not connect to the Wide recorder\nat the IP address: {0}", strIPAddressPROGRAM));
             }
         }
 
         private void btnConnectPC_Click(object sender, EventArgs e)
         {
+            logger.Info("Connecting to PC");
             try
             {
                 pinger = new Ping();
                 PingReply reply = pinger.Send(strIPAddressPC);
                 PCPingable = reply.Status == IPStatus.Success;
             }
-            catch (PingException)
+            catch (PingException pe)
             {
+                logger.Error("... Ping failed");
+                logger.Info(pe.Message);
                 btnConnectPC.BackColor = Color.Green;
                 groupEvent.Enabled = true;
                 btnStartRecording.Enabled = true;
@@ -887,6 +947,7 @@ namespace FIRSTWA_Recorder
                 btnConnectPC.BackColor = Color.Green;
                 groupEvent.Enabled = true;
                 btnStartRecording.Enabled = true;
+                logger.Info("- Done");
             }
             else
             {
@@ -894,6 +955,7 @@ namespace FIRSTWA_Recorder
                 groupEvent.Enabled = false;
                 btnStartRecording.Enabled = false;
                 MessageBox.Show("Could not connect to the PC.  Please check the IP address is correct.");
+                logger.Error("- Failed");
             }
         }
 
@@ -944,7 +1006,7 @@ namespace FIRSTWA_Recorder
 
             lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Finding Video"; }));
 
-            string tempFile = @"C:\Temp\" + fileNameWide;
+            string tempFile = tempFolder + fileNameWide;
 
             int matchIndex = -1;
             int most_recent = -1;
@@ -1035,7 +1097,7 @@ namespace FIRSTWA_Recorder
             lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Downloading Video"; }));
 
 
-            string tempFile = @"C:\Temp\" + fileNameProgram;
+            string tempFile = tempFolder + fileNameProgram;
 
             int matchIndex = 0;
             int most_recent = -1;
@@ -1213,6 +1275,19 @@ namespace FIRSTWA_Recorder
                 SetProgress(progressBar1.Maximum);
                 state = FormState.Idle;
                 launch_youtube();
+            }
+        }
+
+        private void btnTempAccess_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(tempFolder);
+            }
+            catch(Exception ue)
+            {
+                logger.Error("Failed to access temp folder for user");
+                logger.Info(ue.Message);
             }
         }
 
