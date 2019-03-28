@@ -1112,6 +1112,7 @@ namespace FIRSTWA_Recorder
                                     fileNameWide,
                                     ytDescription,
                                     ytTags);
+            YTForm.StartPosition = FormStartPosition.CenterParent;
             YTForm.Show();
         }
 
@@ -1184,6 +1185,7 @@ namespace FIRSTWA_Recorder
                                     fileNameWide,
                                     ytDescription,
                                     ytTags);
+            YTForm.StartPosition = FormStartPosition.CenterParent;
             YTForm.Show();
             btnShowYT.Enabled = true;
         }
