@@ -629,25 +629,6 @@ namespace FIRSTWA_Recorder
             File.Move(outVideo, videoPath);
         }
 
-        //download an mp4 from a remote server, convert its audio track, and upload it to a remote server
-        //fromURI - server connection to download from
-        //toURI - server connection to upload to
-        //fromFilePath - file path to downloaded file
-        //toFilePath - file path to upload
-        private void CopyFTPFile(URI fromURI, URI toURI, FilePath fromFilePath, FilePath toFilePath, FileName localTempFileName, MapMono style)
-        {
-            progress++;
-            SetProgress(progress);
-
-            //string localTempFilePath = tempFolder + localTempFileName;
-            DownloadFileFTP(fromURI +"/" + fromFilePath, localTempFileName);
-
-            ConvertVideo(localTempFileName, style);
-            UploadFileFTP(toURI + "/" + toFilePath, localTempFileName);
-            progress++;
-            SetProgress(progress);
-        }
-
         //download an mp4 from a remote server
         //uri - connection to download from
         //ftpFileName - file path at target remote server
@@ -942,9 +923,12 @@ namespace FIRSTWA_Recorder
         #region Background Workers
         private void bgWorker_FTP_Wide_DoWork(object sender, DoWorkEventArgs e)
         {
+            logger.Info("Starting Wide worker");
+            logger.Info("... Wide worker waiting");
             lblReportA.Invoke((Action)(() => { lblReportA.Text = "Waiting"; }));
             Thread.Sleep(1000);
 
+            logger.Info("... Wide cleaning HyperDeck SD");
             lblReportA.Invoke((Action)(() => { lblReportA.Text = "Clearing SD"; }));
 
             progress++;
@@ -984,6 +968,7 @@ namespace FIRSTWA_Recorder
             SetProgress(progress);
 
             lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Finding Video"; }));
+            logger.Info("... Finding Wide source file");
 
             string tempFile = tempFolder + fileNameWide;
 
@@ -1004,18 +989,23 @@ namespace FIRSTWA_Recorder
             if(matchIndex < 0)
             {
                 lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Failed to Find"; }));
+                logger.Info("- Failed: Wide source file not found");
                 return;
             }
 
             lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Downloading Video"; }));
+            logger.Info("... Wide worker downloading source");
             DownloadFileFTP(wideURI + "/" + fileNames[matchIndex], tempFile);
 
             lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Converting Video"; }));
+            logger.Info("... Wide worker processing");
             ConvertVideo(tempFile, wideChannels);
 
             lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Uploading Video"; }));
+            logger.Info("... Wide worker uploading");
             UploadFileFTP(widePath + "/" + fileNameWide, tempFile);
 
+            logger.Info("- Done: Wide");
             lblReportA.Invoke((Action)(()=> { lblReportA.Text = "Done"; }));
 
             if ((wideFTPUploadFail || programFTPUploadFail) && !bgWorker_FTP_Wide.IsBusy)
@@ -1028,9 +1018,12 @@ namespace FIRSTWA_Recorder
 
         private void bgWorker_FTP_Program_DoWork(object sender, DoWorkEventArgs e)
         {
+            logger.Info("Starting Program worker");
+            logger.Info("... Program worker waiting");
             lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Waiting"; }));
             Thread.Sleep(1000);
 
+            logger.Info("... Program cleaning HyperDeck SD");
             lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Clearing SD"; }));
 
             progress++;
@@ -1071,6 +1064,7 @@ namespace FIRSTWA_Recorder
             SetProgress(progress);
 
             lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Downloading Video"; }));
+            logger.Info("... Finding Program source file");
 
 
             string tempFile = tempFolder + fileNameProgram;
@@ -1093,18 +1087,23 @@ namespace FIRSTWA_Recorder
             if (matchIndex < 0)
             {
                 lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Failed to Find"; }));
+                logger.Info("- Failed: Program source file not found");
                 return;
             }
 
+            logger.Info("... Program worker downloading source");
             lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Downloading Video"; }));
             DownloadFileFTP(programURI + "/" + fileNames[matchIndex], tempFile);
 
+            logger.Info("... Program worker processing");
             lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Converting Video"; }));
             ConvertVideo(tempFile, progChannels);
 
+            logger.Info("... Program worker uploading");
             lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Uploading Video"; }));
             UploadFileFTP(programPath + "/" + fileNameProgram, tempFile);
 
+            logger.Info("- Done: Program");
             lblReportB.Invoke((Action)(()=> { lblReportB.Text = "Done"; }));
 
             if ((wideFTPUploadFail || programFTPUploadFail) && !bgWorker_FTP_Program.IsBusy)
