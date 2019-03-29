@@ -214,7 +214,7 @@ namespace FIRSTWA_Recorder
             }
 
             logger.Info("... Creating Temp directory");
-            tempFolder = Path.GetTempPath() + "local\\FIRSTWA-Recorder\\";
+            tempFolder = Path.GetTempPath() + "FIRSTWA-Recorder\\";
             if (!Directory.Exists(tempFolder))
             {
                 Directory.CreateDirectory(tempFolder);
