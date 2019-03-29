@@ -200,6 +200,12 @@
     <None Include="FFMPEG\bin\presets\libx264-veryfast_firstpass.ffpreset" />
     <None Include="FFMPEG\bin\presets\libx264-veryslow.ffpreset" />
     <None Include="FFMPEG\bin\presets\libx264-veryslow_firstpass.ffpreset" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
