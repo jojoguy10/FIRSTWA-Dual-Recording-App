@@ -45,6 +45,7 @@
             this.recordingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uploadsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.version001ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label3 = new System.Windows.Forms.Label();
             this.groupEvent = new System.Windows.Forms.GroupBox();
             this.comboEventName = new System.Windows.Forms.ComboBox();
@@ -74,7 +75,7 @@
             this.lblReportB = new System.Windows.Forms.Label();
             this.bgWorker_WD = new System.ComponentModel.BackgroundWorker();
             this.btnShowYT = new System.Windows.Forms.Button();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnTempAccess = new System.Windows.Forms.Button();
             this.groupMatchTypes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMatchNumber)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -260,6 +261,13 @@
             this.version001ToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
             this.version001ToolStripMenuItem.Text = "Version 0.0.3";
             this.version001ToolStripMenuItem.Click += new System.EventHandler(this.version001ToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // label3
             // 
@@ -459,7 +467,7 @@
             // progressBar1
             // 
             this.progressBar1.Location = new System.Drawing.Point(12, 380);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
             this.progressBar1.Maximum = 31;
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(391, 26);
@@ -469,7 +477,7 @@
             // 
             this.ledProgram.BackColor = System.Drawing.Color.Red;
             this.ledProgram.Location = new System.Drawing.Point(69, 350);
-            this.ledProgram.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ledProgram.Margin = new System.Windows.Forms.Padding(2);
             this.ledProgram.Name = "ledProgram";
             this.ledProgram.Size = new System.Drawing.Size(34, 16);
             this.ledProgram.TabIndex = 28;
@@ -498,7 +506,7 @@
             // 
             this.ledWide.BackColor = System.Drawing.Color.Red;
             this.ledWide.Location = new System.Drawing.Point(369, 350);
-            this.ledWide.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ledWide.Margin = new System.Windows.Forms.Padding(2);
             this.ledWide.Name = "ledWide";
             this.ledWide.Size = new System.Drawing.Size(34, 16);
             this.ledWide.TabIndex = 30;
@@ -508,7 +516,7 @@
             this.btnCancel.BackColor = System.Drawing.Color.Red;
             this.btnCancel.Enabled = false;
             this.btnCancel.Location = new System.Drawing.Point(145, 437);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(2);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(118, 34);
             this.btnCancel.TabIndex = 32;
@@ -550,12 +558,15 @@
             this.btnShowYT.UseVisualStyleBackColor = true;
             this.btnShowYT.Click += new System.EventHandler(this.btnShowYT_Click);
             // 
-            // helpToolStripMenuItem
+            // btnTempAccess
             // 
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
+            this.btnTempAccess.Location = new System.Drawing.Point(12, 437);
+            this.btnTempAccess.Name = "btnTempAccess";
+            this.btnTempAccess.Size = new System.Drawing.Size(91, 34);
+            this.btnTempAccess.TabIndex = 36;
+            this.btnTempAccess.Text = "Open Temp Folder";
+            this.btnTempAccess.UseVisualStyleBackColor = true;
+            this.btnTempAccess.Click += new System.EventHandler(this.btnTempAccess_Click);
             // 
             // MainForm
             // 
@@ -564,6 +575,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnStopRecording;
             this.ClientSize = new System.Drawing.Size(416, 486);
+            this.Controls.Add(this.btnTempAccess);
             this.Controls.Add(this.btnShowYT);
             this.Controls.Add(this.lblReportB);
             this.Controls.Add(this.lblReportA);
@@ -633,7 +645,6 @@
         private System.Windows.Forms.Button btnConnectProgram;
         private System.ComponentModel.BackgroundWorker bgWorker_FTP_Program;
         private System.ComponentModel.BackgroundWorker bgWorker_FTP_Wide;
-        private System.ComponentModel.BackgroundWorker bgWorker_Youtube;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Panel ledProgram;
         private System.Windows.Forms.Label lblProgramReady;
@@ -651,6 +662,7 @@
         private System.Windows.Forms.Button btnShowYT;
         private System.Windows.Forms.Button btnConnectPC;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.Button btnTempAccess;
     }
 }
 
