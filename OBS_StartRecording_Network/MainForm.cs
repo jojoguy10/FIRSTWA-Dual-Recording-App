@@ -273,19 +273,19 @@ namespace FIRSTWA_Recorder
             switch (currentMatchType)
             {
                 case MatchType.Qualification:
-                    matchType = "Qual";
+                    matchType = "Q";
                     matchAbrev = "qm";
                     break;
                 case MatchType.Quarterfinal:
-                    matchType = "Quarterfinal";
+                    matchType = "QF";
                     matchAbrev = "qf";
                     break;
                 case MatchType.Semifinal:
-                    matchType = "Semifinal";
+                    matchType = "SF";
                     matchAbrev = "sf";
                     break;
                 case MatchType.Final:
-                    matchType = "Final";
+                    matchType = "F";
                     matchAbrev = "f";
                     break;
                 default:
@@ -304,7 +304,7 @@ namespace FIRSTWA_Recorder
             }
             else
             {
-                matchABV = string.Format("{0}c{3}", currentEvent.event_code, txtCeremonyTitle.Text.ToString());
+                matchABV = string.Format("{0}c{1}", currentEvent.event_code, txtCeremonyTitle.Text.ToString());
             }
 
             currentMatch = null;
@@ -375,15 +375,15 @@ namespace FIRSTWA_Recorder
                 logger.Info("... Beginning program recording");
                 if (currentMatchType == MatchType.Qualification || currentMatchType == MatchType.Final)
                 {
-                    matchNameProgram = string.Format("{0} {1} {2} {3}", currentEvent.year, currentEvent.name, matchType, numMatchNumber.Value.ToString());
+                    matchNameProgram = string.Format("{2}{3} {0} {1}", currentEvent.year, currentEvent.name, matchType, numMatchNumber.Value.ToString());
                 }
                 else if (currentMatchType != MatchType.Ceremony)
                 {
-                    matchNameProgram = string.Format("{0} {1} {2} {3} Match {4}", currentEvent.year, currentEvent.name, matchType, numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
+                    matchNameProgram = string.Format("{2}{3}-{4} {0} {1}", currentEvent.year, currentEvent.name, matchType, numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
                 }
                 else
                 {
-                    matchNameProgram = string.Format("{0} {1} Ceremony {3}", currentEvent.year, currentEvent.name, txtCeremonyTitle.Text.ToString());
+                    matchNameProgram = string.Format("{0} {1} Ceremony {2}", currentEvent.year, currentEvent.name, txtCeremonyTitle.Text.ToString());
                 }
 
                 fileNameProgram = matchNameProgram + ".mp4";
@@ -406,11 +406,11 @@ namespace FIRSTWA_Recorder
                 logger.Info("... Beginning wide recording");
                 if (currentMatchType == MatchType.Qualification || currentMatchType == MatchType.Final)
                 {
-                    matchNameWide = string.Format("{0} {1} WIDE {2} {3}", currentEvent.year, currentEvent.name, matchType, numMatchNumber.Value.ToString());
+                    matchNameWide = string.Format("{2}{3} {0} {1} - WIDE ", currentEvent.year, currentEvent.name, matchType, numMatchNumber.Value.ToString());
                 }
                 else
                 {
-                    matchNameWide = string.Format("{0} {1} WIDE {2} {3} Match {4}", currentEvent.year, currentEvent.name, matchType, numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
+                    matchNameWide = string.Format("{2}{3}-{4} {0} {1} - WIDE", currentEvent.year, currentEvent.name, matchType, numFinalNo.Value.ToString(), numMatchNumber.Value.ToString());
                 }
                 fileNameWide = matchNameWide + ".mp4";
 
