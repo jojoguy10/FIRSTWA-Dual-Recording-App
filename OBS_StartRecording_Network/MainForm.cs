@@ -69,11 +69,13 @@ namespace FIRSTWA_Recorder
 
     public partial class MainForm : Form
     {
+        private const string BASESUBKEY = @"Software\FIRSTWA";
+
         RecordingSettings frmRecordingSetting;
         AudioSettings frmAudioSetting;
         
         RestClient tbaClient = new RestClient("http://www.thebluealliance.com/api/v3");
-        RestRequest tbaRequest = new RestRequest($"district/2019pnw/events", Method.GET);
+        RestRequest tbaRequest;
         private string TBAKEY;
 
         List<District> eventDistrict = new List<District>();
@@ -84,6 +86,7 @@ namespace FIRSTWA_Recorder
 
         Match[] matches;
 
+        string strYear = "2020";
         IPAddress strIPAddressPC = @"192.168.100.70";
         IPAddress strIPAddressPROGRAM = @"192.168.100.35";
         IPAddress strIPAddressWIDE = @"192.168.100.34";
@@ -95,6 +98,7 @@ namespace FIRSTWA_Recorder
 
         FormState state;
 
+        RegistryKeyName regYear = "YEAR";
         RegistryKeyName regPROGRAM = "PROGRAM_IPAddress";
         RegistryKeyName regWIDE = "WIDE_IPAddress";
         RegistryKeyName regPC = "PC_IPAddress";
@@ -115,8 +119,6 @@ namespace FIRSTWA_Recorder
         private string ytDescription, ytTags;
 
         private DateTime startTime;
-
-        private FileInfo credFile = new FileInfo(@"D:\__USER\Documents\GitHub\FIRSTWA_PC_RecordingApplication\FIRSTWA_StartRecording_Network\client_secret_613443767055-pvnp5ugap7kgj1i7rid6in7tnm3podmv.apps.googleusercontent.com.json");
 
         private string programPlaylistTitle, widePlaylistTitle;
         private string programVideoTitle, wideVideoTitle;
@@ -149,16 +151,45 @@ namespace FIRSTWA_Recorder
 
             registryKeyNames.Add(regPROGRAM);
             registryKeyNames.Add(regWIDE);
+            registryKeyNames.Add(regYear);
             registryKeyNames.Add(regPC);
             registryKeyNames.Add(regProgAudio);
             registryKeyNames.Add(regWideAudio);
 
-            logger.Info("... Reading TBA API key from registry");
+            logger.Info("... Reading form variables from registry");
             try
             {
-                TBAKEY = ReadRegistryKey("apikey");
+                foreach (RegistryKeyName keyName in registryKeyNames)
+                {
+                    if (ReadRegistryKey(keyName) == "")
+                    {
+                        UpdateRegistryKeys();
+                    }
+                }
+
+                strYear = ReadRegistryKey(regYear);
+                strIPAddressPC = ReadRegistryKey(regPC);
+                strIPAddressPROGRAM = ReadRegistryKey(regPROGRAM);
+                strIPAddressWIDE = ReadRegistryKey(regWIDE);
+
+                Enum.TryParse(ReadRegistryKey(regWideAudio), out MapMono _wideChannels);
+                Enum.TryParse(ReadRegistryKey(regProgAudio), out MapMono _progChannels);
+
+                wideChannels = _wideChannels;
+                progChannels = _progChannels;
             }
             catch
+            {
+                logger.Error("... Could not find form registry keys, creating defaults");
+                UpdateRegistryKeys();
+                MessageBox.Show("Initialized the registry keys.  Please check that the registry keys are correct.");
+            }
+
+            logger.Info("... Reading TBA API key from registry");
+            tbaRequest = new RestRequest($"district/" + strYear + "pnw/events", Method.GET);
+            TBAKEY = ReadRegistryKey("apikey");
+
+            if (TBAKEY == "")
             {
                 logger.Fatal("- Failed: Could not find TBA API key");
                 DialogResult dr = MessageBox.Show("Could not find a TBA API key in the registry.  Closing...");
@@ -181,37 +212,10 @@ namespace FIRSTWA_Recorder
 
             eventDistrict = JsonConvert.DeserializeObject<List<District>>(tbaContent);
             eventDetails = JsonConvert.DeserializeObject<List<Event>>(tbaContent);
-            
+
             eventDetails.ForEach(x => comboEventName.Items.Add((x.week + 1) + " - " + x.first_event_code + " - " + x.location_name));
             comboEventName.Sorted = true;
-
-            logger.Info("... Reading form variables from registry");
-            try
-            {
-                foreach (RegistryKeyName keyName in registryKeyNames)
-                {
-                    if (ReadRegistryKey(keyName) == "")
-                    {
-                        UpdateRegistryKeys();
-                    }
-                }
-
-                strIPAddressPC = ReadRegistryKey(regPC);
-                strIPAddressPROGRAM = ReadRegistryKey(regPROGRAM);
-                strIPAddressWIDE = ReadRegistryKey(regWIDE);
-
-                Enum.TryParse(ReadRegistryKey(regWideAudio), out MapMono _wideChannels);
-                Enum.TryParse(ReadRegistryKey(regProgAudio), out MapMono _progChannels);
-
-                wideChannels = _wideChannels;
-                progChannels = _progChannels;
-            }
-            catch
-            {
-                logger.Error("... Could not find form registry keys, creating defaults");
-                UpdateRegistryKeys();
-                MessageBox.Show("Initialized the registry keys.  Please check that the registry keys are correct.");
-            }
+            comboEventName.Items.Add("Custom Event");
 
             logger.Info("... Creating Temp directory");
             tempFolder = Path.GetTempPath() + "FIRSTWA-Recorder\\";
@@ -221,20 +225,23 @@ namespace FIRSTWA_Recorder
             }
 
             logger.Info("... Initializing Settings Forms");
-            frmRecordingSetting = new RecordingSettings(strIPAddressPC, strIPAddressPROGRAM, strIPAddressWIDE);
+            frmRecordingSetting = new RecordingSettings(strYear, strIPAddressPC, strIPAddressPROGRAM, strIPAddressWIDE);
             frmAudioSetting = new AudioSettings(wideChannels,progChannels);
 
-            groupEvent.Enabled = false;
-            groupMatch.Enabled = false;
-            btnStartRecording.Enabled = false;
-            btnStopRecording.Enabled = false;
-            logger.Info("- Done");
+            if (!Debugger.IsAttached)
+            {
+                groupEvent.Enabled = false;
+                groupMatch.Enabled = false;
+                btnStartRecording.Enabled = false;
+                btnStopRecording.Enabled = false;
+                logger.Info("- Done");
+            }
         }
 
         #region Registry
         private string ReadRegistryKey(string key)
         {
-            RegistryKey firstwaKey = Registry.CurrentUser.OpenSubKey(@"Software\FIRSTWA", true);
+            RegistryKey firstwaKey = Registry.CurrentUser.OpenSubKey(BASESUBKEY, true);
             if (firstwaKey == null)
             {
                 return "";
@@ -248,6 +255,7 @@ namespace FIRSTWA_Recorder
 
         private void UpdateRegistryKeys()
         {
+            WriteRegistryKey(regYear, strYear);
             WriteRegistryKey(regPC, strIPAddressPC);
             WriteRegistryKey(regPROGRAM, strIPAddressPROGRAM);
             WriteRegistryKey(regWIDE, strIPAddressWIDE);
@@ -257,10 +265,10 @@ namespace FIRSTWA_Recorder
 
         private void WriteRegistryKey(string key, string value)
         {
-            RegistryKey firstwaKey = Registry.CurrentUser.OpenSubKey(@"Software\FIRSTWA", true);
+            RegistryKey firstwaKey = Registry.CurrentUser.OpenSubKey(BASESUBKEY, true);
             if (firstwaKey == null)
             {
-                firstwaKey = Registry.CurrentUser.CreateSubKey(@"Software\FIRSTWA");
+                firstwaKey = Registry.CurrentUser.CreateSubKey(BASESUBKEY);
             }
             
             firstwaKey.SetValue(key, value);
@@ -812,12 +820,22 @@ namespace FIRSTWA_Recorder
                 {
                     currentEvent = eventDetails[i];
 
-                    programPlaylistTitle = currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
-                    widePlaylistTitle = "(WIDE) " + currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
+                    //programPlaylistTitle = currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
+                    //widePlaylistTitle = "(WIDE) " + currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
 
                     programVideoTitle = currentEvent.year + " " + currentEvent.name + " " + matchType + " " + numMatchNumber.Value;
                     wideVideoTitle = currentEvent.year + " " + currentEvent.name + " WIDE " + matchType + " " + numMatchNumber.Value;
                     GetMatches();
+                    groupMatch.Enabled = true;
+                }
+                else
+                {
+                    // Custom Event
+                    //programPlaylistTitle = currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
+                    //widePlaylistTitle = "(WIDE) " + currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
+
+                    programVideoTitle = "<CUSTOM EVENT> " + matchType + " " + numMatchNumber.Value;
+                    wideVideoTitle = "<CUSTOM EVENT> WIDE " + matchType + " " + numMatchNumber.Value;
                     groupMatch.Enabled = true;
                 }
             }
@@ -1058,7 +1076,6 @@ namespace FIRSTWA_Recorder
                     directories.RemoveAt(minTimstampIndex);
                 }
             }
-
 
             progress++;
             SetProgress(progress);
