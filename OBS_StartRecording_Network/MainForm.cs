@@ -9,35 +9,28 @@ using System.Windows.Forms;
 using System.Net.Sockets;
 using System.Diagnostics;
 using RestSharp;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
-using Google.Apis.Upload;
-using Google.Apis.Util.Store;
-using Google.Apis.YouTube.v3;
-using Google.Apis.YouTube.v3.Data;
 using Newtonsoft.Json;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using System.Reflection;
-using System.Xml.Linq;
 using Microsoft.Win32;
 using System.Text;
 using System.Net;
 using System.Text.RegularExpressions;
 using NLog;
+using Microsoft.VisualBasic;
 
 /* TODO:
  * Error handling for videos that failed to record, transfer, or convert
  * Figure out a good versioning scheme
+ *      Start with "year.version"
  * Figure out how to record long-run ceremonies (i.e. Opening/Closing ceremonies and awards).  
  *      I want to be able to record up to 1.5 hours to be safe.
  * If the match isn't found when the "start recording" button is pressed, don't halt the recording.
  *      The user might have forgotton to switch off of quarterfinals and needs to start recording.
  *      Give the user the option to change the match type and number is it can't be found in TBA.
  * 
- * Upload to YouTube to playlist
  * Error handling
  * Commenting
  * Layout/UI Design
@@ -104,6 +97,7 @@ namespace FIRSTWA_Recorder
         RegistryKeyName regPC = "PC_IPAddress";
         RegistryKeyName regProgAudio = "PROGRAM_AudioChannel";
         RegistryKeyName regWideAudio = "WIDE_AudioChannel";
+        RegistryKeyName regAPIKey = "apikey";
         List<RegistryKeyName> registryKeyNames = new List<FileName>();
 
         int progress = 0;
@@ -187,17 +181,20 @@ namespace FIRSTWA_Recorder
 
             logger.Info("... Reading TBA API key from registry");
             tbaRequest = new RestRequest($"district/" + strYear + "pnw/events", Method.GET);
-            TBAKEY = ReadRegistryKey("apikey");
+            TBAKEY = ReadRegistryKey(regAPIKey);
 
             if (TBAKEY == "")
             {
                 logger.Fatal("- Failed: Could not find TBA API key");
-                DialogResult dr = MessageBox.Show("Could not find a TBA API key in the registry.  Closing...");
+                TBAKEY = Interaction.InputBox("Please enter the TBA API key.", "TBA API Key", "");
 
-                if (dr == DialogResult.OK)
+                if (TBAKEY == "")
                 {
+                    MessageBox.Show("Could not find a TBA API key in the registry.  Closing...");
                     Application.Exit();
                 }
+
+                WriteRegistryKey(regAPIKey, TBAKEY);
             }
 
             logger.Info("... Getting event list from TBA");

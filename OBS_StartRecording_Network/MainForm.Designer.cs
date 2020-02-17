@@ -258,8 +258,8 @@
             // version001ToolStripMenuItem
             // 
             this.version001ToolStripMenuItem.Name = "version001ToolStripMenuItem";
-            this.version001ToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
-            this.version001ToolStripMenuItem.Text = "Version 0.0.3";
+            this.version001ToolStripMenuItem.Size = new System.Drawing.Size(93, 20);
+            this.version001ToolStripMenuItem.Text = "Version 2020.1";
             this.version001ToolStripMenuItem.Click += new System.EventHandler(this.version001ToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
@@ -595,6 +595,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
+            this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FIRSTWA Recording";
             this.groupMatchTypes.ResumeLayout(false);
