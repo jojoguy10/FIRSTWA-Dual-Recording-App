@@ -114,7 +114,6 @@ namespace FIRSTWA_Recorder
 
         private DateTime startTime;
 
-        private string programPlaylistTitle, widePlaylistTitle;
         private string programVideoTitle, wideVideoTitle;
 
         private bool wideFTPUploadFail = false;
@@ -817,9 +816,6 @@ namespace FIRSTWA_Recorder
                 {
                     currentEvent = eventDetails[i];
 
-                    //programPlaylistTitle = currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
-                    //widePlaylistTitle = "(WIDE) " + currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
-
                     programVideoTitle = currentEvent.year + " " + currentEvent.name + " " + matchType + " " + numMatchNumber.Value;
                     wideVideoTitle = currentEvent.year + " " + currentEvent.name + " WIDE " + matchType + " " + numMatchNumber.Value;
                     GetMatches();
@@ -828,8 +824,6 @@ namespace FIRSTWA_Recorder
                 else
                 {
                     // Custom Event
-                    //programPlaylistTitle = currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
-                    //widePlaylistTitle = "(WIDE) " + currentEvent.year + " " + currentEvent.name + " " + currentEvent.week;
 
                     programVideoTitle = "<CUSTOM EVENT> " + matchType + " " + numMatchNumber.Value;
                     wideVideoTitle = "<CUSTOM EVENT> WIDE " + matchType + " " + numMatchNumber.Value;
